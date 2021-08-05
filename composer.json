@@ -1,0 +1,20 @@
+{
+  "name": "eas/eucompliance",
+  "description": "EAS EU compliance plugin is a comprehensive fully automated EU VAT and customs solution for new special VAT schemes.  The solution provides complete tax determination and reporting needed for unimpeded EU market access",
+  "type": "magento2-module",
+  "version": "1.0.0",
+  "license": [
+    "proprietary"
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Eas\\Eucompliance\\": ""
+    }
+  },
+  "require": {
+    "firebase/php-jwt": "^5.3"
+  }
+}

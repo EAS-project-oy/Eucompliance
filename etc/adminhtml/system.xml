@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="eas" translate="label" sortOrder="120">
+            <label>EAS</label>
+        </tab>
+
+        <section id="configuration" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1"
+                 showInStore="1">
+            <class>separator-top</class>
+            <label>General</label>
+            <tab>eas</tab>
+            <resource>Eas_Eucompliance::default</resource>
+            <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>General</label>
+
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable this solution</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>configuration/general/enable</config_path>
+                </field>
+
+                <field id="post_shipping" translate="label" type="multiselect" sortOrder="1" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Shipping methods by post</label>
+                    <source_model>Magento\Shipping\Model\Config\Source\Allmethods</source_model>
+                </field>
+
+            </group>
+
+            <group id="credentials" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Credentials</label>
+
+                <field id="api_url" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
+                       showInStore="1" canRestore="0">
+                    <label>EAS API Base URL</label>
+                    <comment><![CDATA[Get your credentials <a href="https://internal1.easproject.com/api"
+                    title="Api Key and API Secret" target="_blank" style="color:#2b7dbd">here</a> ]]></comment>
+                    <config_path>configuration/credentials/api_url</config_path>
+                </field>
+
+                <field id="api_key" translate="label" type="obscure" sortOrder="3" showInDefault="1" showInWebsite="1"
+                       showInStore="1" canRestore="0">
+                    <label>EAS api key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+
+                <field id="secret_api_key" translate="label" type="obscure" sortOrder="4" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1" canRestore="0">
+                    <label>EAS secret api key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+
+                <field id="authorize_url" translate="label" type="text" sortOrder="2" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1" canRestore="0">
+                    <label>EAS API authorize URL</label>
+                    <config_path>configuration/credentials/authorize_url</config_path>
+                </field>
+
+                <field id="auth_keys_url" translate="label" type="text" sortOrder="2" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1" canRestore="0">
+                    <label>EAS API auth keys URL</label>
+                    <config_path>configuration/credentials/auth_keys_url</config_path>
+                </field>
+
+                <field id="calculate" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
+                       showInStore="1" canRestore="0">
+                    <label>EAS API calculate URL</label>
+                    <config_path>configuration/credentials/calculate_url</config_path>
+                </field>
+            </group>
+
+            <group id="attributes" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Attributes</label>
+
+                <field id="hscode" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
+                    <label>HSCODE</label>
+                    <comment>Use eas_hscode, if you don't have one</comment>
+                </field>
+
+                <field id="reduced_vat" translate="label" type="select" sortOrder="2" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Reduced vat</label>
+                    <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
+                    <comment>Use eas_reduced_vat, if you don't have one</comment>
+                </field>
+
+                <field id="warehouse_country" translate="label" type="select" sortOrder="3" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Warehouse country</label>
+                    <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
+                    <comment>Use eas_warehouse_country, if you don't have one</comment>
+                </field>
+
+            </group>
+
+            <group id="advanced" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Advanced</label>
+                <field id="debug" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Debug mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>configuration/advanced/debug</config_path>
+                </field>
+            </group>
+
+        </section>
+
+    </system>
+</config>
