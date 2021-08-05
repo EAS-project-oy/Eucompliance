@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <configuration>
+            <general>
+                <enable>0</enable>
+            </general>
+            <advanced>
+                <debug>1</debug>
+            </advanced>
+            <credentials>
+                <api_url>https://internal1.easproject.com/api</api_url>
+                <authorize_url>https://internal1.easproject.com/api/auth/open-id/connect</authorize_url>
+                <calculate_url>https://internal1.easproject.com/api/calculate</calculate_url>
+                <auth_keys_url>https://internal1.easproject.com/api/auth/keys</auth_keys_url>
+            </credentials>
+            <attributes>
+                <hscode>eas_hscode</hscode>
+                <reduced_vat>eas_reduced_vat</reduced_vat>
+                <warehouse_country>eas_warehouse_country</warehouse_country>
+            </attributes>
+        </configuration>
+    </default>
+
+</config>
