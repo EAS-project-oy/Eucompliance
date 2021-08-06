@@ -8,13 +8,13 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="eas" translate="label" sortOrder="120">
-            <label>EAS</label>
+            <label>EAS EU Compliance</label>
         </tab>
 
         <section id="configuration" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1"
                  showInStore="1">
             <class>separator-top</class>
-            <label>General</label>
+            <label>EAS EU Compliance</label>
             <tab>eas</tab>
             <resource>Eas_Eucompliance::default</resource>
             <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
