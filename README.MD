@@ -77,7 +77,7 @@ Shipping methods by post - select shipping methods which use post mailing system
 
 *Note All non selected methods will be considered as delivering using courier.
 
-_**Credentials**_ - get default urls from  https://admin1.easproject.com/api/spec/
+_**Credentials**_ - get default urls from  https://dashboard.easproject.com/
 
 **EAS API Base URL**  -  base api url used for sending request
 
