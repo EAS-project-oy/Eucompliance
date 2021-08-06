@@ -59,7 +59,7 @@ Which means, module is successfully installed and enabled.
 
 After installation, you need to configure the module.
 
-To do so, navigate to Stores → Configuration section in admin. You should be able to see EAS tab
+To do so, navigate to Stores → Configuration section in admin. You should be able to see EAS EU Compliance tab
 
 <p align="center">
     <img alt="EAS main_menu" src="doc/static/main_menu.png" />
@@ -107,7 +107,7 @@ Those data contains data sent to api, data get from api, all errors.
 
 #### Configuration EAS attributes on product level. For it, we should go to edit a product page in admin panel.
 
-You can configure eas attributes, during product edition in EAS tab.
+You can configure eas attributes, during product edition in EAS EU Compliance tab.
 <p align="center">
     <img alt="EAS eas_product_edit" src="doc/static/eas_product_edit.png" />
 </p>
