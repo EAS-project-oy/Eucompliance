@@ -1,4 +1,4 @@
-<p align="center">
+<p align="left">
     <img alt="EAS" width="240px" src="doc/static/Plugin_logo.png" />
 </p>
 EAS EU compliance plugin gives easy and unimpeded access to the whole EU market, your sales are always VAT compliant irrespective of where you sell from and your registry/legal environment.
