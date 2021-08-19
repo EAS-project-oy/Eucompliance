@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EasEucompliance\Model\Source;
+namespace Eas\Eucompliance\Model\Source;
 
 use Eas\Eucompliance\Model\Config\Configuration;
 use Magento\Framework\Data\OptionSourceInterface;
