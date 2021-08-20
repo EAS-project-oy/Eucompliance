@@ -230,7 +230,8 @@ class Calculate
         } else {
             $this->logger->critical('Eas calculate failed' . $response);
             $errors = json_decode($response, true);
-            $errors = array_key_exists('errors', $errors) ? $errors['errors'] : $errors['messages'];
+            $errors = (array_key_exists('errors', $errors) ?
+                $errors['errors'] : array_key_exists('message', $errors))  ? $errors['message'] : $errors['messages'];
             return ['error' => json_encode($errors)];
         }
     }
@@ -258,13 +259,10 @@ class Calculate
         if (!$this->token) {
             $client = $this->clientFactory->create();
             $client->setUri($this->configuration->getAuthorizeUrl());
-            $client->setParameterPost('grant_type', 'client_credentials');
             list($apiKey, $secretApiKey) = $this->configuration->getApiKeys();
-            $client->setHeaders([
-                'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
-                'Content-Type' => 'application/json'
-            ]);
-
+            $client->setParameterPost('client_secret',$secretApiKey);
+            $client->setParameterPost('client_id', $apiKey);
+            $client->setParameterPost('grant_type', 'client_credentials');
             $this->setConfig($client);
             $token = $client->request(Zend_Http_Client::POST)->getBody();
             $this->token = json_decode($token, true)[Configuration::ACCESS_TOKEN];
