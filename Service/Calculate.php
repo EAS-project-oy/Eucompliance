@@ -230,8 +230,8 @@ class Calculate
         } else {
             $this->logger->critical('Eas calculate failed' . $response);
             $errors = json_decode($response, true);
-            $errors = (array_key_exists('errors', $errors) ?
-                $errors['errors'] : array_key_exists('message', $errors))  ? $errors['message'] : $errors['messages'];
+            $errors = array_key_exists('errors', $errors) ?
+                $errors['errors'] : (array_key_exists('message', $errors)  ? $errors['message'] : $errors['messages']);
             return ['error' => json_encode($errors)];
         }
     }
