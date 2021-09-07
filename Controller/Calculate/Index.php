@@ -90,8 +90,8 @@ class Index implements ActionInterface
 
     public function execute()
     {
-        if ($this->configuration->isEnabled()) {
-            $this->response->setRedirect($this->url->getUrl('checkout/cart'));
+        if (!$this->configuration->isEnabled()) {
+            return $this->response->setRedirect($this->url->getUrl('checkout/cart'));
         }
 
         $params = $this->request->getParams();
@@ -121,9 +121,9 @@ class Index implements ActionInterface
 
             $this->quoteRepository->save($quote);
             $quote->setTotalsCollectedFlag(false)->collectTotals();
-            $this->response->setRedirect($this->url->getUrl('checkout/') . '#payment');
+            return $this->response->setRedirect($this->url->getUrl('checkout/') . '#payment');
         } else {
-            $this->response->setRedirect($this->url->getUrl('checkout/cart'));
+            return $this->response->setRedirect($this->url->getUrl('checkout/cart'));
         }
     }
 }
