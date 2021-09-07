@@ -90,7 +90,7 @@ class Index implements ActionInterface
 
     public function execute()
     {
-        if ($this->configuration->isEnabled()) {
+        if (!$this->configuration->isEnabled()) {
             $this->response->setRedirect($this->url->getUrl('checkout/cart'));
         }
 
