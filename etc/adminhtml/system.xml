@@ -67,6 +67,7 @@
                        showInStore="1" canRestore="0">
                     <label>EAS API authorize URL</label>
                     <config_path>configuration/credentials/authorize_url</config_path>
+                    <frontend_model>Eas\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
                 </field>
 
                 <field id="auth_keys_url" translate="label" type="text" sortOrder="2" showInDefault="1"
@@ -74,12 +75,14 @@
                        showInStore="1" canRestore="0">
                     <label>EAS API auth keys URL</label>
                     <config_path>configuration/credentials/auth_keys_url</config_path>
+                    <frontend_model>Eas\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
                 </field>
 
                 <field id="calculate" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS API calculate URL</label>
                     <config_path>configuration/credentials/calculate_url</config_path>
+                    <frontend_model>Eas\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
                 </field>
             </group>
 
@@ -99,6 +102,20 @@
                     <label>Reduced vat</label>
                     <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
                     <comment>Use eas_reduced_vat, if you don't have one</comment>
+                </field>
+
+                <field id="seller_registration_country" translate="label" type="select" sortOrder="2" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Seller registration</label>
+                    <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
+                    <comment>Use eas_seller_registration_country, if you don't have one</comment>
+                </field>
+
+                <field id="act_as_disclosed_agent" translate="label" type="select" sortOrder="2" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Act as disclosed agent</label>
+                    <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
+                    <comment>Use eas_act_as_disclosed_agent, if you don't have one</comment>
                 </field>
 
                 <field id="warehouse_country" translate="label" type="select" sortOrder="3" showInDefault="1"

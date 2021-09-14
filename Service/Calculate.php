@@ -178,7 +178,11 @@ class Calculate
                 "cost_provided_by_em" => (float)number_format((float)$item->getPriceInclTax(), 2),
                 "weight" => (float)number_format((float)$product->getWeight(), 2),
                 "type_of_goods" => Configuration::GOODS,
-                "act_as_disclosed_agent" => true,
+                Configuration::ACT_AS_DISCLOSED_AGENT => $this->productResourceModel->getAttributeRawValue(
+                    $product->getId(),
+                    $this->configuration->getActAsDisclosedAgentAttributeName(),
+                    $storeId
+                ) ?: false,
                 Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->productResourceModel->getAttributeRawValue(
                     $product->getId(),
                     $this->configuration->getWarehouseAttributeName(),
@@ -190,7 +194,7 @@ class Calculate
                 $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] = $originatingCountry;
             } else {
                 $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] =
-                    $items[array_key_last($items)][Configuration::LOCATION_WAREHOUSE_COUNTRY];
+                    $this->configuration->getDefaultCountryCode();
             }
 
             $hs6p = $this->productResourceModel->getAttributeRawValue(
@@ -202,9 +206,12 @@ class Calculate
                 $items[array_key_last($items)]['hs6p_received'] = $hs6p;
             }
             $sellerRegistrationCountry = $this->productResourceModel->
-            getAttributeRawValue($product->getId(), Configuration::EAS_SELLER_REGISTRATION_COUNTRY, $storeId);
+            getAttributeRawValue($product->getId(), $this->configuration->getSellerRegistrationName(), $storeId);
             if ($sellerRegistrationCountry) {
                 $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] = $sellerRegistrationCountry;
+            } else {
+                $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] =
+                    $this->configuration->getDefaultCountryCode();
             }
             $reducedTbeVatGroup = (bool)$this->productResourceModel->getAttributeRawValue(
                 $product->getId(),
@@ -230,7 +237,8 @@ class Calculate
         } else {
             $this->logger->critical('Eas calculate failed' . $response);
             $errors = json_decode($response, true);
-            $errors = array_key_exists('errors', $errors) ? $errors['errors'] : $errors['messages'];
+            $errors = array_key_exists('errors', $errors) ?
+                $errors['errors'] : (array_key_exists('message', $errors)  ? $errors['message'] : $errors['messages']);;
             return ['error' => json_encode($errors)];
         }
     }
@@ -258,6 +266,11 @@ class Calculate
         if (!$this->token) {
             $client = $this->clientFactory->create();
             $client->setUri($this->configuration->getAuthorizeUrl());
+            list($apiKey, $secretApiKey) = $this->configuration->getApiKeys();
+            $client->setHeaders([
+                'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
+            ]);
+
             $client->setParameterPost('grant_type', 'client_credentials');
             list($apiKey, $secretApiKey) = $this->configuration->getApiKeys();
             $client->setHeaders([
