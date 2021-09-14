@@ -16,6 +16,8 @@ class Configuration
     const CONFIGURATION_ATTRIBUTES_REDUCED_VAT = 'configuration/attributes/reduced_vat';
     const CONFIGURATION_ATTRIBUTES_HSCODE = 'configuration/attributes/hscode';
     const CONFIGURATION_ATTRIBUTES_WAREHOUSE_COUNTRY = 'configuration/attributes/warehouse_country';
+    const CONFIGURATION_ATTRIBUTES_ACT_AS_DISCLOSED_AGENT = 'configuration/attributes/act_as_disclosed_agent';
+    const CONFIGURATION_ATTRIBUTES_SELLER_REGISTRATION_COUNTRY = 'configuration/attributes/seller_registration_country';
     const CONFIGURATION_ADVANCED_DEBUG = 'configuration/advanced/debug';
     const CONFIGURATION_CREDENTIALS_AUTH_KEYS_URL = 'configuration/credentials/auth_keys_url';
     const CONFIGURATION_CREDENTIALS_AUTHORIZE_URL = 'configuration/credentials/authorize_url';
@@ -29,6 +31,8 @@ class Configuration
     const EAS_REDUCED_VAT = 'eas_reduced_vat';
     const SELLER_REGISTRATION_COUNTRY = 'seller_registration_country';
     const EAS_SELLER_REGISTRATION_COUNTRY = 'eas_seller_registration_country';
+    const EAS_ACT_AS_DISCLOSED_AGENT = 'eas_act_as_disclosed_agent';
+    const ACT_AS_DISCLOSED_AGENT = 'act_as_disclosed_agent';
     const EAS_HSCODE = 'eas_hscode';
     const EAS_FEE = 'eas_fee';
     const LOCATION_WAREHOUSE_COUNTRY = 'location_warehouse_country';
@@ -43,6 +47,7 @@ class Configuration
     const PRODUCT_ENTITY_TYPE = 4;
     const ATTRIBUTE_CODE = 'attribute_code';
     const EAS = 'eas';
+    const EAS_ADDITIONAL_ATTRIBUTES = 'EAS additional attributes';
     const VERIFYPEER = 'verifypeer';
 
     /**
@@ -109,6 +114,17 @@ class Configuration
     /**
      * @return string|null
      */
+    public function getActAsDisclosedAgentAttributeName(): ?string
+    {
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_ATTRIBUTES_ACT_AS_DISCLOSED_AGENT,
+            ScopeInterface::SCOPE_STORE
+        ) ?: Configuration::EAS_ACT_AS_DISCLOSED_AGENT;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getDefaultCountryCode(): ?string
     {
         return $this->scopeConfig->getValue(
@@ -131,6 +147,15 @@ class Configuration
     {
         return $this->scopeConfig->getValue(Configuration::CONFIGURATION_ATTRIBUTES_REDUCED_VAT,
             ScopeInterface::SCOPE_STORE) ?: self::EAS_REDUCED_VAT;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSellerRegistrationName(): ?string
+    {
+        return $this->scopeConfig->getValue(Configuration::CONFIGURATION_ATTRIBUTES_SELLER_REGISTRATION_COUNTRY,
+            ScopeInterface::SCOPE_STORE) ?: self::EAS_SELLER_REGISTRATION_COUNTRY;
     }
 
     /**

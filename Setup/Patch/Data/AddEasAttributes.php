@@ -71,7 +71,7 @@ class AddEasAttributes implements DataPatchInterface
         $attributeSetId = $this->product->getDefaultAttributeSetId();
         $attributeGroup = $this->attributeGroupFactory->create();
         $attributeGroup->setAttributeSetId($attributeSetId);
-        $attributeGroup->setAttributeGroupName(Configuration::EAS);
+        $attributeGroup->setAttributeGroupName(Configuration::EAS_ADDITIONAL_ATTRIBUTES);
         $this->attributeGroupRepository->save($attributeGroup);
         $this->moduleDataSetup->getConnection()->startSetup();
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
@@ -94,7 +94,7 @@ class AddEasAttributes implements DataPatchInterface
                 'comparable' => false,
                 'visible_on_front' => false,
                 'unique' => false,
-                'group' => Configuration::EAS,
+                'group' => Configuration::EAS_ADDITIONAL_ATTRIBUTES,
                 'used_in_product_listing' => false,
                 'is_used_in_grid' => false,
                 'is_visible_in_grid' => false,
@@ -121,7 +121,7 @@ class AddEasAttributes implements DataPatchInterface
                 'comparable' => false,
                 'visible_on_front' => false,
                 'unique' => false,
-                'group' => Configuration::EAS,
+                'group' => Configuration::EAS_ADDITIONAL_ATTRIBUTES,
                 'used_in_product_listing' => false,
                 'is_used_in_grid' => false,
                 'is_visible_in_grid' => false,
@@ -148,7 +148,7 @@ class AddEasAttributes implements DataPatchInterface
                 'comparable' => false,
                 'visible_on_front' => false,
                 'unique' => false,
-                'group' => Configuration::EAS,
+                'group' => Configuration::EAS_ADDITIONAL_ATTRIBUTES,
                 'used_in_product_listing' => false,
                 'is_used_in_grid' => false,
                 'is_visible_in_grid' => false,
@@ -175,7 +175,34 @@ class AddEasAttributes implements DataPatchInterface
                 'comparable' => false,
                 'visible_on_front' => false,
                 'unique' => false,
-                'group' => Configuration::EAS,
+                'group' => Configuration::EAS_ADDITIONAL_ATTRIBUTES,
+                'used_in_product_listing' => false,
+                'is_used_in_grid' => false,
+                'is_visible_in_grid' => false,
+                'is_filterable_in_grid' => false,
+            ]
+        );
+        $eavSetup->addAttribute(
+            Product::ENTITY,
+            Configuration::EAS_ACT_AS_DISCLOSED_AGENT,
+            [
+                'type' => 'int',
+                'label' => 'Act as disclosed agent',
+                'input' => 'select',
+                'source' => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+                'frontend' => '',
+                'required' => false,
+                'sort_order' => '6',
+                'global' => ScopedAttributeInterface::SCOPE_STORE,
+                'default' => true,
+                'visible' => true,
+                'user_defined' => true,
+                'searchable' => false,
+                'filterable' => false,
+                'comparable' => false,
+                'visible_on_front' => false,
+                'unique' => false,
+                'group' => Configuration::EAS_ADDITIONAL_ATTRIBUTES,
                 'used_in_product_listing' => false,
                 'is_used_in_grid' => false,
                 'is_visible_in_grid' => false,

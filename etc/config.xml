@@ -24,6 +24,8 @@
                 <hscode>eas_hscode</hscode>
                 <reduced_vat>eas_reduced_vat</reduced_vat>
                 <warehouse_country>eas_warehouse_country</warehouse_country>
+                <act_as_disclosed_agent>eas_act_as_disclosed_agent</act_as_disclosed_agent>
+                <seller_registration_country>eas_seller_registration_country</seller_registration_country>
             </attributes>
         </configuration>
     </default>
