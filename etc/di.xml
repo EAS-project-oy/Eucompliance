@@ -25,4 +25,8 @@
                 type="Eas\Eucompliance\Plugin\CartTotal"
                 sortOrder="1"/>
     </type>
+    <type name="Magento\Sales\Model\OrderRepository">
+        <plugin name="confirmOrder"
+                type="Eas\Eucompliance\Plugin\OrderRepository" sortOrder="100"/>
+    </type>
 </config>

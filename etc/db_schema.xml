@@ -9,5 +9,7 @@
     <table name="quote" resource="checkout" comment="Sales Flat Quote">
         <column xsi:type="float" name="eas" unsigned="true" nullable="true"
                 default="0" comment="Eas"/>
+        <column xsi:type="text" name="eas_token" nullable="true" comment="Eas validation token"/>
+        <column xsi:type="int" name="eas_confirmation_sent" nullable="false" default="0" comment="Eas validation token"/>
     </table>
 </schema>

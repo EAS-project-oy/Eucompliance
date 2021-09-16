@@ -25,6 +25,7 @@ class Configuration
     const CONFIGURATION_CREDENTIALS_SECRET_API_KEY = 'configuration/credentials/secret_api_key';
     const CONFIGURATION_GENERAL_ENABLE = 'configuration/general/enable';
     const CONFIGURATION_CREDENTIALS_CALCULATE_URL = 'configuration/credentials/calculate_url';
+    const CONFIGURATION_CREDENTIALS_PAYMENT_VERIFY_URL = 'configuration/credentials/payment_verify_url';
     const CONFIGURATION_GENERAL_POST_SHIPPING = 'configuration/general/post_shipping';
     const EAS_CHECKOUT_TOKEN = 'eas_checkout_token';
     const COUNTRY_CODE_PATH = 'general/country/default';
@@ -47,6 +48,7 @@ class Configuration
     const PRODUCT_ENTITY_TYPE = 4;
     const ATTRIBUTE_CODE = 'attribute_code';
     const EAS = 'eas';
+    const EAS_TOKEN = 'eas_token';
     const EAS_ADDITIONAL_ATTRIBUTES = 'EAS additional attributes';
     const VERIFYPEER = 'verifypeer';
 
@@ -88,6 +90,16 @@ class Configuration
     {
         return $this->scopeConfig->getValue(
             Configuration::CONFIGURATION_CREDENTIALS_CALCULATE_URL, ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPaymentVerifyUrl(): ?string
+    {
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_CREDENTIALS_PAYMENT_VERIFY_URL, ScopeInterface::SCOPE_STORE
         );
     }
 

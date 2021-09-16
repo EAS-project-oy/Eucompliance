@@ -19,6 +19,7 @@
                 <authorize_url>https://internal1.easproject.com/api/auth/open-id/connect</authorize_url>
                 <calculate_url>https://internal1.easproject.com/api/calculate</calculate_url>
                 <auth_keys_url>https://internal1.easproject.com/api/auth/keys</auth_keys_url>
+                <payment_verify_url>https://internal1.easproject.com/api/payment/verify</payment_verify_url>
             </credentials>
             <attributes>
                 <hscode>eas_hscode</hscode>

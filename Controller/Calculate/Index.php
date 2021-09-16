@@ -104,7 +104,8 @@ class Index implements ActionInterface
             );
             $data = json_decode(json_encode($data), true);
             $quote = $this->session->getQuote();
-            $quote->setData('eas', $data[Configuration::EAS_FEE] + $data['taxes_and_duties']);
+            $quote->setData(Configuration::EAS, $data[Configuration::EAS_FEE] + $data['taxes_and_duties']);
+            $quote->setData(Configuration::EAS_TOKEN, $params[Configuration::EAS_CHECKOUT_TOKEN]);
 
             foreach ($data['items'] as $item) {
                 $items = $quote->getAllItems();

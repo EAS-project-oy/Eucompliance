@@ -6,11 +6,13 @@ namespace Eas\Eucompliance\Service;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\HTTP\ZendClientFactory;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteRepository;
 use Eas\Eucompliance\Model\Config\Configuration;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\UrlInterface;
 use Psr\Log\LoggerInterface;
@@ -243,6 +245,43 @@ class Calculate
         }
     }
 
+    /**
+     * @throws NoSuchEntityException
+     * @throws InputException
+     * @throws \Zend_Http_Client_Exception
+     */
+    public function confirmOrder(OrderInterface $order)
+    {
+        if ($this->configuration->isEnabled()) {
+            $quote = $this->quoteRepository->get((int)$order->getQuoteId());
+            if ($quote->getEasToken() && !$quote->getEasConfirmationSent()) {
+                $apiUrl = $this->configuration->getPaymentVerifyUrl();
+                $client = $this->clientFactory->create();
+                $client->setUri($apiUrl);
+                $client->setHeaders([
+                    'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+                    'Content-Type' => 'application/json',
+                    'accept' => 'text/*'
+                ]);
+
+                $data = [
+                    'token' => $quote->getEasToken(),
+                    'checkout_payment_id' => $order->getIncrementId()
+                ];
+                $client->setRawData(json_encode($data), 'application/json');
+                $this->setConfig($client);
+                $response = $client->request(Zend_Http_Client::POST)->getBody();
+                if (empty($response)) {
+                    $quote->setEasConfirmationSent(true);
+                    $this->quoteRepository->save($quote);
+                } else {
+                    $this->logger->debug('EAS: quote with id ' . $quote->getEntityId() .
+                        'failed confirmation. Response body ' . $response);
+                }
+            }
+        }
+    }
+
     public function getPublicKey()
     {
         $apiUrl = $this->configuration->getApiKeysUrl();
@@ -261,26 +300,27 @@ class Calculate
      * @return string
      * @throws \Zend_Http_Client_Exception
      */
-    public function getAuthorizeToken(): ?string
+    public function getAuthorizeToken($apiKey = null, $secretApiKey = null): ?string
     {
         if (!$this->token) {
             $client = $this->clientFactory->create();
             $client->setUri($this->configuration->getAuthorizeUrl());
-            list($apiKey, $secretApiKey) = $this->configuration->getApiKeys();
+            if (!$apiKey && !$secretApiKey) {
+                list($apiKey, $secretApiKey) = $this->configuration->getApiKeys();
+            }
             $client->setHeaders([
                 'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
             ]);
 
             $client->setParameterPost('grant_type', 'client_credentials');
-            list($apiKey, $secretApiKey) = $this->configuration->getApiKeys();
-            $client->setHeaders([
-                'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
-                'Content-Type' => 'application/json'
-            ]);
-
             $this->setConfig($client);
-            $token = $client->request(Zend_Http_Client::POST)->getBody();
-            $this->token = json_decode($token, true)[Configuration::ACCESS_TOKEN];
+            $token = json_decode($client->request(Zend_Http_Client::POST)->getBody(), true);
+            if ($token && array_key_exists(Configuration::ACCESS_TOKEN, $token)) {
+                $this->token = $token[Configuration::ACCESS_TOKEN];
+            } else {
+                throw new InputException(__('Wrong auth keys provided'));
+            }
+
         }
         return $this->token;
     }
