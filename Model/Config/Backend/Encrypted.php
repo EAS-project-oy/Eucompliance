@@ -14,6 +14,9 @@ use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
 {
 

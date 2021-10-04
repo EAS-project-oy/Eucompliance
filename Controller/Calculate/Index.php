@@ -111,6 +111,7 @@ class Index implements ActionInterface
                 $items = $quote->getAllItems();
                 foreach ($items as $quoteItem) {
                     if ($item['item_id'] == $quoteItem->getProductId()) {
+                        $quoteItem->setCustomPrice($item['unit_cost']);
                         $quoteItem->setPrice($item['item_duties_and_taxes'] + $quoteItem->getPrice());
                         $quoteItem->setBasePrice($item['item_duties_and_taxes'] + $quoteItem->getBasePrice());
                         $quoteItem->setTaxAmount($item['item_duties_and_taxes'] + $quoteItem->getTaxAmount());

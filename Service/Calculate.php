@@ -169,7 +169,7 @@ class Calculate
         }
         $items = [];
 
-        foreach ($quote->getAllItems() as $item) {
+        foreach ($quote->getAllVisibleItems() as $item) {
             /** @var ProductInterface $product */
             $product = $item->getProduct();
             $items[] = [

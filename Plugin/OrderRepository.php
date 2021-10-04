@@ -6,6 +6,9 @@ use Eas\Eucompliance\Service\Calculate;
 use Magento\OfflinePayments\Model\Checkmo;
 use Magento\Sales\Api\Data\OrderInterface;
 
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 class OrderRepository
 {
     const PENDING = 'pending';
@@ -57,6 +60,6 @@ class OrderRepository
             }
         }
 
-        return [$entity];
+        return $entity;
     }
 }
