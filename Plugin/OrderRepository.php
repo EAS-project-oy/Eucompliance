@@ -3,6 +3,8 @@
 namespace Eas\Eucompliance\Plugin;
 
 use Eas\Eucompliance\Service\Calculate;
+use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\OfflinePayments\Model\Checkmo;
 use Magento\Sales\Api\Data\OrderInterface;
 
@@ -44,15 +46,16 @@ class OrderRepository
     }
 
     /**
-     * @param OrderRepository $subject
-     * @param OrderInterface $result
+     * @param \Magento\Sales\Model\OrderRepository $subject
      * @param OrderInterface $entity
      * @return array
+     * @throws InputException
+     * @throws NoSuchEntityException
+     * @throws \Zend_Http_Client_Exception
      */
     public function beforeSave(
         \Magento\Sales\Model\OrderRepository $subject,
-        OrderInterface $entity
-    ):  OrderInterface {
+        OrderInterface $entity):  array {
 
         if (!$entity->getEntityId() && $entity->getPayment()->getMethod() !== Checkmo::PAYMENT_METHOD_CHECKMO_CODE) {
             if ($entity->getStatus() == self::PENDING) {
@@ -60,6 +63,6 @@ class OrderRepository
             }
         }
 
-        return $entity;
+        return [$entity];
     }
 }
