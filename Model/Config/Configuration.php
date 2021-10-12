@@ -45,6 +45,8 @@ class Configuration
     const COURIER = 'courier';
     const ACCESS_TOKEN = 'access_token';
     const GOODS = "GOODS";
+    const TBE = "TBE";
+    const VIRTUAL = "virtual";
     const PRODUCT_ENTITY_TYPE = 4;
     const ATTRIBUTE_CODE = 'attribute_code';
     const EAS = 'eas';
