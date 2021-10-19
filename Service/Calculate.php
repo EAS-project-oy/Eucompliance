@@ -179,12 +179,12 @@ class Calculate
                 "quantity" => (int)$item->getQty(),
                 "cost_provided_by_em" => (float)number_format((float)$item->getPriceInclTax(), 2),
                 "weight" => (float)number_format((float)$product->getWeight(), 2),
-                "type_of_goods" => Configuration::GOODS,
-                Configuration::ACT_AS_DISCLOSED_AGENT => $this->productResourceModel->getAttributeRawValue(
-                    $product->getId(),
-                    $this->configuration->getActAsDisclosedAgentAttributeName(),
-                    $storeId
-                ) ?: false,
+                "type_of_goods" => $product->getTypeId() == Configuration::VIRTUAL ? Configuration::TBE : Configuration::GOODS,
+                Configuration::ACT_AS_DISCLOSED_AGENT => (bool)$this->productResourceModel->getAttributeRawValue(
+                        $product->getId(),
+                        $this->configuration->getActAsDisclosedAgentAttributeName(),
+                        $storeId
+                    ),
                 Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->productResourceModel->getAttributeRawValue(
                     $product->getId(),
                     $this->configuration->getWarehouseAttributeName(),
