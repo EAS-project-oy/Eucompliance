@@ -32,10 +32,9 @@ class OrderRepository
      * @param OrderInterface $entity
      * @return OrderInterface
      */
-    public function afterSave(
+    public function afterGet(
         \Magento\Sales\Model\OrderRepository $subject,
-        OrderInterface $result,
-        OrderInterface $entity
+        OrderInterface $result
     ):  OrderInterface {
 
             if ($result->getStatus() == 'processing' || $result->getStatus() == 'complete') {
