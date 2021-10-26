@@ -29,4 +29,9 @@
         <plugin name="confirmOrder"
                 type="Eas\Eucompliance\Plugin\OrderRepository" sortOrder="100"/>
     </type>
+    <type name="Magento\Tax\Model\Sales\Total\Quote\Shipping">
+        <plugin name="setShippingPrice"
+                type="Eas\Eucompliance\Plugin\Tax\Shipping"
+                sortOrder="1"/>
+    </type>
 </config>
