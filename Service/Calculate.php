@@ -146,6 +146,7 @@ class Calculate
 
         if ($quote->getShippingAddress()->getCompany()) {
             $data['recipient_company_name'] = $quote->getShippingAddress()->getCompany();
+            $data['is_delivery_to_person'] = false;
         }
 
         if ($quote->getCustomerPrefix()) {
