@@ -40,6 +40,7 @@ class Configuration
     const ORIGINATING_COUNTRY = 'originating_country';
     const EAS_WAREHOUSE_COUNTRY = 'eas_warehouse_country';
     const REDUCED_TBE_VAT_GROUP = 'reduced_tbe_vat_group';
+    const COUNTRY_OF_MANUFACTURE = 'country_of_manufacture';
     const EAS_CALCULATE = 'eas/calculate';
     const POSTAL = 'postal';
     const COURIER = 'courier';

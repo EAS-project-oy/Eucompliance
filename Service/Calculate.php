@@ -192,7 +192,9 @@ class Calculate
                     $storeId
                 ) ?: $this->configuration->getDefaultCountryCode(),
             ];
-            $originatingCountry = $product->getCountryOfManufacture();
+            $originatingCountry = $this->productResourceModel->getAttributeRawValue(
+                $product->getId(),Configuration::COUNTRY_OF_MANUFACTURE, $storeId
+            );
             if ($originatingCountry) {
                 $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] = $originatingCountry;
             } else {
