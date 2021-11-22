@@ -116,12 +116,13 @@ class Calculate
         if (!$quote->getReservedOrderId()) {
             $quote->reserveOrderId();
         }
+        $address = $quote->getIsVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
 
         $deliveryMethod = Configuration::COURIER;
 
         if ($this->configuration->getPostalMethods()) {
             foreach (explode(',', $this->configuration->getPostalMethods()) as $postalMethod) {
-                if ($quote->getShippingAddress()->getShippingMethod() == $postalMethod) {
+                if ($address->getShippingMethod() == $postalMethod) {
                     $deliveryMethod = Configuration::POSTAL;
                 }
             }
@@ -130,31 +131,34 @@ class Calculate
         $data = [
             "external_order_id" => $quote->getReservedOrderId(),
             "delivery_method" => $deliveryMethod,
-            "delivery_cost" => (float)number_format((float)$quote->getShippingAddress()->getShippingAmount(), 2),
+            "delivery_cost" => (float)number_format((float)$address->getShippingAmount(), 2),
             "payment_currency" => $quote->getQuoteCurrencyCode(),
             "is_delivery_to_person" => true,
-            "recipient_first_name" => $quote->getCustomerFirstname(),
-            "recipient_last_name" => $quote->getCustomerLastname(),
-            "recipient_company_vat" => $quote->getShippingAddress()->getVatId(),
-            "delivery_city" => $quote->getShippingAddress()->getCity(),
-            "delivery_postal_code" => $quote->getShippingAddress()->getPostcode(),
-            "delivery_country" => $quote->getShippingAddress()->getCountryId(),
-            "delivery_phone" => $quote->getShippingAddress()->getTelephone(),
-            "delivery_email" => $quote->getShippingAddress()->getEmail() ?: $quote->getCustomerEmail(),
-            'delivery_state_province' => $quote->getShippingAddress()->getRegion()
+            "recipient_first_name" => 
+                $quote->getCustomerFirstname() ?: $quote->getBillingAddress()->getFirstName(),
+            "recipient_last_name" => 
+                $quote->getCustomerLastname() ?: $quote->getBillingAddress()->getLastName(),
+            "recipient_company_vat" => $address->getVatId(),
+            "delivery_city" => $address->getCity(),
+            "delivery_postal_code" => $address->getPostcode(),
+            "delivery_country" => $address->getCountryId(),
+            "delivery_phone" => $address->getTelephone(),
+            "delivery_email" => $address->getEmail() ?: $quote->getCustomerEmail(),
+            'delivery_state_province' => $address->getRegion()
         ];
 
-        if ($quote->getShippingAddress()->getCompany()) {
-            $data['recipient_company_name'] = $quote->getShippingAddress()->getCompany();
+        if ($address->getCompany()) {
+            $data['recipient_company_name'] = $address->getCompany();
             $data['is_delivery_to_person'] = false;
         }
 
-        if ($quote->getCustomerPrefix()) {
-            $data['recipient_title'] = $quote->getCustomerPrefix();
+        $prefix = $quote->getCustomerPrefix() ?: $address->getPrefix();
+        if ($prefix) {
+            $data['recipient_title'] = $prefix;
         }
 
         /** @TODO need refactoring in future versions */
-        $streets = $quote->getShippingAddress()->getStreet();
+        $streets = $address->getStreet();
         switch (count($streets)) {
             case 1:
                 $data['delivery_address_line_1'] = $streets[0];

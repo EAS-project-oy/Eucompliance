@@ -11,6 +11,7 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\Webapi\Rest\Request;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\QuoteManagement;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
@@ -58,9 +59,15 @@ class Index implements ActionInterface
     private Configuration $configuration;
 
     /**
+     * @var QuoteManagement
+     */
+    private QuoteManagement $quoteManagement;
+
+    /**
      * Index constructor.
      * @param Request $request
      * @param ResponseInterface $response
+     * @param QuoteManagement $quoteManagement
      * @param JWT $jwt
      * @param UrlInterface $url
      * @param Calculate $calculate
@@ -71,6 +78,7 @@ class Index implements ActionInterface
     public function __construct(
         Request $request,
         ResponseInterface $response,
+        QuoteManagement $quoteManagement,
         JWT $jwt,
         UrlInterface $url,
         Calculate $calculate,
@@ -83,6 +91,7 @@ class Index implements ActionInterface
         $this->jwt = $jwt;
         $this->url = $url;
         $this->calculate = $calculate;
+        $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
         $this->session = $session;
         $this->configuration = $configuration;
@@ -124,6 +133,10 @@ class Index implements ActionInterface
 
             $this->quoteRepository->save($quote);
             $quote->setTotalsCollectedFlag(false)->collectTotals();
+            if ($quote->isVirtual()) {
+                $this->quoteManagement->placeOrder($quote->getId(), $quote->getPayment());
+                return $this->response->setRedirect($this->url->getUrl('checkout/onepage/success'));
+            }
             return $this->response->setRedirect($this->url->getUrl('checkout/') . '#payment');
         } else {
             return $this->response->setRedirect($this->url->getUrl('checkout/cart'));
