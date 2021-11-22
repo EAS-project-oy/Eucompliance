@@ -203,7 +203,7 @@ class Calculate
                 $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] = $originatingCountry;
             } else {
                 $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] =
-                    $this->configuration->getDefaultCountryCode();
+                    $this->configuration->getStoreDefaultCountryCode();
             }
 
             $hs6p = $this->productResourceModel->getAttributeRawValue(
@@ -220,7 +220,7 @@ class Calculate
                 $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] = $sellerRegistrationCountry;
             } else {
                 $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] =
-                    $this->configuration->getDefaultCountryCode();
+                    $this->configuration->getStoreDefaultCountryCode();
             }
             $reducedTbeVatGroup = (bool)$this->productResourceModel->getAttributeRawValue(
                 $product->getId(),

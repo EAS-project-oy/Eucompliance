@@ -29,6 +29,7 @@ class Configuration
     const CONFIGURATION_GENERAL_POST_SHIPPING = 'configuration/general/post_shipping';
     const EAS_CHECKOUT_TOKEN = 'eas_checkout_token';
     const COUNTRY_CODE_PATH = 'general/country/default';
+    const STORE_COUNTRY_CODE = 'general/store_information/country_id';
     const EAS_REDUCED_VAT = 'eas_reduced_vat';
     const SELLER_REGISTRATION_COUNTRY = 'seller_registration_country';
     const EAS_SELLER_REGISTRATION_COUNTRY = 'eas_seller_registration_country';
@@ -144,6 +145,15 @@ class Configuration
     {
         return $this->scopeConfig->getValue(
             Configuration::COUNTRY_CODE_PATH, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getStoreDefaultCountryCode(): ?string
+    {
+        return $this->scopeConfig->getValue(
+            Configuration::STORE_COUNTRY_CODE, ScopeInterface::SCOPE_STORE);
     }
 
     /**
