@@ -194,7 +194,7 @@ class Calculate
                     $product->getId(),
                     $this->configuration->getWarehouseAttributeName(),
                     $storeId
-                ) ?: $this->configuration->getDefaultCountryCode(),
+                ) ?: $this->configuration->getStoreDefaultCountryCode(),
             ];
             $originatingCountry = $this->productResourceModel->getAttributeRawValue(
                 $product->getId(),Configuration::COUNTRY_OF_MANUFACTURE, $storeId

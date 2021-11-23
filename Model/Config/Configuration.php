@@ -141,15 +141,6 @@ class Configuration
     /**
      * @return string|null
      */
-    public function getDefaultCountryCode(): ?string
-    {
-        return $this->scopeConfig->getValue(
-            Configuration::COUNTRY_CODE_PATH, ScopeInterface::SCOPE_STORE);
-    }
-
-    /**
-     * @return string|null
-     */
     public function getStoreDefaultCountryCode(): ?string
     {
         return $this->scopeConfig->getValue(
