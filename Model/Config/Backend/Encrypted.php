@@ -21,16 +21,6 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
 {
 
     /**
-     * @var string|null
-     */
-    private ?string $apiKey;
-
-    /**
-     * @var string|null
-     */
-    private ?string $secretApiKey;
-
-    /**
      * @var Calculate
      */
     private Calculate $calculate;

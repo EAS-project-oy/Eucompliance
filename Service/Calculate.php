@@ -190,7 +190,9 @@ class Calculate
                         $this->configuration->getActAsDisclosedAgentAttributeName(),
                         $storeId
                     ),
-                Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->productResourceModel->getAttributeRawValue(
+                Configuration::LOCATION_WAREHOUSE_COUNTRY =>
+                    $this->configuration->getMSIWarehouseLocation() ?:
+                    $this->productResourceModel->getAttributeRawValue(
                     $product->getId(),
                     $this->configuration->getWarehouseAttributeName(),
                     $storeId

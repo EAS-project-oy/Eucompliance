@@ -35,6 +35,25 @@
                     <source_model>Magento\Shipping\Model\Config\Source\Allmethods</source_model>
                 </field>
 
+                <field id="msi_enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable MSI</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>configuration/msi/enable</config_path>
+                </field>
+
+                <field id="msi_methods" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Msi method used for shipping</label>
+                    <frontend_model>Eas\Eucompliance\Block\System\Config\Form\Field\Msi</frontend_model>
+                    <source_model>Eas\Eucompliance\Model\Config\Msi</source_model>
+                    <config_path>configuration/msi/msi_methods</config_path>
+                    <depends>
+                        <field id="msi_enable">1</field>
+                    </depends>
+                </field>
+
             </group>
 
             <group id="credentials" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"

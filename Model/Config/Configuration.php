@@ -6,6 +6,7 @@ namespace Eas\Eucompliance\Model\Config;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Framework\Module\Manager;
 use Magento\Store\Model\ScopeInterface;
 
 /**
@@ -27,6 +28,7 @@ class Configuration
     const CONFIGURATION_CREDENTIALS_CALCULATE_URL = 'configuration/credentials/calculate_url';
     const CONFIGURATION_CREDENTIALS_PAYMENT_VERIFY_URL = 'configuration/credentials/payment_verify_url';
     const CONFIGURATION_GENERAL_POST_SHIPPING = 'configuration/general/post_shipping';
+    const INVENTORY_MODULE = 'Magento_Inventory';
     const EAS_CHECKOUT_TOKEN = 'eas_checkout_token';
     const COUNTRY_CODE_PATH = 'general/country/default';
     const STORE_COUNTRY_CODE = 'general/store_information/country_id';
@@ -55,6 +57,8 @@ class Configuration
     const EAS_TOKEN = 'eas_token';
     const EAS_ADDITIONAL_ATTRIBUTES = 'EAS additional attributes';
     const VERIFYPEER = 'verifypeer';
+    const CONFIGURATION_MSI_ENABLE = 'configuration/msi/enable';
+    const CONFIGURATION_MSI_MSI_METHODS = 'configuration/msi/msi_methods';
 
     /**
      * @var ScopeConfigInterface
@@ -67,13 +71,21 @@ class Configuration
     private EncryptorInterface $encryptor;
 
     /**
+     * @var Manager
+     */
+    private Manager $moduleManager;
+
+    /**
      * @param ScopeConfigInterface $scopeConfig
+     * @param Manager $moduleManager
      * @param EncryptorInterface $encryptor
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
+        Manager $moduleManager,
         EncryptorInterface $encryptor
     ) {
+        $this->moduleManager = $moduleManager;
         $this->scopeConfig = $scopeConfig;
         $this->encryptor = $encryptor;
     }
@@ -145,6 +157,18 @@ class Configuration
     {
         return $this->scopeConfig->getValue(
             Configuration::STORE_COUNTRY_CODE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMSIWarehouseLocation(): ?string
+    {
+        if ($this->scopeConfig->getValue(self::CONFIGURATION_MSI_ENABLE, ScopeInterface::SCOPE_STORE) &&
+            $this->moduleManager->isEnabled(self::INVENTORY_MODULE)) {
+            return $this->scopeConfig->getValue(self::CONFIGURATION_MSI_MSI_METHODS, ScopeInterface::SCOPE_STORE);
+        }
+        return null;
     }
 
     /**
