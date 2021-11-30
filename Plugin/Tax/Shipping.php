@@ -29,12 +29,12 @@ class Shipping extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
             ->calculateTax($quoteDetails, $storeId);
         $baseTaxDetails = $this->taxCalculationService
             ->calculateTax($baseQuoteDetails, $storeId);
-        if (array_key_exists(self::ITEM_CODE_SHIPPING,$taxDetails->getItems())) {
+        if (array_key_exists(self::ITEM_CODE_SHIPPING, $taxDetails->getItems())) {
             $taxDetailsItems = $taxDetails->getItems()[self::ITEM_CODE_SHIPPING];
             $baseTaxDetailsItems = $baseTaxDetails->getItems()[self::ITEM_CODE_SHIPPING];
 
             if ($quote->getData('eas_shipping_cost')) {
-                $quote->setData('eas_shipping_cost',$quote->getData('eas_shipping_cost') * 4 );
+                $quote->setData('eas_shipping_cost', $quote->getData('eas_shipping_cost') * 4);
                 $taxDetails->setSubtotal($quote->getData('eas_shipping_cost'));
                 $baseTaxDetails->setSubtotal($quote->getData('eas_shipping_cost'));
                 $total->setData('shipping_tax_calculation_amount', $quote->getData('eas_shipping_cost'));

@@ -22,7 +22,8 @@ class OrderRepository
     /**
      * @param Calculate $calculate
      */
-    public function __construct(Calculate $calculate) {
+    public function __construct(Calculate $calculate)
+    {
         $this->calculate = $calculate;
     }
 
@@ -37,9 +38,9 @@ class OrderRepository
         OrderInterface $result
     ):  OrderInterface {
 
-            if ($result->getStatus() == 'processing' || $result->getStatus() == 'complete') {
-                $this->calculate->confirmOrder($result);
-            }
+        if ($result->getStatus() == 'processing' || $result->getStatus() == 'complete') {
+            $this->calculate->confirmOrder($result);
+        }
 
         return $result;
     }
@@ -54,7 +55,8 @@ class OrderRepository
      */
     public function beforeSave(
         \Magento\Sales\Model\OrderRepository $subject,
-        OrderInterface $entity):  array {
+        OrderInterface $entity
+    ):  array {
 
         if (!$entity->getEntityId() && $entity->getPayment()->getMethod() !== Checkmo::PAYMENT_METHOD_CHECKMO_CODE) {
             if ($entity->getStatus() == self::PENDING) {

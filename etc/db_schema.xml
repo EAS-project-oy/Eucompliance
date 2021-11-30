@@ -12,4 +12,13 @@
         <column xsi:type="text" name="eas_token" nullable="true" comment="Eas validation token"/>
         <column xsi:type="int" name="eas_confirmation_sent" nullable="false" default="0" comment="Eas validation token"/>
     </table>
+    <table name="quote_item" resource="checkout" comment="Sales Flat Quote Item">
+        <column xsi:type="varchar" name="warehouse_code" nullable="true"
+                length="255" comment="Warehouse code"/>
+    </table>
+
+    <table name="sales_order_item" resource="sales" comment="Sales Flat Order Item">
+        <column xsi:type="varchar" name="warehouse_code" nullable="true"
+                length="255" comment="Warehouse code"/>
+    </table>
 </schema>

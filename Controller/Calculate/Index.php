@@ -133,10 +133,6 @@ class Index implements ActionInterface
 
             $this->quoteRepository->save($quote);
             $quote->setTotalsCollectedFlag(false)->collectTotals();
-            if ($quote->isVirtual()) {
-                $this->quoteManagement->placeOrder($quote->getId(), $quote->getPayment());
-                return $this->response->setRedirect($this->url->getUrl('checkout/onepage/success'));
-            }
             return $this->response->setRedirect($this->url->getUrl('checkout/') . '#payment');
         } else {
             return $this->response->setRedirect($this->url->getUrl('checkout/cart'));

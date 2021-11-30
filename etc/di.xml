@@ -13,12 +13,16 @@
                 sortOrder="1"/>
     </type>
 
+    <type name="Magento\Quote\Model\Quote\Item\ToOrderItem">
+        <plugin name="eas_eucompliance_sales_quote_item_order_item"
+                type="Eas\Eucompliance\Plugin\SetOrderItemValue" />
+    </type>
+
     <type name="Magento\Checkout\Model\ShippingInformationManagement">
         <plugin name="beforeSave"
                 type="Eas\Eucompliance\Plugin\SaveGuestCartData"
                 sortOrder="1"/>
     </type>
-
 
     <type name="Magento\Quote\Model\Cart\CartTotalRepository">
         <plugin name="afterGet"
@@ -34,4 +38,11 @@
                 type="Eas\Eucompliance\Plugin\Tax\Shipping"
                 sortOrder="1"/>
     </type>
+    <type name="Magento\Sales\Api\OrderManagementInterface">
+        <plugin name="notify_order-items_warehouse-location"
+                type="Eas\Eucompliance\Plugin\OrderManagment"
+                sortOrder="1"/>
+    </type>
+    <preference for="Magento\InventoryShippingAdminUi\Ui\DataProvider\SourceSelectionDataProvider"
+                type="Eas\Eucompliance\Ui\DataProvider\SourceSelectionDataProvider"/>
 </config>

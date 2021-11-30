@@ -9,7 +9,18 @@ use Magento\Catalog\Model\ResourceModel\Product;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\HTTP\ZendClientFactory;
+use Magento\InventoryApi\Api\SourceRepositoryInterface;
+use Magento\InventorySourceSelectionApi\Api\Data\AddressInterface;
+use Magento\InventorySourceSelectionApi\Api\Data\AddressInterfaceFactory;
+use Magento\InventorySourceSelectionApi\Api\Data\InventoryRequestExtensionInterfaceFactory;
+use Magento\InventorySourceSelectionApi\Api\Data\InventoryRequestInterfaceFactory;
+use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
+use Magento\InventorySourceSelectionApi\Api\Data\ItemRequestInterfaceFactory;
+use Magento\InventorySourceSelectionApi\Api\Data\SourceSelectionResultInterface;
+use Magento\InventorySourceSelectionApi\Api\SourceSelectionServiceInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\Quote\Item;
+use Magento\Quote\Model\Quote\Item\Repository;
 use Magento\Quote\Model\QuoteRepository;
 use Eas\Eucompliance\Model\Config\Configuration;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -65,6 +76,46 @@ class Calculate
     private Configuration $configuration;
 
     /**
+     * @var AddressInterfaceFactory
+     */
+    private AddressInterfaceFactory $addressInterfaceFactory;
+
+    /**
+     * @var InventoryRequestExtensionInterfaceFactory
+     */
+    private InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory;
+
+    /**
+     * @var StockByWebsiteIdResolverInterface
+     */
+    private StockByWebsiteIdResolverInterface $stockByWebsiteId;
+
+    /**
+     * @var InventoryRequestInterfaceFactory
+     */
+    private InventoryRequestInterfaceFactory $inventoryRequestInterfaceFactory;
+
+    /**
+     * @var ItemRequestInterfaceFactory
+     */
+    private ItemRequestInterfaceFactory $itemRequestInterfaceFactory;
+
+    /**
+     * @var SourceSelectionServiceInterface
+     */
+    private SourceSelectionServiceInterface $sourceSelectionService;
+
+    /**
+     * @var SourceRepositoryInterface
+     */
+    private SourceRepositoryInterface $sourceRepository;
+
+    /**
+     * @var Repository
+     */
+    private Repository $quoteItemRepository;
+
+    /**
      * Calculate constructor.
      * @param ZendClientFactory $clientFactory
      * @param StoreManagerInterface $storeManager
@@ -72,18 +123,42 @@ class Calculate
      * @param QuoteRepository $quoteRepository
      * @param LoggerInterface $logger
      * @param UrlInterface $url
+     * @param AddressInterfaceFactory $addressInterfaceFactory
+     * @param StockByWebsiteIdResolverInterface $stockByWebsiteId
+     * @param ItemRequestInterfaceFactory $itemRequestInterfaceFactory
+     * @param InventoryRequestInterfaceFactory $inventoryRequestInterfaceFactory
+     * @param InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory
+     * @param SourceSelectionServiceInterface $sourceSelectionService
+     * @param SourceRepositoryInterface $sourceRepository
+     * @param Repository $quoteItemRepository
      * @param Configuration $configuration
      */
     public function __construct(
-        ZendClientFactory $clientFactory,
-        StoreManagerInterface $storeManager,
-        Product $productResourceModel,
-        QuoteRepository $quoteRepository,
-        LoggerInterface $logger,
-        UrlInterface $url,
-        Configuration $configuration
+        ZendClientFactory                         $clientFactory,
+        StoreManagerInterface                     $storeManager,
+        Product                                   $productResourceModel,
+        QuoteRepository                           $quoteRepository,
+        LoggerInterface                           $logger,
+        UrlInterface                              $url,
+        AddressInterfaceFactory                   $addressInterfaceFactory,
+        StockByWebsiteIdResolverInterface         $stockByWebsiteId,
+        ItemRequestInterfaceFactory               $itemRequestInterfaceFactory,
+        InventoryRequestInterfaceFactory          $inventoryRequestInterfaceFactory,
+        InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory,
+        SourceSelectionServiceInterface           $sourceSelectionService,
+        SourceRepositoryInterface                 $sourceRepository,
+        Repository                                $quoteItemRepository,
+        Configuration                             $configuration
     ) {
+        $this->sourceRepository = $sourceRepository;
+        $this->sourceSelectionService = $sourceSelectionService;
+        $this->itemRequestInterfaceFactory = $itemRequestInterfaceFactory;
+        $this->quoteItemRepository = $quoteItemRepository;
+        $this->inventoryRequestInterfaceFactory = $inventoryRequestInterfaceFactory;
+        $this->stockByWebsiteId = $stockByWebsiteId;
         $this->clientFactory = $clientFactory;
+        $this->addressInterfaceFactory = $addressInterfaceFactory;
+        $this->inventoryRequestExtensionInterfaceFactory = $inventoryRequestExtensionInterfaceFactory;
         $this->storeManager = $storeManager;
         $this->productResourceModel = $productResourceModel;
         $this->quoteRepository = $quoteRepository;
@@ -128,15 +203,19 @@ class Calculate
             }
         }
 
+        if ($quote->isVirtual()) {
+            $deliveryMethod = Configuration::POSTAL;
+        }
+
         $data = [
             "external_order_id" => $quote->getReservedOrderId(),
             "delivery_method" => $deliveryMethod,
             "delivery_cost" => (float)number_format((float)$address->getShippingAmount(), 2),
             "payment_currency" => $quote->getQuoteCurrencyCode(),
             "is_delivery_to_person" => true,
-            "recipient_first_name" => 
+            "recipient_first_name" =>
                 $quote->getCustomerFirstname() ?: $quote->getBillingAddress()->getFirstName(),
-            "recipient_last_name" => 
+            "recipient_last_name" =>
                 $quote->getCustomerLastname() ?: $quote->getBillingAddress()->getLastName(),
             "recipient_company_vat" => $address->getVatId(),
             "delivery_city" => $address->getCity(),
@@ -174,9 +253,13 @@ class Calculate
         }
         $items = [];
 
+        /** @var \Magento\Quote\Model\Quote\Item $item */
         foreach ($quote->getAllVisibleItems() as $item) {
             /** @var ProductInterface $product */
             $product = $item->getProduct();
+            // set warehouse code
+            $item->setWarehouseCode($this->getWarehouseCode($quote));
+            $this->quoteItemRepository->save($item);
             $items[] = [
                 "short_description" => $product->getSku(),
                 "long_description" => $product->getName(),
@@ -186,20 +269,16 @@ class Calculate
                 "weight" => (float)number_format((float)$product->getWeight(), 2),
                 "type_of_goods" => $product->getTypeId() == Configuration::VIRTUAL ? Configuration::TBE : Configuration::GOODS,
                 Configuration::ACT_AS_DISCLOSED_AGENT => (bool)$this->productResourceModel->getAttributeRawValue(
-                        $product->getId(),
-                        $this->configuration->getActAsDisclosedAgentAttributeName(),
-                        $storeId
-                    ),
-                Configuration::LOCATION_WAREHOUSE_COUNTRY =>
-                    $this->configuration->getMSIWarehouseLocation() ?:
-                    $this->productResourceModel->getAttributeRawValue(
                     $product->getId(),
-                    $this->configuration->getWarehouseAttributeName(),
+                    $this->configuration->getActAsDisclosedAgentAttributeName(),
                     $storeId
-                ) ?: $this->configuration->getStoreDefaultCountryCode(),
+                ),
+                Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->getLocationWarehouse($quote, $item),
             ];
             $originatingCountry = $this->productResourceModel->getAttributeRawValue(
-                $product->getId(),Configuration::COUNTRY_OF_MANUFACTURE, $storeId
+                $product->getId(),
+                Configuration::COUNTRY_OF_MANUFACTURE,
+                $storeId
             );
             if ($originatingCountry) {
                 $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] = $originatingCountry;
@@ -249,7 +328,8 @@ class Calculate
             $this->logger->critical('Eas calculate failed' . $response);
             $errors = json_decode($response, true);
             $errors = array_key_exists('errors', $errors) ?
-                $errors['errors'] : (array_key_exists('message', $errors)  ? $errors['message'] : $errors['messages']);;
+                $errors['errors'] : (array_key_exists('message', $errors) ? $errors['message'] : $errors['messages']);
+            ;
             return ['error' => json_encode($errors)];
         }
     }
@@ -343,5 +423,87 @@ class Calculate
             Configuration::VERIFYPEER => false
         ];
         $client->setConfig($config);
+    }
+
+    /**
+     * @param Quote $quote
+     * @param Item $product
+     * @return array|bool|SourceSelectionResultInterface|string|null
+     * @throws NoSuchEntityException
+     */
+    private function getLocationWarehouse(Quote $quote, Item $product)
+    {
+        if ($this->configuration->getMSIWarehouseLocation()) {
+            $sourceCode = $this->getWarehouseCode($quote);
+            return $this->sourceRepository->get($sourceCode)->getCountryId();
+        }
+
+        return $this->productResourceModel->getAttributeRawValue(
+            $product->getId(),
+            $this->configuration->getWarehouseAttributeName(),
+            $quote->getStoreId()
+        ) ?: $this->configuration->getStoreDefaultCountryCode();
+    }
+
+    private function getWarehouseCode(Quote $quote)
+    {
+        $request = $this->getInventoryRequestFromQuote($quote);
+        $sourceSelectionItems = $this->sourceSelectionService->execute(
+            $request,
+            $this->configuration->getMSIWarehouseLocation()
+        )->getSourceSelectionItems();
+        return $sourceSelectionItems[array_key_first($sourceSelectionItems)]->getSourceCode();
+    }
+
+    private function getInventoryRequestFromQuote(Quote $quote)
+    {
+        $store = $this->storeManager->getStore($quote->getStoreId());
+        $stock = $this->stockByWebsiteId->execute((int)$store->getWebsiteId());
+        $requestItems = [];
+
+        foreach ($quote->getAllVisibleItems() as $item) {
+            $requestItems[] = $this->itemRequestInterfaceFactory->create([
+                'sku' => $item->getSku(),
+                'qty' => $item->getQty()
+            ]);
+        }
+        $inventoryRequest = $this->inventoryRequestInterfaceFactory->create(
+            [
+                'stockId' => $stock->getStockId(),
+                'items' => $requestItems
+            ]
+        );
+
+        $address = $this->getAddressFromQuote($quote);
+        if ($address !== null) {
+            $extensionAttributes = $this->inventoryRequestExtensionInterfaceFactory->create();
+            $extensionAttributes->setDestinationAddress($address);
+            $inventoryRequest->setExtensionAttributes($extensionAttributes);
+        }
+
+        return $inventoryRequest;
+    }
+
+    /**
+     * @param Quote $quote
+     * @return AddressInterface|null
+     */
+    private function getAddressFromQuote(Quote $quote): ?AddressInterface
+    {
+        /** @var AddressInterface $address */
+        $address = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
+        if ($address === null) {
+            return null;
+        }
+
+        return $this->addressInterfaceFactory->create(
+            [
+                'country' => $address->getCountryId(),
+                'postcode' => $address->getPostcode() ?? '',
+                'street' => implode("\n", $address->getStreet()),
+                'region' => $address->getRegion() ?? $address->getRegionCode() ?? '',
+                'city' => $address->getCity() ?? ''
+            ]
+        );
     }
 }

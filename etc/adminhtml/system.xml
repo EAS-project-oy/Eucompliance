@@ -42,13 +42,13 @@
                     <config_path>configuration/msi/enable</config_path>
                 </field>
 
-                <field id="msi_methods" translate="label" type="select" sortOrder="1" showInDefault="1"
+                <field id="msi_algorithm" translate="label" type="select" sortOrder="1" showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
-                    <label>Msi method used for shipping</label>
+                    <label>Msi algorithm used for stock selection</label>
                     <frontend_model>Eas\Eucompliance\Block\System\Config\Form\Field\Msi</frontend_model>
                     <source_model>Eas\Eucompliance\Model\Config\Msi</source_model>
-                    <config_path>configuration/msi/msi_methods</config_path>
+                    <config_path>configuration/msi/msi_algorithm</config_path>
                     <depends>
                         <field id="msi_enable">1</field>
                     </depends>

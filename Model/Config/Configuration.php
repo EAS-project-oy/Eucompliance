@@ -58,7 +58,7 @@ class Configuration
     const EAS_ADDITIONAL_ATTRIBUTES = 'EAS additional attributes';
     const VERIFYPEER = 'verifypeer';
     const CONFIGURATION_MSI_ENABLE = 'configuration/msi/enable';
-    const CONFIGURATION_MSI_MSI_METHODS = 'configuration/msi/msi_methods';
+    const CONFIGURATION_MSI_MSI_ALGORITHM = 'configuration/msi/msi_algorithm';
 
     /**
      * @var ScopeConfigInterface
@@ -96,7 +96,9 @@ class Configuration
     public function isEnabled(): bool
     {
         return (bool)$this->scopeConfig->getValue(
-            self::CONFIGURATION_GENERAL_ENABLE, ScopeInterface::SCOPE_STORE);
+            self::CONFIGURATION_GENERAL_ENABLE,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -105,7 +107,8 @@ class Configuration
     public function getCalculateUrl(): ?string
     {
         return $this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_CALCULATE_URL, ScopeInterface::SCOPE_STORE
+            Configuration::CONFIGURATION_CREDENTIALS_CALCULATE_URL,
+            ScopeInterface::SCOPE_STORE
         );
     }
 
@@ -115,7 +118,8 @@ class Configuration
     public function getPaymentVerifyUrl(): ?string
     {
         return $this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_PAYMENT_VERIFY_URL, ScopeInterface::SCOPE_STORE
+            Configuration::CONFIGURATION_CREDENTIALS_PAYMENT_VERIFY_URL,
+            ScopeInterface::SCOPE_STORE
         );
     }
 
@@ -125,7 +129,9 @@ class Configuration
     public function getPostalMethods(): ?string
     {
         return $this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_GENERAL_POST_SHIPPING, ScopeInterface::SCOPE_STORE);
+            Configuration::CONFIGURATION_GENERAL_POST_SHIPPING,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -156,7 +162,9 @@ class Configuration
     public function getStoreDefaultCountryCode(): ?string
     {
         return $this->scopeConfig->getValue(
-            Configuration::STORE_COUNTRY_CODE, ScopeInterface::SCOPE_STORE);
+            Configuration::STORE_COUNTRY_CODE,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -166,7 +174,7 @@ class Configuration
     {
         if ($this->scopeConfig->getValue(self::CONFIGURATION_MSI_ENABLE, ScopeInterface::SCOPE_STORE) &&
             $this->moduleManager->isEnabled(self::INVENTORY_MODULE)) {
-            return $this->scopeConfig->getValue(self::CONFIGURATION_MSI_MSI_METHODS, ScopeInterface::SCOPE_STORE);
+            return $this->scopeConfig->getValue(self::CONFIGURATION_MSI_MSI_ALGORITHM, ScopeInterface::SCOPE_STORE);
         }
         return null;
     }
@@ -176,8 +184,10 @@ class Configuration
      */
     public function getHscodeAttributeName(): ?string
     {
-        return $this->scopeConfig->getValue(Configuration::CONFIGURATION_ATTRIBUTES_HSCODE,
-            ScopeInterface::SCOPE_STORE) ?: self::EAS_HSCODE;
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_ATTRIBUTES_HSCODE,
+            ScopeInterface::SCOPE_STORE
+        ) ?: self::EAS_HSCODE;
     }
 
     /**
@@ -185,8 +195,10 @@ class Configuration
      */
     public function getReducedVatAttributeName(): ?string
     {
-        return $this->scopeConfig->getValue(Configuration::CONFIGURATION_ATTRIBUTES_REDUCED_VAT,
-            ScopeInterface::SCOPE_STORE) ?: self::EAS_REDUCED_VAT;
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_ATTRIBUTES_REDUCED_VAT,
+            ScopeInterface::SCOPE_STORE
+        ) ?: self::EAS_REDUCED_VAT;
     }
 
     /**
@@ -194,8 +206,10 @@ class Configuration
      */
     public function getSellerRegistrationName(): ?string
     {
-        return $this->scopeConfig->getValue(Configuration::CONFIGURATION_ATTRIBUTES_SELLER_REGISTRATION_COUNTRY,
-            ScopeInterface::SCOPE_STORE) ?: self::EAS_SELLER_REGISTRATION_COUNTRY;
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_ATTRIBUTES_SELLER_REGISTRATION_COUNTRY,
+            ScopeInterface::SCOPE_STORE
+        ) ?: self::EAS_SELLER_REGISTRATION_COUNTRY;
     }
 
     /**
@@ -204,7 +218,9 @@ class Configuration
     public function isDebugEnabled(): bool
     {
         return (bool)$this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_ADVANCED_DEBUG, ScopeInterface::SCOPE_STORE);
+            Configuration::CONFIGURATION_ADVANCED_DEBUG,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**

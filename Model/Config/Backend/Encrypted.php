@@ -83,26 +83,34 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
 
             $path = $this->getPath();
             if ($path == Configuration::CONFIGURATION_CREDENTIALS_API_KEY) {
-               $_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY] = $value;
-            } else if ($path == Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY) {
+                $_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY] = $value;
+            } elseif ($path == Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY) {
                 $_SESSION[Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY] = $value;
             }
 
-            if ( $_SESSION &&
+            if ($_SESSION &&
                 array_key_exists(Configuration::CONFIGURATION_CREDENTIALS_API_KEY, $_SESSION) &&
                 array_key_exists(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY, $_SESSION)
             ) {
                 try {
-                    $this->calculate->getAuthorizeToken($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY],
-                        $_SESSION[Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY]);
+                    $this->calculate->getAuthorizeToken(
+                        $_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY],
+                        $_SESSION[Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY]
+                    );
 
-                    $this->writer->save(Configuration::CONFIGURATION_CREDENTIALS_API_KEY,
+                    $this->writer->save(
+                        Configuration::CONFIGURATION_CREDENTIALS_API_KEY,
                         $this->_encryptor->encrypt($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY]),
-                        $this->getScope(), $this->getScopeId());
+                        $this->getScope(),
+                        $this->getScopeId()
+                    );
 
-                    $this->writer->save(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
+                    $this->writer->save(
+                        Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
                         $this->_encryptor->encrypt($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY]),
-                        $this->getScope(), $this->getScopeId());
+                        $this->getScope(),
+                        $this->getScopeId()
+                    );
                 } catch (InputException $exception) {
                     unset($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY]);
                     unset($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY]);
@@ -115,5 +123,4 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
 
         }
     }
-
 }

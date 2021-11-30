@@ -6,6 +6,7 @@ use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Module\Manager;
 use Magento\Inventory\Model\ResourceModel\Source\Collection;
 use Magento\Inventory\Model\ResourceModel\Source\CollectionFactory;
+use Magento\InventorySourceSelectionApi\Model\GetSourceSelectionAlgorithmList;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
@@ -13,10 +14,6 @@ use Magento\Inventory\Model\ResourceModel\Source\CollectionFactory;
 class Msi implements OptionSourceInterface
 {
 
-    /**
-     * @var CollectionFactory
-     */
-    private CollectionFactory $collectionFactory;
 
     /**
      * @var Manager
@@ -24,15 +21,20 @@ class Msi implements OptionSourceInterface
     private Manager $moduleManager;
 
     /**
-     * @param CollectionFactory $collectionFactory
+     * @var GetSourceSelectionAlgorithmList
+     */
+    private GetSourceSelectionAlgorithmList $getSourceSelectionAlgorithmList;
+
+    /**
+     * @param GetSourceSelectionAlgorithmList $getSourceSelectionAlgorithmList
      * @param Manager $moduleManager
      */
     public function __construct(
-        CollectionFactory $collectionFactory,
+        GetSourceSelectionAlgorithmList $getSourceSelectionAlgorithmList,
         Manager           $moduleManager
     ) {
         $this->moduleManager = $moduleManager;
-        $this->collectionFactory = $collectionFactory;
+        $this->getSourceSelectionAlgorithmList = $getSourceSelectionAlgorithmList;
     }
 
 
@@ -41,20 +43,15 @@ class Msi implements OptionSourceInterface
         if (!$this->moduleManager->isEnabled(Configuration::INVENTORY_MODULE)) {
             return [];
         }
-        /** @var Collection $collection */
-        $collection = $this->collectionFactory->create()
-            ->addFieldToFilter('enabled', ['eq' => 1])
-            ->addFieldToSelect(['name', 'country_id']);
+        $list = $this->getSourceSelectionAlgorithmList->execute();
 
-        $sources = [
-            ['value'=> 0,'label'=>' ']
-        ];
-        foreach ($collection->getItems() as $item) {
-            $sources[] = [
-                'value' => $item->getCountryId(),
-                'label' => $item->getName()
+        $algorithms = [];
+        foreach ($list as $item) {
+            $algorithms[] = [
+                'value' => $item->getCode(),
+                'label' => $item->getTitle()
             ];
         }
-        return $sources;
+        return $algorithms;
     }
 }

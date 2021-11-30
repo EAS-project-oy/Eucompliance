@@ -28,6 +28,9 @@
                 <act_as_disclosed_agent>eas_act_as_disclosed_agent</act_as_disclosed_agent>
                 <seller_registration_country>eas_seller_registration_country</seller_registration_country>
             </attributes>
+            <msi>
+                <enable>0</enable>
+            </msi>
         </configuration>
     </default>
 

@@ -24,7 +24,6 @@ define([
 
     return function (placeOrderAction) {
         return wrapper.wrap(placeOrderAction, function (originalAction, paymentData, messageContainer) {
-            var result;
             if (!quote.isVirtual()) {
              return originalAction(paymentData, messageContainer);
             } else {
