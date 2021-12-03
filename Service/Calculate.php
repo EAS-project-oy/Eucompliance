@@ -258,7 +258,7 @@ class Calculate
             /** @var ProductInterface $product */
             $product = $item->getProduct();
             // set warehouse code
-            $item->setWarehouseCode($this->getWarehouseCode($quote));
+            $item->setWarehouseCode($this->getWarehouseCode($quote,$product));
             $this->quoteItemRepository->save($item);
             $items[] = [
                 "short_description" => $product->getSku(),
@@ -273,7 +273,7 @@ class Calculate
                     $this->configuration->getActAsDisclosedAgentAttributeName(),
                     $storeId
                 ),
-                Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->getLocationWarehouse($quote, $item),
+                Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->getLocationWarehouse($quote, $product),
             ];
             $originatingCountry = $this->productResourceModel->getAttributeRawValue(
                 $product->getId(),
@@ -427,14 +427,14 @@ class Calculate
 
     /**
      * @param Quote $quote
-     * @param Item $product
-     * @return array|bool|SourceSelectionResultInterface|string|null
+     * @param ProductInterface $product
+     * @return array|bool|string|null
      * @throws NoSuchEntityException
      */
-    private function getLocationWarehouse(Quote $quote, Item $product)
+    private function getLocationWarehouse(Quote $quote, ProductInterface $product)
     {
         if ($this->configuration->getMSIWarehouseLocation()) {
-            $sourceCode = $this->getWarehouseCode($quote);
+            $sourceCode = $this->getWarehouseCode($quote, $product);
             return $this->sourceRepository->get($sourceCode)->getCountryId();
         }
 
@@ -445,9 +445,14 @@ class Calculate
         ) ?: $this->configuration->getStoreDefaultCountryCode();
     }
 
-    private function getWarehouseCode(Quote $quote)
+    /**
+     * @param Quote $quote
+     * @param ProductInterface $product
+     * @return string
+     */
+    private function getWarehouseCode(Quote $quote, ProductInterface $product)
     {
-        $request = $this->getInventoryRequestFromQuote($quote);
+        $request = $this->getInventoryRequestFromQuote($quote, $product);
         $sourceSelectionItems = $this->sourceSelectionService->execute(
             $request,
             $this->configuration->getMSIWarehouseLocation()
@@ -455,17 +460,25 @@ class Calculate
         return $sourceSelectionItems[array_key_first($sourceSelectionItems)]->getSourceCode();
     }
 
-    private function getInventoryRequestFromQuote(Quote $quote)
+    /**
+     * @param Quote $quote
+     * @param ProductInterface $product
+     * @return mixed
+     * @throws NoSuchEntityException
+     */
+    private function getInventoryRequestFromQuote(Quote $quote, ProductInterface $product)
     {
         $store = $this->storeManager->getStore($quote->getStoreId());
         $stock = $this->stockByWebsiteId->execute((int)$store->getWebsiteId());
         $requestItems = [];
 
         foreach ($quote->getAllVisibleItems() as $item) {
-            $requestItems[] = $this->itemRequestInterfaceFactory->create([
-                'sku' => $item->getSku(),
-                'qty' => $item->getQty()
-            ]);
+            if ($item->getSku() == $product->getSku()) {
+                $requestItems[] = $this->itemRequestInterfaceFactory->create([
+                    'sku' => $item->getSku(),
+                    'qty' => $item->getQty()
+                ]);
+            }
         }
         $inventoryRequest = $this->inventoryRequestInterfaceFactory->create(
             [

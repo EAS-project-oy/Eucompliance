@@ -113,7 +113,7 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
 
             $item = $orderItem->isDummy(true) ? $orderItem->getParentItem() : $orderItem;
             $sku = $this->getSkuFromOrderItem->execute($item);
-            if ($orderItem->getSku() == $sku) {
+            if ($item->getQtyToShip() > 0) {
                 $sourceCode = $orderItem->getWarehouseCode();
             }
             $qty = $item->getSimpleQtyToShip();
