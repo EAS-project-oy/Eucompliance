@@ -13,6 +13,9 @@ var config = {
             'Magento_Checkout/js/view/billing-address': {
                 'Eas_Eucompliance/js/view/billing-address-mixin': true
             },
+            'Magento_Ui/js/view/messages': {
+                'Eas_Eucompliance/js/view/messages-mixin': true
+            }
         }
     }
 };
