@@ -9,18 +9,24 @@ use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
+use \Magento\Quote\Model\Quote\Item\Repository;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  */
 class EasFee extends AbstractTotal
 {
+    /**
+     * @var Repository
+     */
+    private Repository $repository;
 
     /**
      * EasFee constructor.
      */
-    public function __construct()
+    public function __construct(Repository $repository)
     {
+        $this->repository = $repository;
         $this->setCode(Configuration::EAS_FEE);
     }
 
@@ -34,18 +40,27 @@ class EasFee extends AbstractTotal
         Quote                       $quote,
         ShippingAssignmentInterface $shippingAssignment,
         Total                       $total
-    ): EasFee {
+    ): EasFee
+    {
         parent::collect($quote, $shippingAssignment, $total);
 
         $items = $shippingAssignment->getItems();
         if (!count($items)) {
             return $this;
         }
-        $amount = $quote->getEas();
+        $easTaxAmount = 0;
 
-        if ($amount) {
-            $total->setGrandTotal($total->getGrandTotal() + $amount);
-            $total->setBaseGrandTotal($total->getBaseGrandTotal() + $amount);
+        foreach ($quote->getAllVisibleItems() as $item) {
+            if ($item->getExtensionAttributes() && $item->getExtensionAttributes()->getEasTaxAmount()) {
+                $easTaxAmount += $item->getExtensionAttributes()->getEasTaxAmount();
+            }
+        }
+
+        if ($easTaxAmount) {
+            $total->setGrandTotal($total->getGrandTotal() + $easTaxAmount);
+            $total->setBaseGrandTotal($total->getBaseGrandTotal() + $easTaxAmount);
+            $total->setData('tax_amount', $easTaxAmount);
+            $total->setData('base_tax_amount', $easTaxAmount);
         }
         return $this;
     }

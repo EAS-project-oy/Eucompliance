@@ -6,6 +6,7 @@ namespace Eas\Eucompliance\Service;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\HTTP\ZendClientFactory;
@@ -16,10 +17,8 @@ use Magento\InventorySourceSelectionApi\Api\Data\InventoryRequestExtensionInterf
 use Magento\InventorySourceSelectionApi\Api\Data\InventoryRequestInterfaceFactory;
 use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\ItemRequestInterfaceFactory;
-use Magento\InventorySourceSelectionApi\Api\Data\SourceSelectionResultInterface;
 use Magento\InventorySourceSelectionApi\Api\SourceSelectionServiceInterface;
 use Magento\Quote\Model\Quote;
-use Magento\Quote\Model\Quote\Item;
 use Magento\Quote\Model\Quote\Item\Repository;
 use Magento\Quote\Model\QuoteRepository;
 use Eas\Eucompliance\Model\Config\Configuration;
@@ -28,6 +27,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\UrlInterface;
 use Psr\Log\LoggerInterface;
 use Zend_Http_Client;
+use Zend_Http_Client_Exception;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
@@ -169,7 +169,12 @@ class Calculate
     }
 
     /**
-     * @throws \Zend_Http_Client_Exception|NoSuchEntityException
+     * @param Quote $quote
+     * @return array
+     * @throws InputException
+     * @throws NoSuchEntityException
+     * @throws Zend_Http_Client_Exception
+     * @throws CouldNotSaveException
      */
     public function calculate(Quote $quote): array
     {
@@ -253,19 +258,23 @@ class Calculate
         }
         $items = [];
 
-        /** @var \Magento\Quote\Model\Quote\Item $item */
         foreach ($quote->getAllVisibleItems() as $item) {
             /** @var ProductInterface $product */
             $product = $item->getProduct();
             // set warehouse code
-            $item->setWarehouseCode($this->getWarehouseCode($quote,$product));
+            $extAttributes = $item->getExtensionAttributes();
+            $extAttributes->setEasWarehouseCode($this->getWarehouseCode($quote, $product));
+            $item->setExtensionAttributes($extAttributes);
             $this->quoteItemRepository->save($item);
             $items[] = [
                 "short_description" => $product->getSku(),
                 "long_description" => $product->getName(),
                 "id_provided_by_em" => $product->getId(),
                 "quantity" => (int)$item->getQty(),
-                "cost_provided_by_em" => (float)number_format((float)$item->getPriceInclTax(), 2),
+                "cost_provided_by_em" => (float)number_format(
+                    (float)$item->getPriceInclTax() - $item->getDiscountAmount(),
+                    2
+                ),
                 "weight" => (float)number_format((float)$product->getWeight(), 2),
                 "type_of_goods" => $product->getTypeId() == Configuration::VIRTUAL ? Configuration::TBE : Configuration::GOODS,
                 Configuration::ACT_AS_DISCLOSED_AGENT => (bool)$this->productResourceModel->getAttributeRawValue(
@@ -327,9 +336,8 @@ class Calculate
         } else {
             $this->logger->critical('Eas calculate failed' . $response);
             $errors = json_decode($response, true);
-            $errors = array_key_exists('errors', $errors) ?
-                $errors['errors'] : (array_key_exists('message', $errors) ? $errors['message'] : $errors['messages']);
-            ;
+            $errors = array_key_exists('errors', $errors) ? $errors['errors'] :
+                (array_key_exists('message', $errors) ? $errors['message'] : $errors['messages']);
             return ['error' => json_encode($errors)];
         }
     }
@@ -337,7 +345,7 @@ class Calculate
     /**
      * @throws NoSuchEntityException
      * @throws InputException
-     * @throws \Zend_Http_Client_Exception
+     * @throws Zend_Http_Client_Exception
      */
     public function confirmOrder(OrderInterface $order)
     {
@@ -387,7 +395,7 @@ class Calculate
 
     /**
      * @return string
-     * @throws \Zend_Http_Client_Exception
+     * @throws Zend_Http_Client_Exception|InputException
      */
     public function getAuthorizeToken($apiKey = null, $secretApiKey = null): ?string
     {

@@ -15,18 +15,12 @@
 
     <type name="Magento\Quote\Model\Quote\Item\ToOrderItem">
         <plugin name="eas_eucompliance_sales_quote_item_order_item"
-                type="Eas\Eucompliance\Plugin\SetOrderItemValue" />
+                type="Eas\Eucompliance\Plugin\SetOrderItemValue"/>
     </type>
 
     <type name="Magento\Checkout\Model\ShippingInformationManagement">
         <plugin name="beforeSave"
                 type="Eas\Eucompliance\Plugin\SaveGuestCartData"
-                sortOrder="1"/>
-    </type>
-
-    <type name="Magento\Quote\Model\Cart\CartTotalRepository">
-        <plugin name="afterGet"
-                type="Eas\Eucompliance\Plugin\CartTotal"
                 sortOrder="1"/>
     </type>
     <type name="Magento\Sales\Model\OrderRepository">
@@ -40,9 +34,29 @@
     </type>
     <type name="Magento\Sales\Api\OrderManagementInterface">
         <plugin name="notify_order-items_warehouse-location"
-                type="Eas\Eucompliance\Plugin\OrderManagment"
+                type="Eas\Eucompliance\Plugin\OrderManagement"
                 sortOrder="1"/>
     </type>
     <preference for="Magento\InventoryShippingAdminUi\Ui\DataProvider\SourceSelectionDataProvider"
                 type="Eas\Eucompliance\Ui\DataProvider\SourceSelectionDataProvider"/>
+    <type name="\Magento\Quote\Model\Quote\Item\Repository">
+        <plugin name="setExtensionAttributes"
+                type="Eas\Eucompliance\Plugin\Item"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Quote\Model\ResourceModel\Quote\Item">
+        <plugin name="saveExtensionAttributesValue"
+                type="Eas\Eucompliance\Plugin\Quote\Item"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Quote\Model\Quote">
+        <plugin name="setExtensionAttributes"
+                type="Eas\Eucompliance\Plugin\Quote\Quote"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Sales\Block\Adminhtml\Order\View\Items\Renderer\DefaultRenderer">
+        <plugin name="showEasColumns"
+                type="Eas\Eucompliance\Plugin\DefaultRenderer"
+                sortOrder="1"/>
+    </type>
 </config>

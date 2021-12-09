@@ -27,7 +27,7 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
     /**
      * @var array
      */
-    private $sources = [];
+    private array $sources = [];
 
     /**
      * @var OrderRepositoryInterface
@@ -38,8 +38,20 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
      * @var RequestInterface
      */
     private RequestInterface $request;
+
+    /**
+     * @var StockByWebsiteIdResolverInterface
+     */
     private StockByWebsiteIdResolverInterface $stockByWebsiteIdResolver;
+
+    /**
+     * @var GetSkuFromOrderItemInterface
+     */
     private GetSkuFromOrderItemInterface $getSkuFromOrderItem;
+
+    /**
+     * @var GetStockItemConfigurationInterface
+     */
     private GetStockItemConfigurationInterface $getStockItemConfiguration;
 
     /**
@@ -57,18 +69,18 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
      * @param array $data
      */
     public function __construct(
-        string $name,
-        string $primaryFieldName,
-        string $requestFieldName,
-        RequestInterface $request,
-        OrderRepositoryInterface $orderRepository,
-        StockByWebsiteIdResolverInterface $stockByWebsiteIdResolver,
+        string                             $name,
+        string                             $primaryFieldName,
+        string                             $requestFieldName,
+        RequestInterface                   $request,
+        OrderRepositoryInterface           $orderRepository,
+        StockByWebsiteIdResolverInterface  $stockByWebsiteIdResolver,
         GetStockItemConfigurationInterface $getStockItemConfiguration,
-        $getSourcesByStockIdSkuAndQty,
-        GetSkuFromOrderItemInterface $getSkuFromOrderItem,
-        GetSourcesByOrderIdSkuAndQty $getSourcesByOrderIdSkuAndQty,
-        array $meta = [],
-        array $data = []
+                                           $getSourcesByStockIdSkuAndQty,
+        GetSkuFromOrderItemInterface       $getSkuFromOrderItem,
+        GetSourcesByOrderIdSkuAndQty       $getSourcesByOrderIdSkuAndQty,
+        array                              $meta = [],
+        array                              $data = []
     ) {
         $this->request = $request;
         $this->getStockItemConfiguration = $getStockItemConfiguration;
@@ -98,7 +110,7 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
     public function getData()
     {
         $data = [];
-        $orderId = (int) $this->request->getParam('order_id');
+        $orderId = (int)$this->request->getParam('order_id');
         /** @var Order $order */
         $order = $this->orderRepository->get($orderId);
         $websiteId = $order->getStore()->getWebsiteId();
@@ -114,7 +126,7 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
             $item = $orderItem->isDummy(true) ? $orderItem->getParentItem() : $orderItem;
             $sku = $this->getSkuFromOrderItem->execute($item);
             if ($item->getQtyToShip() > 0) {
-                $sourceCode = $orderItem->getWarehouseCode();
+                $sourceCode = $orderItem->getEasWarehouseCode();
             }
             $qty = $item->getSimpleQtyToShip();
             $qty = $this->castQty($item, $qty);
@@ -165,7 +177,7 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
         }
         return $sources;
     }
-    
+
     /**
      * @param Item $item
      * @param string|int|float $qty
@@ -181,7 +193,7 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
 
         return $qty > 0 ? $qty : 0;
     }
-    
+
     /**
      * Generate display product name
      * @param Item $item
@@ -205,7 +217,7 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
                 }
                 if (count($options)) {
                     foreach ($options as $option) {
-                        $name .= '<dd>' . $option['label'] . ': ' . $option['value'] .'</dd>';
+                        $name .= '<dd>' . $option['label'] . ': ' . $option['value'] . '</dd>';
                     }
                 } else {
                     $name .= '<dd>' . $item->getName() . '</dd>';

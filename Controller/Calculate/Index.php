@@ -76,15 +76,15 @@ class Index implements ActionInterface
      * @param Configuration $configuration
      */
     public function __construct(
-        Request $request,
-        ResponseInterface $response,
-        QuoteManagement $quoteManagement,
-        JWT $jwt,
-        UrlInterface $url,
-        Calculate $calculate,
+        Request                 $request,
+        ResponseInterface       $response,
+        QuoteManagement         $quoteManagement,
+        JWT                     $jwt,
+        UrlInterface            $url,
+        Calculate               $calculate,
         CartRepositoryInterface $quoteRepository,
-        Session $session,
-        Configuration $configuration
+        Session                 $session,
+        Configuration           $configuration
     ) {
         $this->request = $request;
         $this->response = $response;
@@ -113,19 +113,31 @@ class Index implements ActionInterface
             );
             $data = json_decode(json_encode($data), true);
             $quote = $this->session->getQuote();
-            $quote->setData(Configuration::EAS, $data[Configuration::EAS_FEE] + $data['taxes_and_duties']);
-            $quote->setData('eas_shipping_cost', $data['delivery_charge']);
+
+            $quote->setData(Configuration::EAS_SHIPPING_COST, $data['delivery_charge_vat_excl']);
+            $quote->setData(Configuration::EAS_TOTAL_VAT, $data['delivery_charge_vat'] + $data['merchandise_vat']);
             $quote->setData(Configuration::EAS_TOKEN, $params[Configuration::EAS_CHECKOUT_TOKEN]);
 
             foreach ($data['items'] as $item) {
                 $items = $quote->getAllItems();
                 foreach ($items as $quoteItem) {
                     if ($item['item_id'] == $quoteItem->getProductId()) {
-                        $quoteItem->setCustomPrice($item['unit_cost']);
-                        $quoteItem->setPrice($item['item_duties_and_taxes'] + $quoteItem->getPrice());
-                        $quoteItem->setBasePrice($item['item_duties_and_taxes'] + $quoteItem->getBasePrice());
-                        $quoteItem->setTaxAmount($item['item_duties_and_taxes'] + $quoteItem->getTaxAmount());
-                        $quoteItem->setBaseTaxAmount($item['item_duties_and_taxes'] + $quoteItem->getBaseTaxAmount());
+                        $quoteItem->setCustomPrice($item['unit_cost_excl_vat'] + $quoteItem->getDiscountAmount());
+                        $quoteItem->setOriginalCustomPrice($item['unit_cost_excl_vat'] + $quoteItem->getDiscountAmount());
+                        $extAttributes = $quoteItem->getExtensionAttributes();
+                        $extAttributes->setEasTaxAmount($item['item_duties_and_taxes'] - $item['item_customs_duties']
+                            - $item['item_eas_fee'] - $item['item_eas_fee_vat'] - $item['item_delivery_charge_vat']);
+                        $extAttributes->setEasRowTotal($item['unit_cost_excl_vat'] * $quoteItem->getQty() +
+                            $quoteItem->getDiscountAmount());
+
+                        $extAttributes->setEasRowTotalInclTax($item['unit_cost_excl_vat'] * $quoteItem->getQty() +
+                            $extAttributes->getEasTaxAmount() + $item['item_customs_duties'] +
+                            $item['item_eas_fee'] + $item['item_eas_fee']);
+
+                        $extAttributes->setEasTaxPercent($item['vat_rate']);
+                        $extAttributes->setEasFee($item['item_eas_fee']);
+                        $extAttributes->setVatOnEasFee($item['item_eas_fee_vat']);
+                        $extAttributes->setEasCustomDuties($item['item_customs_duties']);
                     }
                 }
                 $quote->setItems($items);

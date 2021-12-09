@@ -9,7 +9,7 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  */
-class OrderManagment
+class OrderManagement
 {
 
     /**
@@ -36,10 +36,10 @@ class OrderManagment
     public function afterPlace(OrderManagementInterface $subject, OrderInterface $result, OrderInterface $order): OrderInterface
     {
         foreach ($result->getItems() as $item) {
-            if ($item->getWarehouseCode()) {
+            if ($item->getEasWarehouseCode()) {
                 $result->addCommentToStatusHistory(
                     'Eas confirmation: product with sku ' .
-                    $item->getSku() . ' should be shipped from ' . $item->getWarehouseCode() . ' stock',
+                    $item->getSku() . ' should be shipped from ' . $item->getEasWarehouseCode() . ' stock',
                     true,
                     true
                 );

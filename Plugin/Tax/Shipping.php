@@ -2,13 +2,17 @@
 
 namespace Eas\Eucompliance\Plugin\Tax;
 
+use Eas\Eucompliance\Model\Config\Configuration;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
+use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
-class Shipping extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
+class Shipping extends CommonTaxCollector
 {
-
     /**
      * @param \Magento\Tax\Model\Sales\Total\Quote\Shipping $subject
      * @param $result
@@ -16,7 +20,13 @@ class Shipping extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
      * @param ShippingAssignmentInterface $shippingAssignment
      * @param Total $total
      */
-    public function afterCollect(\Magento\Tax\Model\Sales\Total\Quote\Shipping $subject, $result, Quote $quote, ShippingAssignmentInterface $shippingAssignment, Total $total)
+    public function afterCollect(
+        \Magento\Tax\Model\Sales\Total\Quote\Shipping $subject,
+                                                      $result,
+        Quote                                         $quote,
+        ShippingAssignmentInterface                   $shippingAssignment,
+        Total                                         $total
+    )
     {
         $storeId = $quote->getStoreId();
         $shippingDataObject = $this->getShippingDataObject($shippingAssignment, $total, false);
@@ -33,12 +43,11 @@ class Shipping extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
             $taxDetailsItems = $taxDetails->getItems()[self::ITEM_CODE_SHIPPING];
             $baseTaxDetailsItems = $baseTaxDetails->getItems()[self::ITEM_CODE_SHIPPING];
 
-            if ($quote->getData('eas_shipping_cost')) {
-                $quote->setData('eas_shipping_cost', $quote->getData('eas_shipping_cost') * 4);
-                $taxDetails->setSubtotal($quote->getData('eas_shipping_cost'));
-                $baseTaxDetails->setSubtotal($quote->getData('eas_shipping_cost'));
-                $total->setData('shipping_tax_calculation_amount', $quote->getData('eas_shipping_cost'));
-                $total->setData('base_shipping_tax_calculation_amount', $quote->getData('eas_shipping_cost'));
+            if ($quote->getData(Configuration::EAS_SHIPPING_COST)) {
+                $taxDetails->setSubtotal($quote->getData(Configuration::EAS_SHIPPING_COST));
+                $baseTaxDetails->setSubtotal($quote->getData(Configuration::EAS_SHIPPING_COST));
+                $total->setData('shipping_tax_calculation_amount', $quote->getData(Configuration::EAS_SHIPPING_COST));
+                $total->setData('base_shipping_tax_calculation_amount', $quote->getData(Configuration::EAS_SHIPPING_COST));
             }
             $this->processShippingTaxInfo(
                 $shippingAssignment,

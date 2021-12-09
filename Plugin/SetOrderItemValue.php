@@ -21,7 +21,10 @@ class SetOrderItemValue
     public function aroundConvert(ToOrderItem $subject, callable $proceed, $quoteItem, $data)
     {
         $orderItem = $proceed($quoteItem, $data);
-        $orderItem->setWarehouseCode($quoteItem->getWarehouseCode());
+        $orderItem->setEasWarehouseCode($quoteItem->getExtensionAttributes()->getEasWarehouseCode());
+        $orderItem->setEasCustomDuties($quoteItem->getEasCustomDuties());
+        $orderItem->setEasFee($quoteItem->getEasFee());
+        $orderItem->setVatOnEasFee($quoteItem->getVatOnEasFee());
         return $orderItem;
     }
 }

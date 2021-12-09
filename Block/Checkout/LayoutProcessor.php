@@ -135,8 +135,7 @@ class LayoutProcessor
         $elements = $this->getAddressAttributes();
         $elements = $this->convertElementsToSelect($elements, $attributesToConvert);
         if (isset($jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children']
-            ['eas-billing']['children']
-        )) {
+            ['eas-billing']['children'])) {
             $jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children']['customer-email'] =
                 [
                     'component'=>'Magento_Checkout/js/view/form/element/email',

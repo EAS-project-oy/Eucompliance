@@ -10,15 +10,48 @@
         <column xsi:type="float" name="eas" unsigned="true" nullable="true"
                 default="0" comment="Eas"/>
         <column xsi:type="text" name="eas_token" nullable="true" comment="Eas validation token"/>
-        <column xsi:type="int" name="eas_confirmation_sent" nullable="false" default="0" comment="Eas validation token"/>
+        <column xsi:type="int" name="eas_confirmation_sent" nullable="false" default="0"
+                comment="Eas validation token"/>
+        <column xsi:type="float" name="eas_total_vat" nullable="true" default="0" comment="Eas total vat"/>
     </table>
+
+    <table name="sales_order" resource="sales" comment="Sales Flat Order">
+        <column xsi:type="float" name="eas_total_vat" nullable="true" default="0" comment="Eas total vat"/>
+    </table>
+
     <table name="quote_item" resource="checkout" comment="Sales Flat Quote Item">
-        <column xsi:type="varchar" name="warehouse_code" nullable="true"
+        <column xsi:type="varchar" name="eas_warehouse_code" nullable="true"
                 length="255" comment="Warehouse code"/>
+        <column xsi:type="float" name="eas_custom_duties" nullable="true" default="0" unsigned="false"
+                comment="Custom duties"/>
+        <column xsi:type="float" name="eas_fee" nullable="true" default="0" unsigned="false" comment="Eas fee"/>
+        <column xsi:type="float" name="vat_on_eas_fee" nullable="true" default="0" unsigned="false"
+                comment="Vat on eas fee"/>
+        <column xsi:type="float" name="eas_tax_amount" nullable="true" default="0" unsigned="false"
+                comment="EAS Tax amount"/>
+        <column xsi:type="float" name="eas_tax_percent" nullable="true" default="0" unsigned="false"
+                comment="EAS Tax percent"/>
+        <column xsi:type="float" name="eas_row_total" nullable="true" default="0" unsigned="false"
+                comment="EAS Row total"/>
+        <column xsi:type="float" name="eas_row_total_incl_tax" nullable="true" default="0" unsigned="false"
+                comment="EAS Row total Incl tax"/>
     </table>
 
     <table name="sales_order_item" resource="sales" comment="Sales Flat Order Item">
-        <column xsi:type="varchar" name="warehouse_code" nullable="true"
+        <column xsi:type="varchar" name="eas_warehouse_code" nullable="true"
                 length="255" comment="Warehouse code"/>
+        <column xsi:type="float" name="eas_custom_duties" nullable="true" default="0" unsigned="false"
+                comment="Custom duties"/>
+        <column xsi:type="float" name="eas_fee" nullable="true" default="0" unsigned="false" comment="Eas fee"/>
+        <column xsi:type="float" name="vat_on_eas_fee" nullable="true" default="0" unsigned="false"
+                comment="Vat on eas fee"/>
+        <column xsi:type="float" name="eas_tax_amount" nullable="true" default="0" unsigned="false"
+                comment="EAS Tax amount"/>
+        <column xsi:type="float" name="eas_tax_percent" nullable="true" default="0" unsigned="false"
+                comment="EAS Tax percent"/>
+        <column xsi:type="float" name="eas_row_total" nullable="true" default="0" unsigned="false"
+                comment="EAS Row total"/>
+        <column xsi:type="float" name="eas_row_total_incl_tax" nullable="true" default="0" unsigned="false"
+                comment="EAS Row total incl tax"/>
     </table>
 </schema>

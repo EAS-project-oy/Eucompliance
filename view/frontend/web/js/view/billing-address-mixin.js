@@ -1,6 +1,6 @@
 define(['Magento_Checkout/js/model/quote'],
     function (quote) {
-    'use strict';
+        'use strict';
 
         function isVirtual(quote) {
             if (window.location.hash == '#eas-billing' || !window.location.hash) {
@@ -8,18 +8,23 @@ define(['Magento_Checkout/js/model/quote'],
                 return false;
             }
 
+            // Disable on payment step to avoid address manipulation
+            if (window.location.hash == '#payment') {
+                return true;
+            }
+
             return quote.isVirtual();
         }
-    var mixin = {
-        defaults:{
-            detailsTemplate: 'Eas_Eucompliance/billing-address/details',
-        },
-        isVirtual : isVirtual(quote)
+
+        var mixin = {
+            defaults: {
+                detailsTemplate: 'Eas_Eucompliance/billing-address/details',
+            },
+            isVirtual: isVirtual(quote)
         };
 
+        return function (target) {
+            return target.extend(mixin);
+        }
 
-    return function (target) {
-        return target.extend(mixin);
-    }
-
-});
+    });

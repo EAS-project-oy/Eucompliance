@@ -55,6 +55,8 @@ class Configuration
     const ATTRIBUTE_CODE = 'attribute_code';
     const EAS = 'eas';
     const EAS_TOKEN = 'eas_token';
+    const EAS_SHIPPING_COST = 'eas_shipping_cost';
+    const EAS_TOTAL_VAT = 'eas_total_vat';
     const EAS_ADDITIONAL_ATTRIBUTES = 'EAS additional attributes';
     const VERIFYPEER = 'verifypeer';
     const CONFIGURATION_MSI_ENABLE = 'configuration/msi/enable';
@@ -82,8 +84,8 @@ class Configuration
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
-        Manager $moduleManager,
-        EncryptorInterface $encryptor
+        Manager              $moduleManager,
+        EncryptorInterface   $encryptor
     ) {
         $this->moduleManager = $moduleManager;
         $this->scopeConfig = $scopeConfig;
