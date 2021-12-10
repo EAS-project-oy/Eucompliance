@@ -48,7 +48,7 @@ class EasFee extends AbstractTotal
         if (!count($items)) {
             return $this;
         }
-        $easTaxAmount = $quote->getData(Configuration::EAS_TOTAL_VAT);
+        $easTaxAmount = $quote->getData(Configuration::EAS_TOTAL_TAX);
 
         if ($easTaxAmount) {
             $total->setGrandTotal($total->getGrandTotal() + $easTaxAmount);

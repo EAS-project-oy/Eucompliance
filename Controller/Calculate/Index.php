@@ -117,6 +117,9 @@ class Index implements ActionInterface
 
             $quote->setData(Configuration::EAS_SHIPPING_COST, $data['delivery_charge_vat_excl']);
             $quote->setData(Configuration::EAS_TOTAL_VAT, $data['delivery_charge_vat'] + $data['merchandise_vat']);
+            $quote->setData(Configuration::EAS_TOTAL_TAX,
+                $data['delivery_charge_vat'] + $data['merchandise_vat'] +
+                $data['eas_fee'] + $data['eas_fee_vat']);
             $quote->setData(Configuration::EAS_TOKEN, $params[Configuration::EAS_CHECKOUT_TOKEN]);
 
             foreach ($data['items'] as $item) {
@@ -133,7 +136,7 @@ class Index implements ActionInterface
 
                         $extAttributes->setEasRowTotalInclTax($item['unit_cost_excl_vat'] * $quoteItem->getQty() +
                             $extAttributes->getEasTaxAmount() + $item['item_customs_duties'] +
-                            $item['item_eas_fee'] + $item['item_eas_fee']);
+                            $item['item_eas_fee'] + $item['item_eas_fee_vat']);
 
                         $extAttributes->setEasTaxPercent($item['vat_rate']);
                         $extAttributes->setEasFee($item['item_eas_fee']);

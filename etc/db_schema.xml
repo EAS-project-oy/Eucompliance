@@ -13,6 +13,8 @@
         <column xsi:type="int" name="eas_confirmation_sent" nullable="false" default="0"
                 comment="Eas validation token"/>
         <column xsi:type="float" name="eas_total_vat" nullable="true" default="0" comment="Eas total vat"/>
+        <column xsi:type="float" name="eas_total_tax" nullable="true" default="0" comment="Eas total tax"/>
+
     </table>
 
     <table name="sales_order" resource="sales" comment="Sales Flat Order">
