@@ -122,13 +122,12 @@ class Index implements ActionInterface
                 $items = $quote->getAllItems();
                 foreach ($items as $quoteItem) {
                     if ($item['item_id'] == $quoteItem->getProductId()) {
-                        $quoteItem->setCustomPrice($item['unit_cost_excl_vat'] + $quoteItem->getDiscountAmount());
-                        $quoteItem->setOriginalCustomPrice($item['unit_cost_excl_vat'] + $quoteItem->getDiscountAmount());
+                        $quoteItem->setCustomPrice($item['unit_cost_excl_vat']);
+                        $quoteItem->setOriginalCustomPrice($item['unit_cost_excl_vat']);
                         $extAttributes = $quoteItem->getExtensionAttributes();
                         $extAttributes->setEasTaxAmount($item['item_duties_and_taxes'] - $item['item_customs_duties']
                             - $item['item_eas_fee'] - $item['item_eas_fee_vat'] - $item['item_delivery_charge_vat']);
-                        $extAttributes->setEasRowTotal($item['unit_cost_excl_vat'] * $quoteItem->getQty() +
-                            $quoteItem->getDiscountAmount());
+                        $extAttributes->setEasRowTotal($item['unit_cost_excl_vat'] * $quoteItem->getQty());
 
                         $extAttributes->setEasRowTotalInclTax($item['unit_cost_excl_vat'] * $quoteItem->getQty() +
                             $extAttributes->getEasTaxAmount() + $item['item_customs_duties'] +

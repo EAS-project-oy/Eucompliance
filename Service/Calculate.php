@@ -272,7 +272,7 @@ class Calculate
                 "id_provided_by_em" => $product->getId(),
                 "quantity" => (int)$item->getQty(),
                 "cost_provided_by_em" => (float)number_format(
-                    (float)$item->getPriceInclTax() - $item->getDiscountAmount(),
+                    ($item->getOriginalPrice() * $item->getQty() - $item->getOriginalDiscountAmount())/ $item->getQty(),
                     2
                 ),
                 "weight" => (float)number_format((float)$product->getWeight(), 2),
