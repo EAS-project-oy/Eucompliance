@@ -72,7 +72,6 @@ class CartItem
             } else {
                 $this->handleAttribute($cartItem, $key, $attributeName, $extAttributes, $mode);
             }
-
         }
         $cartItem->setExtensionAttributes($extAttributes);
         return $cartItem;
@@ -109,7 +108,6 @@ class CartItem
             }
 
         } elseif ($mode == self::SET) {
-
             if ($cartItem->$getAttributeName()) {
                 $extAttributes->$setAttributeName($cartItem->$getAttributeName());
             }

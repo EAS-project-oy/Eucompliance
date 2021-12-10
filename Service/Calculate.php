@@ -460,12 +460,19 @@ class Calculate
      */
     private function getWarehouseCode(Quote $quote, ProductInterface $product)
     {
-        $request = $this->getInventoryRequestFromQuote($quote, $product);
-        $sourceSelectionItems = $this->sourceSelectionService->execute(
-            $request,
-            $this->configuration->getMSIWarehouseLocation()
-        )->getSourceSelectionItems();
-        return $sourceSelectionItems[array_key_first($sourceSelectionItems)]->getSourceCode();
+        if ($this->configuration->getMSIWarehouseLocation()) {
+            $request = $this->getInventoryRequestFromQuote($quote, $product);
+            $sourceSelectionItems = $this->sourceSelectionService->execute(
+                $request,
+                $this->configuration->getMSIWarehouseLocation()
+            )->getSourceSelectionItems();
+            return $sourceSelectionItems[array_key_first($sourceSelectionItems)]->getSourceCode();
+        }
+        return $this->productResourceModel->getAttributeRawValue(
+            $product->getId(),
+            $this->configuration->getWarehouseAttributeName(),
+            $quote->getStoreId()
+        ) ?: $this->configuration->getStoreDefaultCountryCode();
     }
 
     /**

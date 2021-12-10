@@ -39,7 +39,7 @@ class OrderManagement
             if ($item->getEasWarehouseCode()) {
                 $result->addCommentToStatusHistory(
                     'Eas confirmation: product with sku ' .
-                    $item->getSku() . ' should be shipped from ' . $item->getEasWarehouseCode() . ' stock',
+                    $item->getSku() . ' should be shipped from ' . $item->getEasWarehouseCode(),
                     true,
                     true
                 );

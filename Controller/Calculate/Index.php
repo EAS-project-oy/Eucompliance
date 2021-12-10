@@ -11,6 +11,7 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\Webapi\Rest\Request;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\Quote\Item;
 use Magento\Quote\Model\QuoteManagement;
 
 /**
@@ -122,6 +123,7 @@ class Index implements ActionInterface
                 $items = $quote->getAllItems();
                 foreach ($items as $quoteItem) {
                     if ($item['item_id'] == $quoteItem->getProductId()) {
+                        $this->clear($quoteItem);
                         $quoteItem->setCustomPrice($item['unit_cost_excl_vat']);
                         $quoteItem->setOriginalCustomPrice($item['unit_cost_excl_vat']);
                         $extAttributes = $quoteItem->getExtensionAttributes();
@@ -148,5 +150,15 @@ class Index implements ActionInterface
         } else {
             return $this->response->setRedirect($this->url->getUrl('checkout/cart'));
         }
+    }
+
+    private function clear (Item $item) {
+        $item->setEasTaxAmount(0);
+        $item->setEasRowTotal(0);
+        $item->setEasRowTotalInclTax(0);
+        $item->setEasTaxPercent(0);
+        $item->setEasFee(0);
+        $item->setVatOnEasFee(0);
+        $item->setEasCustomDuties(0);
     }
 }

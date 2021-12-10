@@ -22,9 +22,9 @@ class SetOrderItemValue
     {
         $orderItem = $proceed($quoteItem, $data);
         $orderItem->setEasWarehouseCode($quoteItem->getExtensionAttributes()->getEasWarehouseCode());
-        $orderItem->setEasCustomDuties($quoteItem->getEasCustomDuties());
-        $orderItem->setEasFee($quoteItem->getEasFee());
-        $orderItem->setVatOnEasFee($quoteItem->getVatOnEasFee());
+        $orderItem->setEasCustomDuties($quoteItem->getExtensionAttributes()->getEasCustomDuties());
+        $orderItem->setEasFee($quoteItem->getExtensionAttributes()->getEasFee());
+        $orderItem->setVatOnEasFee($quoteItem->getExtensionAttributes()->getVatOnEasFee());
         return $orderItem;
     }
 }
