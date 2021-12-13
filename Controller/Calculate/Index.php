@@ -119,7 +119,8 @@ class Index implements ActionInterface
             $quote->setData(Configuration::EAS_TOTAL_VAT, $data['delivery_charge_vat'] + $data['merchandise_vat']);
             $quote->setData(Configuration::EAS_TOTAL_TAX,
                 $data['delivery_charge_vat'] + $data['merchandise_vat'] +
-                $data['eas_fee'] + $data['eas_fee_vat']);
+                $data['eas_fee_vat'] + $data['total_customs_duties'] +
+                $data['eas_fee']);
             $quote->setData(Configuration::EAS_TOTAL_AMOUNT, $data['total_order_amount']);
             $quote->setData(Configuration::EAS_TOKEN, $params[Configuration::EAS_CHECKOUT_TOKEN]);
 

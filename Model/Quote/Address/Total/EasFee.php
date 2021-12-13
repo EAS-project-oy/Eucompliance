@@ -77,8 +77,8 @@ class EasFee extends AbstractTotal
         }
 
         if ($easTotalAmount) {
-            $total->setGrandTotal($easTaxAmount);
-            $total->setBaseGrandTotal($easTaxAmount);
+            $total->setGrandTotal($easTotalAmount);
+            $total->setBaseGrandTotal($easTotalAmount);
         }
 
         return $this;
