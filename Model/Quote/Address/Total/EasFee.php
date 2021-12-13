@@ -49,13 +49,38 @@ class EasFee extends AbstractTotal
             return $this;
         }
         $easTaxAmount = $quote->getData(Configuration::EAS_TOTAL_TAX);
+        $easTotalAmount = $quote->getData(Configuration::EAS_TOTAL_AMOUNT);
+
+        foreach ($quote->getAllItems() as $item) {
+            if ($item->getExtensionAttributes()) {
+                $extAttributes = $item->getExtensionAttributes();
+                if ($extAttributes->getEasTaxPercent()) {
+                    $item->setTaxPercent($extAttributes->getEasTaxPercent());
+                }
+                if ($extAttributes->getEasTaxAmount()) {
+                    $item->setTaxAmount($extAttributes->getEasTaxAmount());
+                }
+                if ($extAttributes->getEasRowTotal()) {
+                    $item->setRowTotal($extAttributes->getEasRowTotal());
+                }
+
+                if ($extAttributes->getEasRowTotalInclTax()) {
+                    $item->setRowTotalInclTax($extAttributes->getEasRowTotalInclTax());
+                }
+            }
+        }
+
 
         if ($easTaxAmount) {
-            $total->setGrandTotal($total->getGrandTotal() + $easTaxAmount);
-            $total->setBaseGrandTotal($total->getBaseGrandTotal() + $easTaxAmount);
             $total->setData('tax_amount', $easTaxAmount);
             $total->setData('base_tax_amount', $easTaxAmount);
         }
+
+        if ($easTotalAmount) {
+            $total->setGrandTotal($easTaxAmount);
+            $total->setBaseGrandTotal($easTaxAmount);
+        }
+
         return $this;
     }
 

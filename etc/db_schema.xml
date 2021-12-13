@@ -14,6 +14,7 @@
                 comment="Eas validation token"/>
         <column xsi:type="float" name="eas_total_vat" nullable="true" default="0" comment="Eas total vat"/>
         <column xsi:type="float" name="eas_total_tax" nullable="true" default="0" comment="Eas total tax"/>
+        <column xsi:type="float" name="eas_total_amount" nullable="true" default="0" comment="Eas total amount"/>
 
     </table>
 

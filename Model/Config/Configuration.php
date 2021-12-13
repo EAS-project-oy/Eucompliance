@@ -58,6 +58,7 @@ class Configuration
     const EAS_SHIPPING_COST = 'eas_shipping_cost';
     const EAS_TOTAL_VAT = 'eas_total_vat';
     const EAS_TOTAL_TAX = 'eas_total_tax';
+    const EAS_TOTAL_AMOUNT = 'eas_total_amount';
     const EAS_ADDITIONAL_ATTRIBUTES = 'EAS additional attributes';
     const VERIFYPEER = 'verifypeer';
     const CONFIGURATION_MSI_ENABLE = 'configuration/msi/enable';
