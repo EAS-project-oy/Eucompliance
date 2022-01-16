@@ -22,6 +22,7 @@ class Configuration
     const CONFIGURATION_ADVANCED_DEBUG = 'configuration/advanced/debug';
     const CONFIGURATION_CREDENTIALS_AUTH_KEYS_URL = 'configuration/credentials/auth_keys_url';
     const CONFIGURATION_CREDENTIALS_AUTHORIZE_URL = 'configuration/credentials/authorize_url';
+    const CONFIGURATION_GENERAL_TAX_NAME = 'configuration/general/tax_name';
     const CONFIGURATION_CREDENTIALS_API_KEY = 'configuration/credentials/api_key';
     const CONFIGURATION_CREDENTIALS_SECRET_API_KEY = 'configuration/credentials/secret_api_key';
     const CONFIGURATION_GENERAL_ENABLE = 'configuration/general/enable';
@@ -263,5 +264,16 @@ class Configuration
             ScopeInterface::SCOPE_STORE
         ));
         return [$apiKey, $secretApiKey];
+    }
+
+    /**
+     * @return string
+     */
+    public function getTaxLabel(): string
+    {
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_GENERAL_TAX_NAME,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 }

@@ -10,6 +10,7 @@
         <configuration>
             <general>
                 <enable>0</enable>
+                <tax_name>Tax</tax_name>
             </general>
             <advanced>
                 <debug>1</debug>

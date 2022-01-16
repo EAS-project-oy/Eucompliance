@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Eas\Eucompliance\Block\Checkout;
 
+use Eas\Eucompliance\Model\Config\Configuration;
 use Magento\Checkout\Block\Checkout\AttributeMerger;
 use Magento\Customer\Model\AttributeMetadataDataProvider;
 use Magento\Customer\Model\Options;
@@ -33,18 +34,26 @@ class LayoutProcessor
     private Options $options;
 
     /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
+    /**
      * @param AttributeMetadataDataProvider $attributeMetadataDataProvider
      * @param AttributeMapper $attributeMapper
      * @param AttributeMerger $merger
      * @param Options $options
+     * @param Configuration $configuration
      */
     public function __construct(
         AttributeMetadataDataProvider $attributeMetadataDataProvider,
         AttributeMapper $attributeMapper,
         AttributeMerger $merger,
-        Options $options
+        Options $options,
+        Configuration $configuration
     ) {
         $this->options = $options;
+        $this->configuration = $configuration;
         $this->attributeMetadataDataProvider = $attributeMetadataDataProvider;
         $this->attributeMapper = $attributeMapper;
         $this->merger = $merger;
@@ -127,6 +136,13 @@ class LayoutProcessor
      */
     public function process($jsLayout)
     {
+        if (!$this->configuration->isEnabled()) {
+            return $jsLayout;
+        }
+        /** Rename tax */
+        $jsLayout['components']['checkout']['children']['sidebar']['children']
+        ['summary']['children']['totals']['children']['tax']['config']['title'] =  __($this->configuration->getTaxLabel());
+
         $attributesToConvert = [
             'prefix' => [$this->getOptions(), 'getNamePrefixOptions'],
             'suffix' => [$this->getOptions(), 'getNameSuffixOptions'],
@@ -186,9 +202,6 @@ class LayoutProcessor
         array $newStepsLayout,
         array $elements
     ) {
-        if (!isset($paymentLayout['payments-list']['children'])) {
-            $paymentLayout['payments-list']['children'] = [];
-        }
 
         if (!isset($newStepsLayout['afterMethods']['children'])) {
             $newStepsLayout['afterMethods']['children'] = [];

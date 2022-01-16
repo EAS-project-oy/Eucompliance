@@ -44,7 +44,7 @@ class Totals extends \Magento\Sales\Block\Adminhtml\Order\Totals
                 'strong' => true,
                 'value' => $this->getOrderItemAggregatedValue('getEasFee', $this->getSource()),
                 'base_value' => $this->getOrderItemAggregatedValue('getEasFee', $this->getSource()),
-                'label' => __(' Total EAS fee'),
+                'label' => __('Total EAS fee'),
                 'area' => 'footer',
             ]
         );
