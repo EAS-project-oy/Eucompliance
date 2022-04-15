@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Easproject\Eucompliance\Plugin;
+namespace Eas\Eucompliance\Plugin;
 
 use Magento\Checkout\Model\Session;
 use Magento\Customer\Model\AccountManagement;
