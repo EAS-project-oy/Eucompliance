@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Easproject\Eucompliance\Setup\Patch\Data;
+namespace Eas\Eucompliance\Setup\Patch\Data;
 
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
-use Easproject\Eucompliance\Model\Config\Configuration;
+use Eas\Eucompliance\Model\Config\Configuration;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;

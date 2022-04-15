@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Easproject\Eucompliance\Block\System\Config\Form\Field;
+namespace Eas\Eucompliance\Block\System\Config\Form\Field;
 
-use Easproject\Eucompliance\Model\Config\Configuration;
+use Eas\Eucompliance\Model\Config\Configuration;
 use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;

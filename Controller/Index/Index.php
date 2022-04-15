@@ -1,8 +1,8 @@
 <?php
 
-namespace Easproject\Eucompliance\Controller\Index;
+namespace Eas\Eucompliance\Controller\Index;
 
-use Easproject\Eucompliance\Service\Calculate;
+use Eas\Eucompliance\Service\Calculate;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\ResponseInterface;

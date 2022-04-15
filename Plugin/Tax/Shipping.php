@@ -1,8 +1,8 @@
 <?php
 
-namespace Easproject\Eucompliance\Plugin\Tax;
+namespace Eas\Eucompliance\Plugin\Tax;
 
-use Easproject\Eucompliance\Model\Config\Configuration;
+use Eas\Eucompliance\Model\Config\Configuration;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;

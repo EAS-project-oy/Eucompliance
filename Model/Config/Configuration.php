@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Easproject\Eucompliance\Model\Config;
+namespace Eas\Eucompliance\Model\Config;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Encryption\EncryptorInterface;

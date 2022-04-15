@@ -1,6 +1,6 @@
 <?php
 
-namespace Easproject\Eucompliance\Plugin;
+namespace Eas\Eucompliance\Plugin;
 
 use Magento\Framework\DataObject;
 

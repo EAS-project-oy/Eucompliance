@@ -1,6 +1,6 @@
 <?php
 
-namespace Easproject\Eucompliance\Plugin;
+namespace Eas\Eucompliance\Plugin;
 
 use Magento\Quote\Model\Quote\Address\Item as AddressItem;
 use Magento\Quote\Model\Quote\Item;

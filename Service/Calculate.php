@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Easproject\Eucompliance\Service;
+namespace Eas\Eucompliance\Service;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
@@ -21,7 +21,7 @@ use Magento\InventorySourceSelectionApi\Api\SourceSelectionServiceInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item\Repository;
 use Magento\Quote\Model\QuoteRepository;
-use Easproject\Eucompliance\Model\Config\Configuration;
+use Eas\Eucompliance\Model\Config\Configuration;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\UrlInterface;

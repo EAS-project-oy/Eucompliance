@@ -1,9 +1,9 @@
 <?php
 
-namespace Easproject\Eucompliance\Model\Config\Backend;
+namespace Eas\Eucompliance\Model\Config\Backend;
 
-use Easproject\Eucompliance\Model\Config\Configuration;
-use Easproject\Eucompliance\Service\Calculate;
+use Eas\Eucompliance\Model\Config\Configuration;
+use Eas\Eucompliance\Service\Calculate;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Data\Collection\AbstractDb;

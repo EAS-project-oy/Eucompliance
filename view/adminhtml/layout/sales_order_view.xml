@@ -74,7 +74,7 @@
                         <block class="Magento\Sales\Block\Adminhtml\Order\View\Giftmessage" name="order_giftmessage"
                                template="Magento_Sales::order/view/giftmessage.phtml"/>
                     </block>
-                    <block class="Easproject\Eucompliance\Block\Adminhtml\Order\Totals" name="order_totals"
+                    <block class="Eas\Eucompliance\Block\Adminhtml\Order\Totals" name="order_totals"
                            template="Magento_Sales::order/totals.phtml">
                         <block class="Magento\Sales\Block\Adminhtml\Order\Totals\Tax" name="tax"
                                template="Magento_Sales::order/totals/tax.phtml"/>

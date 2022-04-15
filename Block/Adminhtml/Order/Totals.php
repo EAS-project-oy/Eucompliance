@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Easproject\Eucompliance\Block\Adminhtml\Order;
+namespace Eas\Eucompliance\Block\Adminhtml\Order;
 
 use Magento\Framework\DataObject;
 use Magento\Sales\Api\Data\OrderInterface;

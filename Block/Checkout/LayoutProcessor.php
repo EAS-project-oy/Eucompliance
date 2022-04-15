@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Easproject\Eucompliance\Block\Checkout;
+namespace Eas\Eucompliance\Block\Checkout;
 
-use Easproject\Eucompliance\Model\Config\Configuration;
+use Eas\Eucompliance\Model\Config\Configuration;
 use Magento\Checkout\Block\Checkout\AttributeMerger;
 use Magento\Customer\Model\AttributeMetadataDataProvider;
 use Magento\Customer\Model\Options;

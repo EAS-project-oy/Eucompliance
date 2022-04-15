@@ -5,7 +5,7 @@
         <arguments>
             <argument name="layoutProcessors" xsi:type="array">
                 <item name="eas_billing" xsi:type="object">
-                    Easproject\Eucompliance\Block\Checkout\LayoutProcessor
+                    Eas\Eucompliance\Block\Checkout\LayoutProcessor
                 </item>
             </argument>
         </arguments>

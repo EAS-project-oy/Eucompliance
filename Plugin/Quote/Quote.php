@@ -1,8 +1,8 @@
 <?php
 
-namespace Easproject\Eucompliance\Plugin\Quote;
+namespace Eas\Eucompliance\Plugin\Quote;
 
-use Easproject\Eucompliance\Service\CartItem;
+use Eas\Eucompliance\Service\CartItem;
 use Magento\Quote\Model\Quote\Item;
 
 /**

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Easproject\Eucompliance\Plugin;
+namespace Eas\Eucompliance\Plugin;
 
-use Easproject\Eucompliance\Service\CartItem;
+use Eas\Eucompliance\Service\CartItem;
 use Magento\Quote\Api\Data\CartItemExtensionFactory;
 use Magento\Quote\Api\Data\CartItemInterface;
 use Magento\Quote\Model\Quote\Item\Repository;
