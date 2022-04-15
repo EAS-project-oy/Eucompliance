@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Easproject\Eucompliance\Block\System\Config\Form\Field;
+namespace Eas\Eucompliance\Block\System\Config\Form\Field;
 
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Config\Block\System\Config\Form\Field;
@@ -13,5 +13,6 @@ class Disable extends Field
     {
         $element->setDisabled('disabled');
         return $element->getElementHtml();
+
     }
 }
