@@ -9,20 +9,54 @@
 
     <type name="Magento\Customer\Model\AccountManagement">
         <plugin name="beforeIsEmailAvailable"
-                type="Eas\Eucompliance\Plugin\SaveGuestEmail"
+                type="Easproject\Eucompliance\Plugin\SaveGuestEmail"
                 sortOrder="1"/>
+    </type>
+
+    <type name="Magento\Quote\Model\Quote\Item\ToOrderItem">
+        <plugin name="eas_eucompliance_sales_quote_item_order_item"
+                type="Easproject\Eucompliance\Plugin\SetOrderItemValue"/>
     </type>
 
     <type name="Magento\Checkout\Model\ShippingInformationManagement">
         <plugin name="beforeSave"
-                type="Eas\Eucompliance\Plugin\SaveGuestCartData"
+                type="Easproject\Eucompliance\Plugin\SaveGuestCartData"
                 sortOrder="1"/>
     </type>
-
-
-    <type name="Magento\Quote\Model\Cart\CartTotalRepository">
-        <plugin name="afterGet"
-                type="Eas\Eucompliance\Plugin\CartTotal"
+    <type name="Magento\Sales\Model\OrderRepository">
+        <plugin name="confirmOrder"
+                type="Easproject\Eucompliance\Plugin\OrderRepository" sortOrder="100"/>
+    </type>
+    <type name="Magento\Tax\Model\Sales\Total\Quote\Shipping">
+        <plugin name="setShippingPrice"
+                type="Easproject\Eucompliance\Plugin\Tax\Shipping"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Sales\Api\OrderManagementInterface">
+        <plugin name="notify_order-items_warehouse-location"
+                type="Easproject\Eucompliance\Plugin\OrderManagement"
+                sortOrder="1"/>
+    </type>
+    <preference for="Magento\InventoryShippingAdminUi\Ui\DataProvider\SourceSelectionDataProvider"
+                type="Easproject\Eucompliance\Ui\DataProvider\SourceSelectionDataProvider"/>
+    <type name="\Magento\Quote\Model\Quote\Item\Repository">
+        <plugin name="setExtensionAttributes"
+                type="Easproject\Eucompliance\Plugin\Item"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Quote\Model\ResourceModel\Quote\Item">
+        <plugin name="saveExtensionAttributesValue"
+                type="Easproject\Eucompliance\Plugin\Quote\Item"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Quote\Model\Quote">
+        <plugin name="setExtensionAttributes"
+                type="Easproject\Eucompliance\Plugin\Quote\Quote"
+                sortOrder="1"/>
+    </type>
+    <type name="Magento\Sales\Block\Adminhtml\Order\View\Items\Renderer\DefaultRenderer">
+        <plugin name="showEasColumns"
+                type="Easproject\Eucompliance\Plugin\DefaultRenderer"
                 sortOrder="1"/>
     </type>
 </config>
