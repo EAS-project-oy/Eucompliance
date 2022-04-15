@@ -41,7 +41,7 @@ After that navigate to the newly created directory
 
 And clone module
 
-`git clone https://github.com//EAS-project-oy/eascompliance  Magento
+`git clone https://github.com//EAS-project-oy/eascompliance  eucompliance
 `
 
 After installation from root magento folder,
