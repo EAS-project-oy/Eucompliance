@@ -6,4 +6,4 @@ declare(strict_types = 1);
 
 use Magento\Framework\Component\ComponentRegistrar;
 
-ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Easproject_Eucompliance', __DIR__);
+ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Eas_Eucompliance', __DIR__);
