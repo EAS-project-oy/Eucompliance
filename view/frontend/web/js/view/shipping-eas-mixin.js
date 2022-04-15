@@ -94,7 +94,10 @@ define([
                     }
                 );
             }
-        }
+        },
+        defaults:{
+            template: 'Eas_Eucompliance/shipping'
+        },
     };
 
     return function (target) {

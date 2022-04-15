@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Model\Config;
+namespace Easproject\Eucompliance\Model\Config;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Framework\Module\Manager;
 use Magento\Store\Model\ScopeInterface;
 
 /**
@@ -21,13 +22,17 @@ class Configuration
     const CONFIGURATION_ADVANCED_DEBUG = 'configuration/advanced/debug';
     const CONFIGURATION_CREDENTIALS_AUTH_KEYS_URL = 'configuration/credentials/auth_keys_url';
     const CONFIGURATION_CREDENTIALS_AUTHORIZE_URL = 'configuration/credentials/authorize_url';
+    const CONFIGURATION_GENERAL_TAX_NAME = 'configuration/general/tax_name';
     const CONFIGURATION_CREDENTIALS_API_KEY = 'configuration/credentials/api_key';
     const CONFIGURATION_CREDENTIALS_SECRET_API_KEY = 'configuration/credentials/secret_api_key';
     const CONFIGURATION_GENERAL_ENABLE = 'configuration/general/enable';
     const CONFIGURATION_CREDENTIALS_CALCULATE_URL = 'configuration/credentials/calculate_url';
+    const CONFIGURATION_CREDENTIALS_PAYMENT_VERIFY_URL = 'configuration/credentials/payment_verify_url';
     const CONFIGURATION_GENERAL_POST_SHIPPING = 'configuration/general/post_shipping';
+    const INVENTORY_MODULE = 'Magento_Inventory';
     const EAS_CHECKOUT_TOKEN = 'eas_checkout_token';
     const COUNTRY_CODE_PATH = 'general/country/default';
+    const STORE_COUNTRY_CODE = 'general/store_information/country_id';
     const EAS_REDUCED_VAT = 'eas_reduced_vat';
     const SELLER_REGISTRATION_COUNTRY = 'seller_registration_country';
     const EAS_SELLER_REGISTRATION_COUNTRY = 'eas_seller_registration_country';
@@ -39,16 +44,26 @@ class Configuration
     const ORIGINATING_COUNTRY = 'originating_country';
     const EAS_WAREHOUSE_COUNTRY = 'eas_warehouse_country';
     const REDUCED_TBE_VAT_GROUP = 'reduced_tbe_vat_group';
+    const COUNTRY_OF_MANUFACTURE = 'country_of_manufacture';
     const EAS_CALCULATE = 'eas/calculate';
     const POSTAL = 'postal';
     const COURIER = 'courier';
     const ACCESS_TOKEN = 'access_token';
     const GOODS = "GOODS";
+    const TBE = "TBE";
+    const VIRTUAL = "virtual";
     const PRODUCT_ENTITY_TYPE = 4;
     const ATTRIBUTE_CODE = 'attribute_code';
     const EAS = 'eas';
+    const EAS_TOKEN = 'eas_token';
+    const EAS_SHIPPING_COST = 'eas_shipping_cost';
+    const EAS_TOTAL_VAT = 'eas_total_vat';
+    const EAS_TOTAL_TAX = 'eas_total_tax';
+    const EAS_TOTAL_AMOUNT = 'eas_total_amount';
     const EAS_ADDITIONAL_ATTRIBUTES = 'EAS additional attributes';
     const VERIFYPEER = 'verifypeer';
+    const CONFIGURATION_MSI_ENABLE = 'configuration/msi/enable';
+    const CONFIGURATION_MSI_MSI_ALGORITHM = 'configuration/msi/msi_algorithm';
 
     /**
      * @var ScopeConfigInterface
@@ -61,13 +76,21 @@ class Configuration
     private EncryptorInterface $encryptor;
 
     /**
+     * @var Manager
+     */
+    private Manager $moduleManager;
+
+    /**
      * @param ScopeConfigInterface $scopeConfig
+     * @param Manager $moduleManager
      * @param EncryptorInterface $encryptor
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
-        EncryptorInterface $encryptor
+        Manager              $moduleManager,
+        EncryptorInterface   $encryptor
     ) {
+        $this->moduleManager = $moduleManager;
         $this->scopeConfig = $scopeConfig;
         $this->encryptor = $encryptor;
     }
@@ -78,7 +101,9 @@ class Configuration
     public function isEnabled(): bool
     {
         return (bool)$this->scopeConfig->getValue(
-            self::CONFIGURATION_GENERAL_ENABLE, ScopeInterface::SCOPE_STORE);
+            self::CONFIGURATION_GENERAL_ENABLE,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -87,7 +112,19 @@ class Configuration
     public function getCalculateUrl(): ?string
     {
         return $this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_CALCULATE_URL, ScopeInterface::SCOPE_STORE
+            Configuration::CONFIGURATION_CREDENTIALS_CALCULATE_URL,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPaymentVerifyUrl(): ?string
+    {
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_CREDENTIALS_PAYMENT_VERIFY_URL,
+            ScopeInterface::SCOPE_STORE
         );
     }
 
@@ -97,7 +134,9 @@ class Configuration
     public function getPostalMethods(): ?string
     {
         return $this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_GENERAL_POST_SHIPPING, ScopeInterface::SCOPE_STORE);
+            Configuration::CONFIGURATION_GENERAL_POST_SHIPPING,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -125,10 +164,24 @@ class Configuration
     /**
      * @return string|null
      */
-    public function getDefaultCountryCode(): ?string
+    public function getStoreDefaultCountryCode(): ?string
     {
         return $this->scopeConfig->getValue(
-            Configuration::COUNTRY_CODE_PATH, ScopeInterface::SCOPE_STORE);
+            Configuration::STORE_COUNTRY_CODE,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMSIWarehouseLocation(): ?string
+    {
+        if ($this->scopeConfig->getValue(self::CONFIGURATION_MSI_ENABLE, ScopeInterface::SCOPE_STORE) &&
+            $this->moduleManager->isEnabled(self::INVENTORY_MODULE)) {
+            return $this->scopeConfig->getValue(self::CONFIGURATION_MSI_MSI_ALGORITHM, ScopeInterface::SCOPE_STORE);
+        }
+        return null;
     }
 
     /**
@@ -136,8 +189,10 @@ class Configuration
      */
     public function getHscodeAttributeName(): ?string
     {
-        return $this->scopeConfig->getValue(Configuration::CONFIGURATION_ATTRIBUTES_HSCODE,
-            ScopeInterface::SCOPE_STORE) ?: self::EAS_HSCODE;
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_ATTRIBUTES_HSCODE,
+            ScopeInterface::SCOPE_STORE
+        ) ?: self::EAS_HSCODE;
     }
 
     /**
@@ -145,8 +200,10 @@ class Configuration
      */
     public function getReducedVatAttributeName(): ?string
     {
-        return $this->scopeConfig->getValue(Configuration::CONFIGURATION_ATTRIBUTES_REDUCED_VAT,
-            ScopeInterface::SCOPE_STORE) ?: self::EAS_REDUCED_VAT;
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_ATTRIBUTES_REDUCED_VAT,
+            ScopeInterface::SCOPE_STORE
+        ) ?: self::EAS_REDUCED_VAT;
     }
 
     /**
@@ -154,8 +211,10 @@ class Configuration
      */
     public function getSellerRegistrationName(): ?string
     {
-        return $this->scopeConfig->getValue(Configuration::CONFIGURATION_ATTRIBUTES_SELLER_REGISTRATION_COUNTRY,
-            ScopeInterface::SCOPE_STORE) ?: self::EAS_SELLER_REGISTRATION_COUNTRY;
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_ATTRIBUTES_SELLER_REGISTRATION_COUNTRY,
+            ScopeInterface::SCOPE_STORE
+        ) ?: self::EAS_SELLER_REGISTRATION_COUNTRY;
     }
 
     /**
@@ -164,7 +223,9 @@ class Configuration
     public function isDebugEnabled(): bool
     {
         return (bool)$this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_ADVANCED_DEBUG, ScopeInterface::SCOPE_STORE);
+            Configuration::CONFIGURATION_ADVANCED_DEBUG,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -203,5 +264,16 @@ class Configuration
             ScopeInterface::SCOPE_STORE
         ));
         return [$apiKey, $secretApiKey];
+    }
+
+    /**
+     * @return string
+     */
+    public function getTaxLabel(): string
+    {
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_GENERAL_TAX_NAME,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 }
