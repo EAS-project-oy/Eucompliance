@@ -1,8 +1,8 @@
 <?php
 
-namespace Eas\Eucompliance\Controller\Index;
+namespace Easproject\Eucompliance\Controller\Index;
 
-use Eas\Eucompliance\Service\Calculate;
+use Easproject\Eucompliance\Service\Calculate;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\ResponseInterface;
@@ -41,8 +41,8 @@ class Index implements ActionInterface
      */
     public function __construct(
         JsonFactory $jsonResultFactory,
-        Session $session,
-        Calculate $calculate
+        Session     $session,
+        Calculate   $calculate
     ) {
         $this->jsonResultFactory = $jsonResultFactory;
         $this->session = $session;
@@ -50,7 +50,7 @@ class Index implements ActionInterface
     }
 
     /**
-     * @return ResponseInterface|Json|ResultInterface
+     * @return Json
      * @throws LocalizedException
      * @throws NoSuchEntityException
      * @throws Zend_Http_Client_Exception
