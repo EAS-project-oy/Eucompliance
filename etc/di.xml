@@ -59,4 +59,21 @@
                 type="Eas\Eucompliance\Plugin\DefaultRenderer"
                 sortOrder="1"/>
     </type>
+
+    <preference for="Eas\Eucompliance\Api\MessageRepositoryInterface" type="Eas\Eucompliance\Model\MessageRepository"/>
+    <preference for="Eas\Eucompliance\Api\Data\MessageInterface" type="Eas\Eucompliance\Model\Message"/>
+    <preference for="Eas\Eucompliance\Api\Data\MessageSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    <virtualType name="Eas\Eucompliance\Model\ResourceModel\Message\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">eas_eucompliance_message</argument>
+            <argument name="resourceModel" xsi:type="string">Eas\Eucompliance\Model\ResourceModel\Message\Collection</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="eas_eucompliance_message_listing_data_source" xsi:type="string">Eas\Eucompliance\Model\ResourceModel\Message\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

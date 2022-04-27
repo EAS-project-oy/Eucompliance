@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Eas\Eucompliance\Service;
 
+use Eas\Eucompliance\Api\Data\MessageInterfaceFactory as MessageFactory;
+use Eas\Eucompliance\Api\MessageRepositoryInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\HTTP\ZendClientFactory;
+use Magento\Framework\Mail\MessageInterfaceFactory;
 use Magento\InventoryApi\Api\SourceRepositoryInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\AddressInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\AddressInterfaceFactory;
@@ -28,6 +32,7 @@ use Magento\Framework\UrlInterface;
 use Psr\Log\LoggerInterface;
 use Zend_Http_Client;
 use Zend_Http_Client_Exception;
+use Magento\Framework\Serialize\SerializerInterface;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
@@ -116,6 +121,22 @@ class Calculate
     private Repository $quoteItemRepository;
 
     /**
+     * @var MessageRepositoryInterface
+     */
+    private MessageRepositoryInterface $messageRepository;
+
+    /**
+     * @var MessageFactory
+     */
+    private MessageFactory $messageFactory;
+
+    /**
+     * @var SerializerInterface
+     */
+    private SerializerInterface $serializer;
+
+
+    /**
      * Calculate constructor.
      * @param ZendClientFactory $clientFactory
      * @param StoreManagerInterface $storeManager
@@ -132,6 +153,9 @@ class Calculate
      * @param SourceRepositoryInterface $sourceRepository
      * @param Repository $quoteItemRepository
      * @param Configuration $configuration
+     * @param MessageRepositoryInterface $messageRepository
+     * @param MessageFactory $messageFactory
+     * @param SerializerInterface $serializer
      */
     public function __construct(
         ZendClientFactory                         $clientFactory,
@@ -148,7 +172,10 @@ class Calculate
         SourceSelectionServiceInterface           $sourceSelectionService,
         SourceRepositoryInterface                 $sourceRepository,
         Repository                                $quoteItemRepository,
-        Configuration                             $configuration
+        Configuration                             $configuration,
+        MessageRepositoryInterface $messageRepository,
+        MessageFactory $messageFactory,
+        SerializerInterface $serializer
     ) {
         $this->sourceRepository = $sourceRepository;
         $this->sourceSelectionService = $sourceSelectionService;
@@ -166,6 +193,9 @@ class Calculate
         $this->url = $url;
         $this->configuration = $configuration;
         $this->token = null;
+        $this->messageRepository = $messageRepository;
+        $this->messageFactory = $messageFactory;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -272,7 +302,7 @@ class Calculate
                 "id_provided_by_em" => $product->getId(),
                 "quantity" => (int)$item->getQty(),
                 "cost_provided_by_em" => (float)number_format(
-                    ($item->getOriginalPrice() * $item->getQty() - $item->getOriginalDiscountAmount())/ $item->getQty(),
+                    ($item->getOriginalPrice() * $item->getQty() - $item->getOriginalDiscountAmount()) / $item->getQty(),
                     2
                 ),
                 "weight" => (float)number_format((float)$product->getWeight(), 2),
@@ -336,10 +366,87 @@ class Calculate
         } else {
             $this->logger->critical('Eas calculate failed' . $response);
             $errors = json_decode($response, true);
+            if (array_key_exists('type', $errors)) {
+                return $this->getErrorResult($errors);
+            }
             $errors = array_key_exists('errors', $errors) ? $errors['errors'] :
                 (array_key_exists('message', $errors) ? $errors['message'] : $errors['messages']);
             return ['error' => json_encode($errors)];
         }
+    }
+
+    /**
+     * @param $error
+     * @return bool[]|string[]
+     */
+    private function getErrorResult($error): array
+    {
+        $defaultMessage = 'Please contact our support to fix the issue';
+        $message = $this->getUserMessage($error, $defaultMessage);
+        switch ($error['type']) {
+            case 'STANDARD_CHECKOUT':
+                return ['disabled' => true];
+            case 'TRY_LATER':
+                $this->sendToAdmin($error);
+                return ['error' => $message];
+            case 'STOP_SELLING':
+                return ['error' => $message];
+            default:
+                $this->sendToAdmin($error);
+                return ['error' => $defaultMessage];
+        }
+    }
+
+    /**
+     * @param $error
+     * @param string $defaultMessage
+     * @return mixed|string
+     */
+    private function getUserMessage($error, string $defaultMessage = '')
+    {
+        if ($this->configuration->isDebugEnabled()) {
+            $message = $this->getFullMessage($error);
+        } else {
+            $message = $error['message'] ?? '';
+        }
+
+        return $message;
+    }
+
+    /**
+     * @param $error
+     * @return void
+     */
+    private function sendToAdmin($error)
+    {
+        $message = $this->getFullMessage($error);
+
+        $messageModel = $this->messageFactory->create();
+        $messageModel->setErrorType($error['type']);
+        $messageModel->setResponse($this->serializer->serialize($error));
+        $messageModel->setMessage($message);
+
+        try {
+            $this->messageRepository->save($messageModel);
+        } catch (LocalizedException $e) {
+            $this->logger->error('Error when saving data to admin: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @param $error
+     * @return string
+     */
+    public function getFullMessage($error): string
+    {
+        $message = '';
+        if (isset($error['message'])) {
+            $message .= $error['message'] . ' ';
+        }
+        if (isset($error['data']) && isset($error['data']['message'])) {
+            $message .= $error['data']['message'];
+        }
+        return $message;
     }
 
     /**

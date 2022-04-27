@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Eas_Eucompliance::message" title="Eas Messages" module="Eas_Eucompliance" sortOrder="9999" parent="Magento_Sales::sales"
+             resource="Eas_Eucompliance::message"/>
+        <add id="Eas_Eucompliance::eas_eucompliance_message" title="Messages" module="Eas_Eucompliance" sortOrder="9999"
+             resource="Eas_Eucompliance::eas_eucompliance_message" parent="Eas_Eucompliance::message" action="eas/message/index"/>
+    </menu>
+</config>

@@ -57,4 +57,14 @@
         <column xsi:type="float" name="eas_row_total_incl_tax" nullable="true" default="0" unsigned="false"
                 comment="EAS Row total incl tax"/>
     </table>
+
+    <table name="eas_eucompliance_message" resource="default" engine="innodb" comment="eas_eucompliance_message Table">
+        <column xsi:type="int" name="message_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Entity Id"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="message_id"/>
+        </constraint>
+        <column name="error_type" nullable="true" xsi:type="varchar" comment="error_type" length="255"/>
+        <column name="response" nullable="true" xsi:type="varchar" comment="response" length="255"/>
+        <column name="message" nullable="true" xsi:type="text" comment="message"/>
+    </table>
 </schema>
