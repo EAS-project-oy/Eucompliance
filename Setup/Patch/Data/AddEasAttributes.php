@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Eas\Eucompliance\Setup\Patch\Data;
 
 use Magento\Catalog\Model\Product;
+use Magento\Customer\Model\ResourceModel\Address\Attribute\Source\Country;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
 use Eas\Eucompliance\Model\Config\Configuration;
+use Magento\Eav\Model\Entity\Attribute\Source\Boolean;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
@@ -53,11 +55,11 @@ class AddEasAttributes implements DataPatchInterface
      * @param Product $product
      */
     public function __construct(
-        ModuleDataSetupInterface $moduleDataSetup,
-        EavSetupFactory $eavSetupFactory,
-        AttributeGroupInterfaceFactory $attributeGroupFactory,
+        ModuleDataSetupInterface          $moduleDataSetup,
+        EavSetupFactory                   $eavSetupFactory,
+        AttributeGroupInterfaceFactory    $attributeGroupFactory,
         AttributeGroupRepositoryInterface $attributeGroupRepository,
-        Product $product
+        Product                           $product
     ) {
         $this->moduleDataSetup = $moduleDataSetup;
         $this->eavSetupFactory = $eavSetupFactory;
@@ -108,7 +110,7 @@ class AddEasAttributes implements DataPatchInterface
                 'type' => 'int',
                 'label' => 'Reduced vat',
                 'input' => 'select',
-                'source' => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+                'source' => Boolean::class,
                 'frontend' => '',
                 'required' => false,
                 'sort_order' => '6',
@@ -135,7 +137,7 @@ class AddEasAttributes implements DataPatchInterface
                 'type' => 'varchar',
                 'label' => 'Warehouse Country',
                 'input' => 'select',
-                'source' => 'Magento\Customer\Model\ResourceModel\Address\Attribute\Source\Country',
+                'source' => Country::class,
                 'frontend' => '',
                 'required' => false,
                 'sort_order' => '7',
@@ -162,7 +164,7 @@ class AddEasAttributes implements DataPatchInterface
                 'type' => 'varchar',
                 'label' => 'Seller registration country',
                 'input' => 'select',
-                'source' => 'Magento\Customer\Model\ResourceModel\Address\Attribute\Source\Country',
+                'source' => Country::class,
                 'frontend' => '',
                 'required' => false,
                 'sort_order' => '7',
@@ -189,7 +191,7 @@ class AddEasAttributes implements DataPatchInterface
                 'type' => 'int',
                 'label' => 'Act as disclosed agent',
                 'input' => 'select',
-                'source' => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+                'source' => Boolean::class,
                 'frontend' => '',
                 'required' => false,
                 'sort_order' => '6',

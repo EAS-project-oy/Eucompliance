@@ -9,18 +9,24 @@ use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
+use \Magento\Quote\Model\Quote\Item\Repository;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  */
 class EasFee extends AbstractTotal
 {
+    /**
+     * @var Repository
+     */
+    private Repository $repository;
 
     /**
      * EasFee constructor.
      */
-    public function __construct()
+    public function __construct(Repository $repository)
     {
+        $this->repository = $repository;
         $this->setCode(Configuration::EAS_FEE);
     }
 
@@ -34,20 +40,45 @@ class EasFee extends AbstractTotal
         Quote                       $quote,
         ShippingAssignmentInterface $shippingAssignment,
         Total                       $total
-    ): EasFee
-    {
+    ): EasFee {
         parent::collect($quote, $shippingAssignment, $total);
 
         $items = $shippingAssignment->getItems();
         if (!count($items)) {
             return $this;
         }
-        $amount = $quote->getEas();
+        $easTaxAmount = $quote->getData(Configuration::EAS_TOTAL_TAX);
+        $easTotalAmount = $quote->getData(Configuration::EAS_TOTAL_AMOUNT);
 
-        if ($amount) {
-            $total->setGrandTotal($total->getGrandTotal() + $amount);
-            $total->setBaseGrandTotal($total->getBaseGrandTotal() + $amount);
+        foreach ($quote->getAllItems() as $item) {
+            if ($item->getExtensionAttributes()) {
+                $extAttributes = $item->getExtensionAttributes();
+                if ($extAttributes->getEasTaxPercent()) {
+                    $item->setTaxPercent($extAttributes->getEasTaxPercent());
+                }
+                if ($extAttributes->getEasTaxAmount()) {
+                    $item->setTaxAmount($extAttributes->getEasTaxAmount());
+                }
+                if ($extAttributes->getEasRowTotal()) {
+                    $item->setRowTotal($extAttributes->getEasRowTotal());
+                }
+
+                if ($extAttributes->getEasRowTotalInclTax()) {
+                    $item->setRowTotalInclTax($extAttributes->getEasRowTotalInclTax());
+                }
+            }
         }
+
+        if ($easTaxAmount) {
+            $total->setData('tax_amount', $easTaxAmount);
+            $total->setData('base_tax_amount', $easTaxAmount);
+        }
+
+        if ($easTotalAmount) {
+            $total->setGrandTotal($easTotalAmount);
+            $total->setBaseGrandTotal($easTotalAmount);
+        }
+
         return $this;
     }
 

@@ -4,17 +4,35 @@ declare(strict_types=1);
 
 namespace Eas\Eucompliance\Service;
 
+use Eas\Eucompliance\Api\Data\MessageInterfaceFactory as MessageFactory;
+use Eas\Eucompliance\Api\MessageRepositoryInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\HTTP\ZendClientFactory;
+use Magento\Framework\Mail\MessageInterfaceFactory;
+use Magento\InventoryApi\Api\SourceRepositoryInterface;
+use Magento\InventorySourceSelectionApi\Api\Data\AddressInterface;
+use Magento\InventorySourceSelectionApi\Api\Data\AddressInterfaceFactory;
+use Magento\InventorySourceSelectionApi\Api\Data\InventoryRequestExtensionInterfaceFactory;
+use Magento\InventorySourceSelectionApi\Api\Data\InventoryRequestInterfaceFactory;
+use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
+use Magento\InventorySourceSelectionApi\Api\Data\ItemRequestInterfaceFactory;
+use Magento\InventorySourceSelectionApi\Api\SourceSelectionServiceInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\Quote\Item\Repository;
 use Magento\Quote\Model\QuoteRepository;
 use Eas\Eucompliance\Model\Config\Configuration;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\UrlInterface;
 use Psr\Log\LoggerInterface;
 use Zend_Http_Client;
+use Zend_Http_Client_Exception;
+use Magento\Framework\Serialize\SerializerInterface;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
@@ -63,6 +81,78 @@ class Calculate
     private Configuration $configuration;
 
     /**
+     * @var AddressInterfaceFactory
+     */
+    private AddressInterfaceFactory $addressInterfaceFactory;
+
+    /**
+     * @var InventoryRequestExtensionInterfaceFactory
+     */
+    private InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory;
+
+    /**
+     * @var StockByWebsiteIdResolverInterface
+     */
+    private StockByWebsiteIdResolverInterface $stockByWebsiteId;
+
+    /**
+     * @var InventoryRequestInterfaceFactory
+     */
+    private InventoryRequestInterfaceFactory $inventoryRequestInterfaceFactory;
+
+    /**
+     * @var ItemRequestInterfaceFactory
+     */
+    private ItemRequestInterfaceFactory $itemRequestInterfaceFactory;
+
+    /**
+     * @var SourceSelectionServiceInterface
+     */
+    private SourceSelectionServiceInterface $sourceSelectionService;
+
+    /**
+     * @var SourceRepositoryInterface
+     */
+    private SourceRepositoryInterface $sourceRepository;
+
+    /**
+     * @var Repository
+     */
+    private Repository $quoteItemRepository;
+
+    /**
+     * @var MessageRepositoryInterface
+     */
+    private MessageRepositoryInterface $messageRepository;
+
+    /**
+     * @var MessageFactory
+     */
+    private MessageFactory $messageFactory;
+
+    /**
+     * @var SerializerInterface
+     */
+    private SerializerInterface $serializer;
+
+    /**
+     * @var string[]
+     */
+    private $keyMapping = [
+        'delivery_address_line_1' => 'Street Address',
+        'delivery_address_line_2' => 'Street Address',
+        'delivery_city' => 'City',
+        'delivery_country' => 'Country',
+        'delivery_email' => 'Email Address',
+        'delivery_phone' => 'Phone Number',
+        'delivery_postal_code' => 'Zip/Postal Code',
+        'delivery_state_province' => 'State/Province',
+        'recipient_first_name' => 'First Name',
+        'recipient_last_name' => 'Last Name',
+        'recipient_company_name' => 'Company'
+    ];
+
+    /**
      * Calculate constructor.
      * @param ZendClientFactory $clientFactory
      * @param StoreManagerInterface $storeManager
@@ -70,18 +160,48 @@ class Calculate
      * @param QuoteRepository $quoteRepository
      * @param LoggerInterface $logger
      * @param UrlInterface $url
+     * @param AddressInterfaceFactory $addressInterfaceFactory
+     * @param StockByWebsiteIdResolverInterface $stockByWebsiteId
+     * @param ItemRequestInterfaceFactory $itemRequestInterfaceFactory
+     * @param InventoryRequestInterfaceFactory $inventoryRequestInterfaceFactory
+     * @param InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory
+     * @param SourceSelectionServiceInterface $sourceSelectionService
+     * @param SourceRepositoryInterface $sourceRepository
+     * @param Repository $quoteItemRepository
      * @param Configuration $configuration
+     * @param MessageRepositoryInterface $messageRepository
+     * @param MessageFactory $messageFactory
+     * @param SerializerInterface $serializer
      */
     public function __construct(
-        ZendClientFactory $clientFactory,
-        StoreManagerInterface $storeManager,
-        Product $productResourceModel,
-        QuoteRepository $quoteRepository,
-        LoggerInterface $logger,
-        UrlInterface $url,
-        Configuration $configuration
+        ZendClientFactory                         $clientFactory,
+        StoreManagerInterface                     $storeManager,
+        Product                                   $productResourceModel,
+        QuoteRepository                           $quoteRepository,
+        LoggerInterface                           $logger,
+        UrlInterface                              $url,
+        AddressInterfaceFactory                   $addressInterfaceFactory,
+        StockByWebsiteIdResolverInterface         $stockByWebsiteId,
+        ItemRequestInterfaceFactory               $itemRequestInterfaceFactory,
+        InventoryRequestInterfaceFactory          $inventoryRequestInterfaceFactory,
+        InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory,
+        SourceSelectionServiceInterface           $sourceSelectionService,
+        SourceRepositoryInterface                 $sourceRepository,
+        Repository                                $quoteItemRepository,
+        Configuration                             $configuration,
+        MessageRepositoryInterface                $messageRepository,
+        MessageFactory                            $messageFactory,
+        SerializerInterface                       $serializer
     ) {
+        $this->sourceRepository = $sourceRepository;
+        $this->sourceSelectionService = $sourceSelectionService;
+        $this->itemRequestInterfaceFactory = $itemRequestInterfaceFactory;
+        $this->quoteItemRepository = $quoteItemRepository;
+        $this->inventoryRequestInterfaceFactory = $inventoryRequestInterfaceFactory;
+        $this->stockByWebsiteId = $stockByWebsiteId;
         $this->clientFactory = $clientFactory;
+        $this->addressInterfaceFactory = $addressInterfaceFactory;
+        $this->inventoryRequestExtensionInterfaceFactory = $inventoryRequestExtensionInterfaceFactory;
         $this->storeManager = $storeManager;
         $this->productResourceModel = $productResourceModel;
         $this->quoteRepository = $quoteRepository;
@@ -89,10 +209,18 @@ class Calculate
         $this->url = $url;
         $this->configuration = $configuration;
         $this->token = null;
+        $this->messageRepository = $messageRepository;
+        $this->messageFactory = $messageFactory;
+        $this->serializer = $serializer;
     }
 
     /**
-     * @throws \Zend_Http_Client_Exception|NoSuchEntityException
+     * @param Quote $quote
+     * @return array
+     * @throws InputException
+     * @throws NoSuchEntityException
+     * @throws Zend_Http_Client_Exception
+     * @throws CouldNotSaveException
      */
     public function calculate(Quote $quote): array
     {
@@ -114,44 +242,53 @@ class Calculate
         if (!$quote->getReservedOrderId()) {
             $quote->reserveOrderId();
         }
+        $address = $quote->getIsVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
 
         $deliveryMethod = Configuration::COURIER;
 
         if ($this->configuration->getPostalMethods()) {
             foreach (explode(',', $this->configuration->getPostalMethods()) as $postalMethod) {
-                if ($quote->getShippingAddress()->getShippingMethod() == $postalMethod) {
+                if ($address->getShippingMethod() == $postalMethod) {
                     $deliveryMethod = Configuration::POSTAL;
                 }
             }
         }
 
+        if ($quote->isVirtual()) {
+            $deliveryMethod = Configuration::POSTAL;
+        }
+
         $data = [
             "external_order_id" => $quote->getReservedOrderId(),
             "delivery_method" => $deliveryMethod,
-            "delivery_cost" => (float)number_format((float)$quote->getShippingAddress()->getShippingAmount(), 2),
+            "delivery_cost" => (float)number_format((float)$address->getShippingAmount(), 2),
             "payment_currency" => $quote->getQuoteCurrencyCode(),
             "is_delivery_to_person" => true,
-            "recipient_first_name" => $quote->getCustomerFirstname(),
-            "recipient_last_name" => $quote->getCustomerLastname(),
-            "recipient_company_vat" => $quote->getShippingAddress()->getVatId(),
-            "delivery_city" => $quote->getShippingAddress()->getCity(),
-            "delivery_postal_code" => $quote->getShippingAddress()->getPostcode(),
-            "delivery_country" => $quote->getShippingAddress()->getCountryId(),
-            "delivery_phone" => $quote->getShippingAddress()->getTelephone(),
-            "delivery_email" => $quote->getShippingAddress()->getEmail() ?: $quote->getCustomerEmail(),
-            'delivery_state_province' => $quote->getShippingAddress()->getRegion()
+            "recipient_first_name" =>
+                $quote->getCustomerFirstname() ?: $quote->getBillingAddress()->getFirstName(),
+            "recipient_last_name" =>
+                $quote->getCustomerLastname() ?: $quote->getBillingAddress()->getLastName(),
+            "recipient_company_vat" => $address->getVatId(),
+            "delivery_city" => $address->getCity(),
+            "delivery_postal_code" => $address->getPostcode(),
+            "delivery_country" => $address->getCountryId(),
+            "delivery_phone" => $address->getTelephone(),
+            "delivery_email" => $address->getEmail() ?: $quote->getCustomerEmail(),
+            'delivery_state_province' => $address->getRegion() ? $address->getRegion() : ''
         ];
 
-        if ($quote->getShippingAddress()->getCompany()) {
-            $data['recipient_company_name'] = $quote->getShippingAddress()->getCompany();
+        if ($address->getCompany()) {
+            $data['recipient_company_name'] = $address->getCompany();
+            $data['is_delivery_to_person'] = false;
         }
 
-        if ($quote->getCustomerPrefix()) {
-            $data['recipient_title'] = $quote->getCustomerPrefix();
+        $prefix = $quote->getCustomerPrefix() ?: $address->getPrefix();
+        if ($prefix) {
+            $data['recipient_title'] = $prefix;
         }
 
         /** @TODO need refactoring in future versions */
-        $streets = $quote->getShippingAddress()->getStreet();
+        $streets = $address->getStreet();
         switch (count($streets)) {
             case 1:
                 $data['delivery_address_line_1'] = $streets[0];
@@ -167,34 +304,44 @@ class Calculate
         }
         $items = [];
 
-        foreach ($quote->getAllItems() as $item) {
+        foreach ($quote->getAllVisibleItems() as $item) {
             /** @var ProductInterface $product */
             $product = $item->getProduct();
+            // set warehouse code
+            $extAttributes = $item->getExtensionAttributes();
+            $extAttributes->setEasWarehouseCode($this->getWarehouseCode($quote, $product));
+            $item->setExtensionAttributes($extAttributes);
+            $this->quoteItemRepository->save($item);
             $items[] = [
                 "short_description" => $product->getSku(),
                 "long_description" => $product->getName(),
                 "id_provided_by_em" => $product->getId(),
                 "quantity" => (int)$item->getQty(),
-                "cost_provided_by_em" => (float)number_format((float)$item->getPriceInclTax(), 2),
+                "cost_provided_by_em" => (float)number_format(
+                    ($item->getOriginalPrice() *
+                        $item->getQty() - $item->getOriginalDiscountAmount()) / $item->getQty(),
+                    2
+                ),
                 "weight" => (float)number_format((float)$product->getWeight(), 2),
-                "type_of_goods" => Configuration::GOODS,
-                Configuration::ACT_AS_DISCLOSED_AGENT => $this->productResourceModel->getAttributeRawValue(
+                "type_of_goods" => $product->getTypeId() == Configuration::VIRTUAL ?
+                    Configuration::TBE : Configuration::GOODS,
+                Configuration::ACT_AS_DISCLOSED_AGENT => (bool)$this->productResourceModel->getAttributeRawValue(
                     $product->getId(),
                     $this->configuration->getActAsDisclosedAgentAttributeName(),
                     $storeId
-                ) ?: false,
-                Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->productResourceModel->getAttributeRawValue(
-                    $product->getId(),
-                    $this->configuration->getWarehouseAttributeName(),
-                    $storeId
-                ) ?: $this->configuration->getDefaultCountryCode(),
+                ),
+                Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->getLocationWarehouse($quote, $product),
             ];
-            $originatingCountry = $product->getCountryOfManufacture();
+            $originatingCountry = $this->productResourceModel->getAttributeRawValue(
+                $product->getId(),
+                Configuration::COUNTRY_OF_MANUFACTURE,
+                $storeId
+            );
             if ($originatingCountry) {
                 $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] = $originatingCountry;
             } else {
                 $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] =
-                    $this->configuration->getDefaultCountryCode();
+                    $this->configuration->getStoreDefaultCountryCode();
             }
 
             $hs6p = $this->productResourceModel->getAttributeRawValue(
@@ -211,7 +358,7 @@ class Calculate
                 $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] = $sellerRegistrationCountry;
             } else {
                 $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] =
-                    $this->configuration->getDefaultCountryCode();
+                    $this->configuration->getStoreDefaultCountryCode();
             }
             $reducedTbeVatGroup = (bool)$this->productResourceModel->getAttributeRawValue(
                 $product->getId(),
@@ -224,11 +371,11 @@ class Calculate
         }
 
         $data['order_breakdown'] = $items;
-        $client->setRawData(json_encode($data), 'application/json');
+        $client->setRawData($this->serializer->serialize($data), 'application/json');
         $this->setConfig($client);
         $response = $client->request(Zend_Http_Client::POST)->getBody();
         if ($this->configuration->isDebugEnabled()) {
-            $this->logger->debug('Eas data send :' . json_encode($data));
+            $this->logger->debug('Eas data send :' . $this->serializer->serialize($data));
             $this->logger->debug('Eas data get :' . $response);
         }
         if (filter_var(str_replace('"', '', $response), FILTER_VALIDATE_URL)) {
@@ -236,10 +383,317 @@ class Calculate
             return ['redirect' => str_replace('"', '', $response)];
         } else {
             $this->logger->critical('Eas calculate failed' . $response);
-            $errors = json_decode($response, true);
-            $errors = array_key_exists('errors', $errors) ?
-                $errors['errors'] : (array_key_exists('message', $errors)  ? $errors['message'] : $errors['messages']);;
-            return ['error' => json_encode($errors)];
+            $errors = $this->serializer->unserialize($response);
+            if (array_key_exists('type', $errors)) {
+                return $this->getErrorResult($errors);
+            }
+            $errors = array_key_exists('errors', $errors) ? $errors['errors'] :
+                (array_key_exists('message', $errors) ? $errors['message'] : $errors['messages']);
+            return $this->getErrorResult($errors);
+        }
+    }
+
+    /**
+     * @return string
+     * @throws Zend_Http_Client_Exception|InputException
+     */
+    public function getAuthorizeToken($apiKey = null, $secretApiKey = null): ?string
+    {
+        if (!$this->token) {
+            $client = $this->clientFactory->create();
+            $client->setUri($this->configuration->getAuthorizeUrl());
+            if (!$apiKey && !$secretApiKey) {
+                list($apiKey, $secretApiKey) = $this->configuration->getApiKeys();
+            }
+            $client->setHeaders([
+                'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
+            ]);
+
+            $client->setParameterPost('grant_type', 'client_credentials');
+            $this->setConfig($client);
+            $token = $this->serializer->unserialize($client->request(Zend_Http_Client::POST)->getBody());
+            if ($token && array_key_exists(Configuration::ACCESS_TOKEN, $token)) {
+                $this->token = $token[Configuration::ACCESS_TOKEN];
+            } else {
+                throw new InputException(__('Wrong auth keys provided'));
+            }
+
+        }
+        return $this->token;
+    }
+
+    /**
+     * @param $client
+     */
+    protected function setConfig($client)
+    {
+        $config = [
+            Configuration::VERIFYPEER => false
+        ];
+        $client->setConfig($config);
+    }
+
+    /**
+     * @param Quote $quote
+     * @param ProductInterface $product
+     * @return string
+     */
+    private function getWarehouseCode(Quote $quote, ProductInterface $product)
+    {
+        if ($this->configuration->getMSIWarehouseLocation()) {
+            $request = $this->getInventoryRequestFromQuote($quote, $product);
+            $sourceSelectionItems = $this->sourceSelectionService->execute(
+                $request,
+                $this->configuration->getMSIWarehouseLocation()
+            )->getSourceSelectionItems();
+            return $sourceSelectionItems[array_key_first($sourceSelectionItems)]->getSourceCode();
+        }
+        return $this->productResourceModel->getAttributeRawValue(
+            $product->getId(),
+            $this->configuration->getWarehouseAttributeName(),
+            $quote->getStoreId()
+        ) ?: $this->configuration->getStoreDefaultCountryCode();
+    }
+
+    /**
+     * @param Quote $quote
+     * @param ProductInterface $product
+     * @return mixed
+     * @throws NoSuchEntityException
+     */
+    private function getInventoryRequestFromQuote(Quote $quote, ProductInterface $product)
+    {
+        $store = $this->storeManager->getStore($quote->getStoreId());
+        $stock = $this->stockByWebsiteId->execute((int)$store->getWebsiteId());
+        $requestItems = [];
+
+        foreach ($quote->getAllVisibleItems() as $item) {
+            if ($item->getSku() == $product->getSku()) {
+                $requestItems[] = $this->itemRequestInterfaceFactory->create([
+                    'sku' => $item->getSku(),
+                    'qty' => $item->getQty()
+                ]);
+            }
+        }
+        $inventoryRequest = $this->inventoryRequestInterfaceFactory->create(
+            [
+                'stockId' => $stock->getStockId(),
+                'items' => $requestItems
+            ]
+        );
+
+        $address = $this->getAddressFromQuote($quote);
+        if ($address !== null) {
+            $extensionAttributes = $this->inventoryRequestExtensionInterfaceFactory->create();
+            $extensionAttributes->setDestinationAddress($address);
+            $inventoryRequest->setExtensionAttributes($extensionAttributes);
+        }
+
+        return $inventoryRequest;
+    }
+
+    /**
+     * @param Quote $quote
+     * @return AddressInterface|null
+     */
+    private function getAddressFromQuote(Quote $quote): ?AddressInterface
+    {
+        /** @var AddressInterface $address */
+        $address = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
+        if ($address === null) {
+            return null;
+        }
+
+        return $this->addressInterfaceFactory->create(
+            [
+                'country' => $address->getCountryId(),
+                'postcode' => $address->getPostcode() ?? '',
+                'street' => implode("\n", $address->getStreet()),
+                'region' => $address->getRegion() ?? $address->getRegionCode() ?? '',
+                'city' => $address->getCity() ?? ''
+            ]
+        );
+    }
+
+    /**
+     * @param Quote $quote
+     * @param ProductInterface $product
+     * @return array|bool|string|null
+     * @throws NoSuchEntityException
+     */
+    private function getLocationWarehouse(Quote $quote, ProductInterface $product)
+    {
+        if ($this->configuration->getMSIWarehouseLocation()) {
+            $sourceCode = $this->getWarehouseCode($quote, $product);
+            return $this->sourceRepository->get($sourceCode)->getCountryId();
+        }
+
+        return $this->productResourceModel->getAttributeRawValue(
+            $product->getId(),
+            $this->configuration->getWarehouseAttributeName(),
+            $quote->getStoreId()
+        ) ?: $this->configuration->getStoreDefaultCountryCode();
+    }
+
+    /**
+     * @param $error
+     * @return bool[]|string[]
+     */
+    private function getErrorResult($error): array
+    {
+        $message = $this->getUserMessage($error);
+        switch ($error['type']) {
+            case 'STANDARD_CHECKOUT':
+                return ['disabled' => true];
+            case 'STOP_SELLING':
+                return ['error' => $message];
+            default:
+                $this->sendToAdmin($error);
+                return ['error' => $message];
+        }
+    }
+
+    /**
+     * @param $error
+     * @return \Magento\Framework\Phrase
+     */
+    private function getUserMessage($error): \Magento\Framework\Phrase
+    {
+        if ($this->configuration->isDebugEnabled()) {
+            $message = $this->getFullMessage($error);
+        } else {
+            $message = $this->getErrorMessage($error);
+        }
+
+        return __($message);
+    }
+
+    /**
+     * @param $error
+     * @return string
+     */
+    public function getFullMessage($error): string
+    {
+        $message = $this->getErrorMessage($error);
+        if (isset($error['data']) && isset($error['data']['message'])) {
+            $message .= $error['data']['message'];
+        }
+        return $message;
+    }
+
+    /**
+     * @param $error
+     * @return string
+     */
+    public function getErrorMessage($error): string
+    {
+        $message = '';
+        if (isset($error['message'])) {
+            $message = $this->getMessage($error);
+        }
+        if (!isset($error['message']) && !isset($error['data'])) {
+            $message = $this->getKeyMessage($error, $message);
+        }
+        return $message;
+    }
+
+    /**
+     * @param $error
+     * @return string
+     */
+    public function getMessage($error): string
+    {
+        $message = '';
+        if ($error['type'] === 'CONTACT_ADMIN') {
+            if (array_key_exists($error['data']['field'], $this->keyMapping)) {
+                $message .= $error['message'] . ' ';
+            } else {
+                return $this->getDefaultMessage();
+            }
+        } else {
+            $message .= $error['message'] . ' ';
+        }
+        return $message;
+    }
+
+    /**
+     * @return string
+     */
+    private function getDefaultMessage(): string
+    {
+        return 'Please contact our support to fix the issue';
+    }
+
+    /**
+     * @param $error
+     * @param string $message
+     * @return string
+     */
+    public function getKeyMessage($error, string $message): string
+    {
+        foreach ($error as $key => $value) {
+            if ($key !== 'type' && array_key_exists($key, $this->keyMapping)) {
+                $changedMessage = str_replace($key, __($this->keyMapping[$key]), $value);
+                $message .= $changedMessage . ' ';
+            }
+        }
+        return $message ?: $this->getDefaultMessage();
+    }
+
+    /**
+     * @param $error
+     * @return void
+     */
+    private function sendToAdmin($error)
+    {
+        $message = $this->getFullMessage($error);
+
+        $messageModel = $this->messageFactory->create();
+        $messageModel->setErrorType($error['type']);
+        $messageModel->setResponse($this->serializer->serialize($error));
+        $messageModel->setMessage($message);
+
+        try {
+            $this->messageRepository->save($messageModel);
+        } catch (LocalizedException $e) {
+            $this->logger->error('Error when saving data to admin: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws NoSuchEntityException
+     * @throws InputException
+     * @throws Zend_Http_Client_Exception
+     */
+    public function confirmOrder(OrderInterface $order)
+    {
+        if ($this->configuration->isEnabled()) {
+            $quote = $this->quoteRepository->get((int)$order->getQuoteId());
+            if ($quote->getEasToken() && !$quote->getEasConfirmationSent()) {
+                $apiUrl = $this->configuration->getPaymentVerifyUrl();
+                $client = $this->clientFactory->create();
+                $client->setUri($apiUrl);
+                $client->setHeaders([
+                    'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+                    'Content-Type' => 'application/json',
+                    'accept' => 'text/*'
+                ]);
+
+                $data = [
+                    'token' => $quote->getEasToken(),
+                    'checkout_payment_id' => $order->getIncrementId()
+                ];
+                $client->setRawData($this->serializer->serialize($data), 'application/json');
+                $this->setConfig($client);
+                $response = $client->request(Zend_Http_Client::POST)->getBody();
+                if (empty($response)) {
+                    $quote->setEasConfirmationSent(true);
+                    $this->quoteRepository->save($quote);
+                } else {
+                    $this->logger->debug('EAS: quote with id ' . $quote->getEntityId() .
+                        'failed confirmation. Response body ' . $response);
+                }
+            }
         }
     }
 
@@ -255,38 +709,5 @@ class Calculate
             'accept' => 'text/*'
         ]);
         return $client->request(Zend_Http_Client::GET)->getBody();
-    }
-
-    /**
-     * @return string
-     * @throws \Zend_Http_Client_Exception
-     */
-    public function getAuthorizeToken(): ?string
-    {
-        if (!$this->token) {
-            $client = $this->clientFactory->create();
-            $client->setUri($this->configuration->getAuthorizeUrl());
-            list($apiKey, $secretApiKey) = $this->configuration->getApiKeys();
-            $client->setHeaders([
-                'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
-            ]);
-
-            $client->setParameterPost('grant_type', 'client_credentials');
-            $this->setConfig($client);
-            $token = $client->request(Zend_Http_Client::POST)->getBody();
-            $this->token = json_decode($token, true)[Configuration::ACCESS_TOKEN];
-        }
-        return $this->token;
-    }
-
-    /**
-     * @param $client
-     */
-    protected function setConfig($client)
-    {
-        $config = [
-            Configuration::VERIFYPEER => false
-        ];
-        $client->setConfig($config);
     }
 }

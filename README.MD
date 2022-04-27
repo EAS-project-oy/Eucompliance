@@ -1,8 +1,8 @@
- <img alt="EAS" width="150px" src="doc/static/Plugin_logo.png" align="left"  HSPACE=”50” VSPACE=”50”/>
- EAS EU compliance plugin gives easy and unimpeded access to the whole EU market, your sales are always VAT compliant irrespective of where you sell from and your registry/legal environment.
-All complicated tax schemes and situations are covered automatically – you involve yourself in making sales , not manual accounting reports
-<br/>
-<br/>
+<p align="center">
+    <img alt="EAS" width="600px" src="doc/static/Plugin_logo.png" />
+</p>
+
+
 EAS integration module is available for both newest Magento versions 2.4.* and  2.3.5 version.
 
 ### You may install this module using composer or git
@@ -29,12 +29,6 @@ You should get following result
 
 ### **To install this module using git**
 
-<br/>Our application requires "firebase/php-jwt" version 5.3 and higher
-<br/>Please install "firebase/php-jwt" before using 
-`composer require firebase/php-jwt 5.3
-`
-
-
 Firstly,  create Eas package in app/code directory
 
 `mkdir app/code/Eas
@@ -47,7 +41,7 @@ After that navigate to the newly created directory
 
 And clone module
 
-`git clone https://github.com//EAS-project-oy/eascompliance  eucompliance
+`git clone https://github.com//EAS-project-oy/eascompliance  Magento
 `
 
 After installation from root magento folder,

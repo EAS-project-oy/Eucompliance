@@ -10,6 +10,7 @@
         <configuration>
             <general>
                 <enable>0</enable>
+                <tax_name>Tax</tax_name>
             </general>
             <advanced>
                 <debug>1</debug>
@@ -19,6 +20,7 @@
                 <authorize_url>https://internal1.easproject.com/api/auth/open-id/connect</authorize_url>
                 <calculate_url>https://internal1.easproject.com/api/calculate</calculate_url>
                 <auth_keys_url>https://internal1.easproject.com/api/auth/keys</auth_keys_url>
+                <payment_verify_url>https://internal1.easproject.com/api/payment/verify</payment_verify_url>
             </credentials>
             <attributes>
                 <hscode>eas_hscode</hscode>
@@ -27,6 +29,9 @@
                 <act_as_disclosed_agent>eas_act_as_disclosed_agent</act_as_disclosed_agent>
                 <seller_registration_country>eas_seller_registration_country</seller_registration_country>
             </attributes>
+            <msi>
+                <enable>0</enable>
+            </msi>
         </configuration>
     </default>
 
