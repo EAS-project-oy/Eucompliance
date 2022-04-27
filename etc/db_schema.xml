@@ -64,7 +64,7 @@
             <column name="message_id"/>
         </constraint>
         <column name="error_type" nullable="true" xsi:type="varchar" comment="error_type" length="255"/>
-        <column name="response" nullable="true" xsi:type="varchar" comment="response" length="255"/>
+        <column name="response" nullable="true" xsi:type="mediumtext" comment="response"/>
         <column name="message" nullable="true" xsi:type="text" comment="message"/>
     </table>
 </schema>
