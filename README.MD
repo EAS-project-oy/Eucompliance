@@ -29,8 +29,10 @@ You should get following result
 
 ### **To install this module using git**
 
-Our application requires "firebase/php-jwt" version 5.3 and higher
-Please install "firebase/php-jwt" before using 'composer require firebase/php-jwt 5.3
+<br/>Our application requires "firebase/php-jwt" version 5.3 and higher
+<br/>Please install "firebase/php-jwt" before using 
+`composer require firebase/php-jwt 5.3
+`
 
 
 Firstly,  create Eas package in app/code directory
