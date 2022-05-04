@@ -136,6 +136,21 @@ class Calculate
     private SerializerInterface $serializer;
 
 
+    private $keyMapping = [
+        'delivery_address_line_1' => 'Street Address',
+        'delivery_address_line_2' => 'Street Address',
+        'delivery_city' => 'City',
+        'delivery_country' => 'Country',
+        'delivery_email' => 'Email Address',
+        'delivery_phone' => 'Phone Number',
+        'delivery_postal_code' => 'Zip/Postal Code',
+        'delivery_state_province' => 'State/Province',
+        'recipient_first_name' => 'First Name',
+        'recipient_last_name' => 'Last Name',
+        'recipient_company_name' => 'Company'
+    ];
+
+
     /**
      * Calculate constructor.
      * @param ZendClientFactory $clientFactory
@@ -173,9 +188,9 @@ class Calculate
         SourceRepositoryInterface                 $sourceRepository,
         Repository                                $quoteItemRepository,
         Configuration                             $configuration,
-        MessageRepositoryInterface $messageRepository,
-        MessageFactory $messageFactory,
-        SerializerInterface $serializer
+        MessageRepositoryInterface                $messageRepository,
+        MessageFactory                            $messageFactory,
+        SerializerInterface                       $serializer
     ) {
         $this->sourceRepository = $sourceRepository;
         $this->sourceSelectionService = $sourceSelectionService;
@@ -258,7 +273,7 @@ class Calculate
             "delivery_country" => $address->getCountryId(),
             "delivery_phone" => $address->getTelephone(),
             "delivery_email" => $address->getEmail() ?: $quote->getCustomerEmail(),
-            'delivery_state_province' => $address->getRegion()
+            'delivery_state_province' => $address->getRegion() ? $address->getRegion() : ''
         ];
 
         if ($address->getCompany()) {
@@ -302,11 +317,13 @@ class Calculate
                 "id_provided_by_em" => $product->getId(),
                 "quantity" => (int)$item->getQty(),
                 "cost_provided_by_em" => (float)number_format(
-                    ($item->getOriginalPrice() * $item->getQty() - $item->getOriginalDiscountAmount()) / $item->getQty(),
+                    ($item->getOriginalPrice() *
+                        $item->getQty() - $item->getOriginalDiscountAmount()) / $item->getQty(),
                     2
                 ),
                 "weight" => (float)number_format((float)$product->getWeight(), 2),
-                "type_of_goods" => $product->getTypeId() == Configuration::VIRTUAL ? Configuration::TBE : Configuration::GOODS,
+                "type_of_goods" => $product->getTypeId() == Configuration::VIRTUAL ?
+                    Configuration::TBE : Configuration::GOODS,
                 Configuration::ACT_AS_DISCLOSED_AGENT => (bool)$this->productResourceModel->getAttributeRawValue(
                     $product->getId(),
                     $this->configuration->getActAsDisclosedAgentAttributeName(),
@@ -376,143 +393,6 @@ class Calculate
     }
 
     /**
-     * @param $error
-     * @return bool[]|string[]
-     */
-    private function getErrorResult($error): array
-    {
-        $defaultMessage = 'Please contact our support to fix the issue';
-        $message = $this->getUserMessage($error);
-        switch ($error['type']) {
-            case 'STANDARD_CHECKOUT':
-                return ['disabled' => true];
-            case 'TRY_LATER':
-                $this->sendToAdmin($error);
-                return ['error' => $message];
-            case 'STOP_SELLING':
-                return ['error' => $message];
-            default:
-                $this->sendToAdmin($error);
-                return ['error' => $defaultMessage];
-        }
-    }
-
-    /**
-     * @param $error
-     * @return string
-     */
-    private function getUserMessage($error): string
-    {
-        if (!$this->configuration->isDebugEnabled()) {
-            $message = $this->getFullMessage($error);
-        } else {
-            $message = $this->getErrorMessage($error);
-        }
-
-        return $message;
-    }
-
-    /**
-     * @param $error
-     * @return void
-     */
-    private function sendToAdmin($error)
-    {
-        $message = $this->getFullMessage($error);
-
-        $messageModel = $this->messageFactory->create();
-        $messageModel->setErrorType($error['type']);
-        $messageModel->setResponse($this->serializer->serialize($error));
-        $messageModel->setMessage($message);
-
-        try {
-            $this->messageRepository->save($messageModel);
-        } catch (LocalizedException $e) {
-            $this->logger->error('Error when saving data to admin: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * @param $error
-     * @return string
-     */
-    public function getFullMessage($error): string
-    {
-        $message = $this->getErrorMessage($error);
-        if (isset($error['data']) && isset($error['data']['message'])) {
-            $message .= $error['data']['message'];
-        }
-        return $message;
-    }
-
-    /**
-     * @param $error
-     * @return string
-     */
-    public function getErrorMessage($error): string
-    {
-        $message = '';
-        if (isset($error['message'])) {
-            $message .= $error['message'] . ' ';
-        }
-        if (!isset($error['message']) && !isset($error['data'])) {
-            $message .= $error[array_key_first($error)];
-        }
-        return $message;
-    }
-
-    /**
-     * @throws NoSuchEntityException
-     * @throws InputException
-     * @throws Zend_Http_Client_Exception
-     */
-    public function confirmOrder(OrderInterface $order)
-    {
-        if ($this->configuration->isEnabled()) {
-            $quote = $this->quoteRepository->get((int)$order->getQuoteId());
-            if ($quote->getEasToken() && !$quote->getEasConfirmationSent()) {
-                $apiUrl = $this->configuration->getPaymentVerifyUrl();
-                $client = $this->clientFactory->create();
-                $client->setUri($apiUrl);
-                $client->setHeaders([
-                    'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
-                    'Content-Type' => 'application/json',
-                    'accept' => 'text/*'
-                ]);
-
-                $data = [
-                    'token' => $quote->getEasToken(),
-                    'checkout_payment_id' => $order->getIncrementId()
-                ];
-                $client->setRawData(json_encode($data), 'application/json');
-                $this->setConfig($client);
-                $response = $client->request(Zend_Http_Client::POST)->getBody();
-                if (empty($response)) {
-                    $quote->setEasConfirmationSent(true);
-                    $this->quoteRepository->save($quote);
-                } else {
-                    $this->logger->debug('EAS: quote with id ' . $quote->getEntityId() .
-                        'failed confirmation. Response body ' . $response);
-                }
-            }
-        }
-    }
-
-    public function getPublicKey()
-    {
-        $apiUrl = $this->configuration->getApiKeysUrl();
-        $client = $this->clientFactory->create();
-        $client->setUri($apiUrl);
-        $this->setConfig($client);
-        $client->setHeaders([
-            'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
-            'Content-Type' => 'application/json',
-            'accept' => 'text/*'
-        ]);
-        return $client->request(Zend_Http_Client::GET)->getBody();
-    }
-
-    /**
      * @return string
      * @throws Zend_Http_Client_Exception|InputException
      */
@@ -550,26 +430,6 @@ class Calculate
             Configuration::VERIFYPEER => false
         ];
         $client->setConfig($config);
-    }
-
-    /**
-     * @param Quote $quote
-     * @param ProductInterface $product
-     * @return array|bool|string|null
-     * @throws NoSuchEntityException
-     */
-    private function getLocationWarehouse(Quote $quote, ProductInterface $product)
-    {
-        if ($this->configuration->getMSIWarehouseLocation()) {
-            $sourceCode = $this->getWarehouseCode($quote, $product);
-            return $this->sourceRepository->get($sourceCode)->getCountryId();
-        }
-
-        return $this->productResourceModel->getAttributeRawValue(
-            $product->getId(),
-            $this->configuration->getWarehouseAttributeName(),
-            $quote->getStoreId()
-        ) ?: $this->configuration->getStoreDefaultCountryCode();
     }
 
     /**
@@ -652,5 +512,201 @@ class Calculate
                 'city' => $address->getCity() ?? ''
             ]
         );
+    }
+
+    /**
+     * @param Quote $quote
+     * @param ProductInterface $product
+     * @return array|bool|string|null
+     * @throws NoSuchEntityException
+     */
+    private function getLocationWarehouse(Quote $quote, ProductInterface $product)
+    {
+        if ($this->configuration->getMSIWarehouseLocation()) {
+            $sourceCode = $this->getWarehouseCode($quote, $product);
+            return $this->sourceRepository->get($sourceCode)->getCountryId();
+        }
+
+        return $this->productResourceModel->getAttributeRawValue(
+            $product->getId(),
+            $this->configuration->getWarehouseAttributeName(),
+            $quote->getStoreId()
+        ) ?: $this->configuration->getStoreDefaultCountryCode();
+    }
+
+    /**
+     * @param $error
+     * @return bool[]|string[]
+     */
+    private function getErrorResult($error): array
+    {
+        $message = $this->getUserMessage($error);
+        switch ($error['type']) {
+            case 'STANDARD_CHECKOUT':
+                return ['disabled' => true];
+            case 'STOP_SELLING':
+                return ['error' => $message];
+            default:
+                $this->sendToAdmin($error);
+                return ['error' => $message];
+        }
+    }
+
+    /**
+     * @param $error
+     * @return \Magento\Framework\Phrase
+     */
+    private function getUserMessage($error): \Magento\Framework\Phrase
+    {
+        if ($this->configuration->isDebugEnabled()) {
+            $message = $this->getFullMessage($error);
+        } else {
+            $message = $this->getErrorMessage($error);
+        }
+
+        return __($message);
+    }
+
+    /**
+     * @param $error
+     * @return string
+     */
+    public function getFullMessage($error): string
+    {
+        $message = $this->getErrorMessage($error);
+        if (isset($error['data']) && isset($error['data']['message'])) {
+            $message .= $error['data']['message'];
+        }
+        return $message;
+    }
+
+    /**
+     * @param $error
+     * @return string
+     */
+    public function getErrorMessage($error): string
+    {
+        $message = '';
+        if (isset($error['message'])) {
+            $message = $this->getMessage($error);
+        }
+        if (!isset($error['message']) && !isset($error['data'])) {
+            $message = $this->getKeyMessage($error, $message);
+        }
+        return $message;
+    }
+
+    /**
+     * @param $error
+     * @return string
+     */
+    public function getMessage($error): string
+    {
+        $message = '';
+        if ($error['type'] === 'CONTACT_ADMIN') {
+            if (array_key_exists($error['data']['field'], $this->keyMapping)) {
+                $message .= $error['message'] . ' ';
+            } else {
+                return $this->getDefaultMessage();
+            }
+        } else {
+            $message .= $error['message'] . ' ';
+        }
+        return $message;
+    }
+
+    /**
+     * @return string
+     */
+    private function getDefaultMessage(): string
+    {
+        return 'Please contact our support to fix the issue';
+    }
+
+    /**
+     * @param $error
+     * @param string $message
+     * @return string
+     */
+    public function getKeyMessage($error, string $message): string
+    {
+        foreach ($error as $key => $value) {
+            if ($key !== 'type' && array_key_exists($key, $this->keyMapping)) {
+                $changedMessage = str_replace($key, __($this->keyMapping[$key]), $value);
+                $message .= $changedMessage . ' ';
+            }
+        }
+        return $message ?: $this->getDefaultMessage();
+    }
+
+    /**
+     * @param $error
+     * @return void
+     */
+    private function sendToAdmin($error)
+    {
+        $message = $this->getFullMessage($error);
+
+        $messageModel = $this->messageFactory->create();
+        $messageModel->setErrorType($error['type']);
+        $messageModel->setResponse($this->serializer->serialize($error));
+        $messageModel->setMessage($message);
+
+        try {
+            $this->messageRepository->save($messageModel);
+        } catch (LocalizedException $e) {
+            $this->logger->error('Error when saving data to admin: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws NoSuchEntityException
+     * @throws InputException
+     * @throws Zend_Http_Client_Exception
+     */
+    public function confirmOrder(OrderInterface $order)
+    {
+        if ($this->configuration->isEnabled()) {
+            $quote = $this->quoteRepository->get((int)$order->getQuoteId());
+            if ($quote->getEasToken() && !$quote->getEasConfirmationSent()) {
+                $apiUrl = $this->configuration->getPaymentVerifyUrl();
+                $client = $this->clientFactory->create();
+                $client->setUri($apiUrl);
+                $client->setHeaders([
+                    'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+                    'Content-Type' => 'application/json',
+                    'accept' => 'text/*'
+                ]);
+
+                $data = [
+                    'token' => $quote->getEasToken(),
+                    'checkout_payment_id' => $order->getIncrementId()
+                ];
+                $client->setRawData(json_encode($data), 'application/json');
+                $this->setConfig($client);
+                $response = $client->request(Zend_Http_Client::POST)->getBody();
+                if (empty($response)) {
+                    $quote->setEasConfirmationSent(true);
+                    $this->quoteRepository->save($quote);
+                } else {
+                    $this->logger->debug('EAS: quote with id ' . $quote->getEntityId() .
+                        'failed confirmation. Response body ' . $response);
+                }
+            }
+        }
+    }
+
+    public function getPublicKey()
+    {
+        $apiUrl = $this->configuration->getApiKeysUrl();
+        $client = $this->clientFactory->create();
+        $client->setUri($apiUrl);
+        $this->setConfig($client);
+        $client->setHeaders([
+            'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+            'Content-Type' => 'application/json',
+            'accept' => 'text/*'
+        ]);
+        return $client->request(Zend_Http_Client::GET)->getBody();
     }
 }
