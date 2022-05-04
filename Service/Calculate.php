@@ -371,7 +371,7 @@ class Calculate
             }
             $errors = array_key_exists('errors', $errors) ? $errors['errors'] :
                 (array_key_exists('message', $errors) ? $errors['message'] : $errors['messages']);
-            return ['error' => json_encode($errors)];
+            return $this->getErrorResult($errors);
         }
     }
 
@@ -382,7 +382,7 @@ class Calculate
     private function getErrorResult($error): array
     {
         $defaultMessage = 'Please contact our support to fix the issue';
-        $message = $this->getUserMessage($error, $defaultMessage);
+        $message = $this->getUserMessage($error);
         switch ($error['type']) {
             case 'STANDARD_CHECKOUT':
                 return ['disabled' => true];
@@ -399,15 +399,14 @@ class Calculate
 
     /**
      * @param $error
-     * @param string $defaultMessage
-     * @return mixed|string
+     * @return string
      */
-    private function getUserMessage($error, string $defaultMessage = '')
+    private function getUserMessage($error): string
     {
-        if ($this->configuration->isDebugEnabled()) {
+        if (!$this->configuration->isDebugEnabled()) {
             $message = $this->getFullMessage($error);
         } else {
-            $message = $error['message'] ?? '';
+            $message = $this->getErrorMessage($error);
         }
 
         return $message;
@@ -439,12 +438,25 @@ class Calculate
      */
     public function getFullMessage($error): string
     {
+        $message = $this->getErrorMessage($error);
+        if (isset($error['data']) && isset($error['data']['message'])) {
+            $message .= $error['data']['message'];
+        }
+        return $message;
+    }
+
+    /**
+     * @param $error
+     * @return string
+     */
+    public function getErrorMessage($error): string
+    {
         $message = '';
         if (isset($error['message'])) {
             $message .= $error['message'] . ' ';
         }
-        if (isset($error['data']) && isset($error['data']['message'])) {
-            $message .= $error['data']['message'];
+        if (!isset($error['message']) && !isset($error['data'])) {
+            $message .= $error[array_key_first($error)];
         }
         return $message;
     }
