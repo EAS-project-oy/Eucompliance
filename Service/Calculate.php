@@ -240,7 +240,7 @@ class Calculate
         $storeId = $this->storeManager->getStore()->getId();
 
         if (!$quote->getReservedOrderId()) {
-           // $quote->reserveOrderId();
+            $quote->reserveOrderId();
         }
         $address = $quote->getIsVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
 
