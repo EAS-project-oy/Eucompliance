@@ -8,7 +8,6 @@ use Eas\Eucompliance\Model\Config\Configuration;
 use Magento\Checkout\Block\Checkout\AttributeMerger;
 use Magento\Customer\Model\AttributeMetadataDataProvider;
 use Magento\Customer\Model\Options;
-use Magento\Framework\App\ObjectManager;
 use Magento\Ui\Component\Form\AttributeMapper;
 
 class LayoutProcessor
@@ -47,10 +46,10 @@ class LayoutProcessor
      */
     public function __construct(
         AttributeMetadataDataProvider $attributeMetadataDataProvider,
-        AttributeMapper $attributeMapper,
-        AttributeMerger $merger,
-        Options $options,
-        Configuration $configuration
+        AttributeMapper               $attributeMapper,
+        AttributeMerger               $merger,
+        Options                       $options,
+        Configuration                 $configuration
     ) {
         $this->options = $options;
         $this->configuration = $configuration;
@@ -64,9 +63,6 @@ class LayoutProcessor
      */
     private function getOptions()
     {
-        if (!is_object($this->options)) {
-            $this->options = ObjectManager::getInstance()->get(Options::class);
-        }
         return $this->options;
     }
 
@@ -110,7 +106,8 @@ class LayoutProcessor
             if (!in_array($code, $codes)) {
                 continue;
             }
-            $options = call_user_func($attributesToConvert[$code]);
+            $method = $attributesToConvert[$code]['method'];
+            $options = $attributesToConvert[$code]['class']->$method();
             if (!is_array($options)) {
                 continue;
             }
@@ -141,20 +138,22 @@ class LayoutProcessor
         }
         /** Rename tax */
         $jsLayout['components']['checkout']['children']['sidebar']['children']
-        ['summary']['children']['totals']['children']['tax']['config']['title'] =  __($this->configuration->getTaxLabel());
+        ['summary']['children']['totals']['children']['tax']['config']['title'] =
+            __($this->configuration->getTaxLabel());
 
         $attributesToConvert = [
-            'prefix' => [$this->getOptions(), 'getNamePrefixOptions'],
-            'suffix' => [$this->getOptions(), 'getNameSuffixOptions'],
+            'prefix' => ['class' => $this->getOptions(), 'method' => 'getNamePrefixOptions'],
+            'suffix' => ['class' => $this->getOptions(), 'method' => 'getNameSuffixOptions'],
         ];
 
         $elements = $this->getAddressAttributes();
         $elements = $this->convertElementsToSelect($elements, $attributesToConvert);
         if (isset($jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children']
             ['eas-billing']['children'])) {
-            $jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children']['customer-email'] =
+            $jsLayout['components']['checkout']['children']['steps']
+            ['children']['eas-billing-step']['children']['customer-email'] =
                 [
-                    'component'=>'Magento_Checkout/js/view/form/element/email',
+                    'component' => 'Magento_Checkout/js/view/form/element/email',
                     'displayArea' => 'customer-email',
                     'tooltip' => [
                         'description' => "We'll send your order confirmation here."
@@ -182,9 +181,10 @@ class LayoutProcessor
 
         }
 
-
         $jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children'] =
-        array_reverse($jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children']);
+            array_reverse(
+                $jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children']
+            );
 
         return $jsLayout;
     }
@@ -220,12 +220,11 @@ class LayoutProcessor
         return $newStepsLayout;
     }
 
-
     /**
      * Gets billing address component details
      *
      * @param string $paymentCode
-     * @param array  $elements
+     * @param array $elements
      *
      * @return array
      */

@@ -39,4 +39,3 @@ abstract class Message extends \Magento\Backend\App\Action
         return $resultPage;
     }
 }
-

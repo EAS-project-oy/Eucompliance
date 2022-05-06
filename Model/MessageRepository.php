@@ -46,7 +46,6 @@ class MessageRepository implements MessageRepositoryInterface
      */
     protected $resource;
 
-
     /**
      * @param ResourceMessage $resource
      * @param MessageInterfaceFactory $messageFactory
@@ -104,17 +103,17 @@ class MessageRepository implements MessageRepositoryInterface
         \Magento\Framework\Api\SearchCriteriaInterface $criteria
     ) {
         $collection = $this->messageCollectionFactory->create();
-        
+
         $this->collectionProcessor->process($criteria, $collection);
-        
+
         $searchResults = $this->searchResultsFactory->create();
         $searchResults->setSearchCriteria($criteria);
-        
+
         $items = [];
         foreach ($collection as $model) {
             $items[] = $model;
         }
-        
+
         $searchResults->setItems($items);
         $searchResults->setTotalCount($collection->getSize());
         return $searchResults;
@@ -146,4 +145,3 @@ class MessageRepository implements MessageRepositoryInterface
         return $this->delete($this->get($messageId));
     }
 }
-

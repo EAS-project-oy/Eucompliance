@@ -14,7 +14,6 @@ use Magento\InventorySourceSelectionApi\Model\GetSourceSelectionAlgorithmList;
 class Msi implements OptionSourceInterface
 {
 
-
     /**
      * @var Manager
      */
@@ -37,7 +36,9 @@ class Msi implements OptionSourceInterface
         $this->getSourceSelectionAlgorithmList = $getSourceSelectionAlgorithmList;
     }
 
-
+    /**
+     * @return array
+     */
     public function toOptionArray()
     {
         if (!$this->moduleManager->isEnabled(Configuration::INVENTORY_MODULE)) {

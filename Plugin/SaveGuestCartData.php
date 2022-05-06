@@ -36,8 +36,11 @@ class SaveGuestCartData
      * @return array
      * @throws NoSuchEntityException
      */
-    public function beforeSaveAddressInformation(ShippingInformationManagement $subject, int $cartId, ShippingInformationInterface $addressInformation): array
-    {
+    public function beforeSaveAddressInformation(
+        ShippingInformationManagement $subject,
+        int                           $cartId,
+        ShippingInformationInterface  $addressInformation
+    ): array {
         $quote = $this->quoteRepository->getActive($cartId);
         $shipping = $addressInformation->getShippingAddress();
         $quote->setCustomerFirstname($shipping->getFirstname());

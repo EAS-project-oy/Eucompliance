@@ -44,4 +44,3 @@ class Delete extends \Eas\Eucompliance\Controller\Adminhtml\Message
         return $resultRedirect->setPath('*/*/');
     }
 }
-

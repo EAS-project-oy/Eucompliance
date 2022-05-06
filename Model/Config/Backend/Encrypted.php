@@ -6,6 +6,7 @@ use Eas\Eucompliance\Model\Config\Configuration;
 use Eas\Eucompliance\Service\Calculate;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Framework\Exception\InputException;
@@ -31,31 +32,39 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
     private WriterInterface $writer;
 
     /**
-     * @param Context $context
-     * @param Registry $registry
-     * @param ScopeConfigInterface $config
-     * @param TypeListInterface $cacheTypeList
-     * @param EncryptorInterface $encryptor
-     * @param Calculate $calculate
-     * @param WriterInterface $writer
-     * @param AbstractResource|null $resource
-     * @param AbstractDb|null $resourceCollection
+     * @var RequestInterface
+     */
+    private RequestInterface $request;
+
+    /**
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
+     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     * @param \Eas\Eucompliance\Service\Calculate $calculate
+     * @param \Magento\Framework\App\Config\Storage\WriterInterface $writer
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param \Magento\Framework\App\RequestInterface $request
      * @param array $data
      */
     public function __construct(
-        Context $context,
-        Registry $registry,
+        Context              $context,
+        Registry             $registry,
         ScopeConfigInterface $config,
-        TypeListInterface $cacheTypeList,
-        EncryptorInterface $encryptor,
-        Calculate $calculate,
-        WriterInterface $writer,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
-        array $data = []
+        TypeListInterface    $cacheTypeList,
+        EncryptorInterface   $encryptor,
+        Calculate            $calculate,
+        WriterInterface      $writer,
+        AbstractResource     $resource = null,
+        AbstractDb           $resourceCollection = null,
+        RequestInterface     $request,
+        array                $data = []
     ) {
         $this->writer = $writer;
         $this->calculate = $calculate;
+        $this->request = $request;
         parent::__construct(
             $context,
             $registry,
@@ -83,42 +92,45 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
 
             $path = $this->getPath();
             if ($path == Configuration::CONFIGURATION_CREDENTIALS_API_KEY) {
-                $_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY] = $value;
+                $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_API_KEY => $value]);
             } elseif ($path == Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY) {
-                $_SESSION[Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY] = $value;
+                $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY => $value]);
             }
 
-            if ($_SESSION &&
-                array_key_exists(Configuration::CONFIGURATION_CREDENTIALS_API_KEY, $_SESSION) &&
-                array_key_exists(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY, $_SESSION)
+            if ($this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_API_KEY) &&
+                $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY)
             ) {
                 try {
                     $this->calculate->getAuthorizeToken(
-                        $_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY],
-                        $_SESSION[Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY]
+                        $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_API_KEY),
+                        $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY)
                     );
 
                     $this->writer->save(
                         Configuration::CONFIGURATION_CREDENTIALS_API_KEY,
-                        $this->_encryptor->encrypt($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY]),
+                        $this->_encryptor->encrypt(
+                            $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_API_KEY)
+                        ),
                         $this->getScope(),
                         $this->getScopeId()
                     );
 
                     $this->writer->save(
                         Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
-                        $this->_encryptor->encrypt($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY]),
+                        $this->_encryptor->encrypt(
+                            $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY)
+                        ),
                         $this->getScope(),
                         $this->getScopeId()
                     );
                 } catch (InputException $exception) {
-                    unset($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY]);
-                    unset($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY]);
+                    $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_API_KEY => null]);
+                    $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY => null]);
                     throw new InputException(__($exception->getMessage()));
                 }
 
-                unset($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_API_KEY]);
-                unset($_SESSION[Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY]);
+                $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_API_KEY => null]);
+                $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY => null]);
             }
 
         }

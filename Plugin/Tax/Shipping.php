@@ -22,12 +22,11 @@ class Shipping extends CommonTaxCollector
      */
     public function afterCollect(
         \Magento\Tax\Model\Sales\Total\Quote\Shipping $subject,
-                                                      $result,
+        $result,
         Quote                                         $quote,
         ShippingAssignmentInterface                   $shippingAssignment,
         Total                                         $total
-    )
-    {
+    ) {
         $storeId = $quote->getStoreId();
         $shippingDataObject = $this->getShippingDataObject($shippingAssignment, $total, false);
         $baseShippingDataObject = $this->getShippingDataObject($shippingAssignment, $total, true);
@@ -46,8 +45,14 @@ class Shipping extends CommonTaxCollector
             if ($quote->getData(Configuration::EAS_SHIPPING_COST)) {
                 $taxDetails->setSubtotal($quote->getData(Configuration::EAS_SHIPPING_COST));
                 $baseTaxDetails->setSubtotal($quote->getData(Configuration::EAS_SHIPPING_COST));
-                $total->setData('shipping_tax_calculation_amount', $quote->getData(Configuration::EAS_SHIPPING_COST));
-                $total->setData('base_shipping_tax_calculation_amount', $quote->getData(Configuration::EAS_SHIPPING_COST));
+                $total->setData(
+                    'shipping_tax_calculation_amount',
+                    $quote->getData(Configuration::EAS_SHIPPING_COST)
+                );
+                $total->setData(
+                    'base_shipping_tax_calculation_amount',
+                    $quote->getData(Configuration::EAS_SHIPPING_COST)
+                );
             }
             $this->processShippingTaxInfo(
                 $shippingAssignment,

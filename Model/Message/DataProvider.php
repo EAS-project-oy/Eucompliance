@@ -28,7 +28,6 @@ class DataProvider extends AbstractDataProvider
      */
     protected $collection;
 
-
     /**
      * @param string $name
      * @param string $primaryFieldName
@@ -65,15 +64,14 @@ class DataProvider extends AbstractDataProvider
             $this->loadedData[$model->getId()] = $model->getData();
         }
         $data = $this->dataPersistor->get('eas_eucompliance_message');
-        
+
         if (!empty($data)) {
             $model = $this->collection->getNewEmptyItem();
             $model->setData($data);
             $this->loadedData[$model->getId()] = $model->getData();
             $this->dataPersistor->clear('eas_eucompliance_message');
         }
-        
+
         return $this->loadedData;
     }
 }
-

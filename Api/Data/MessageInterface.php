@@ -67,4 +67,3 @@ interface MessageInterface
      */
     public function setMessage($message);
 }
-

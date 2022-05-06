@@ -21,10 +21,9 @@ class DefaultRenderer
         \Magento\Sales\Block\Adminhtml\Order\View\Items\Renderer\DefaultRenderer $subject,
         string                                                                   $result,
         DataObject                                                               $item,
-                                                                                 $column,
-                                                                                 $field = null
-    ): string
-    {
+        $column,
+        $field = null
+    ): string {
         switch ($column) {
             case 'eas_custom_duties':
                 return $subject->displayPriceAttribute('eas_custom_duties');

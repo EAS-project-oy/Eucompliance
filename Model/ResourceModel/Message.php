@@ -20,4 +20,3 @@ class Message extends AbstractDb
         $this->_init('eas_eucompliance_message', 'message_id');
     }
 }
-

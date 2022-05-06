@@ -23,4 +23,3 @@ interface MessageSearchResultsInterface extends \Magento\Framework\Api\SearchRes
      */
     public function setItems(array $items);
 }
-

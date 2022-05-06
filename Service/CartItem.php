@@ -91,8 +91,7 @@ class CartItem
         string $attribute,
         $extAttributes,
         string $mode = self::SAVE
-    )
-    {
+    ) {
         $getAttributeName = $this->toCamelCase(self::GET . $attribute);
         $setAttributeName = $this->toCamelCase(self::SET . '_' . $attribute);
         if ($mode == self::SAVE) {

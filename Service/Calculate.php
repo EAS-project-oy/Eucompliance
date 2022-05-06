@@ -135,7 +135,9 @@ class Calculate
      */
     private SerializerInterface $serializer;
 
-
+    /**
+     * @var string[]
+     */
     private $keyMapping = [
         'delivery_address_line_1' => 'Street Address',
         'delivery_address_line_2' => 'Street Address',
@@ -149,7 +151,6 @@ class Calculate
         'recipient_last_name' => 'Last Name',
         'recipient_company_name' => 'Company'
     ];
-
 
     /**
      * Calculate constructor.
@@ -239,7 +240,7 @@ class Calculate
         $storeId = $this->storeManager->getStore()->getId();
 
         if (!$quote->getReservedOrderId()) {
-            $quote->reserveOrderId();
+           // $quote->reserveOrderId();
         }
         $address = $quote->getIsVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
 
@@ -370,11 +371,11 @@ class Calculate
         }
 
         $data['order_breakdown'] = $items;
-        $client->setRawData(json_encode($data), 'application/json');
+        $client->setRawData($this->serializer->serialize($data), 'application/json');
         $this->setConfig($client);
         $response = $client->request(Zend_Http_Client::POST)->getBody();
         if ($this->configuration->isDebugEnabled()) {
-            $this->logger->debug('Eas data send :' . json_encode($data));
+            $this->logger->debug('Eas data send :' . $this->serializer->serialize($data));
             $this->logger->debug('Eas data get :' . $response);
         }
         if (filter_var(str_replace('"', '', $response), FILTER_VALIDATE_URL)) {
@@ -382,7 +383,7 @@ class Calculate
             return ['redirect' => str_replace('"', '', $response)];
         } else {
             $this->logger->critical('Eas calculate failed' . $response);
-            $errors = json_decode($response, true);
+            $errors = $this->serializer->unserialize($response);
             if (array_key_exists('type', $errors)) {
                 return $this->getErrorResult($errors);
             }
@@ -410,7 +411,7 @@ class Calculate
 
             $client->setParameterPost('grant_type', 'client_credentials');
             $this->setConfig($client);
-            $token = json_decode($client->request(Zend_Http_Client::POST)->getBody(), true);
+            $token = $this->serializer->unserialize($client->request(Zend_Http_Client::POST)->getBody());
             if ($token && array_key_exists(Configuration::ACCESS_TOKEN, $token)) {
                 $this->token = $token[Configuration::ACCESS_TOKEN];
             } else {
@@ -682,7 +683,7 @@ class Calculate
                     'token' => $quote->getEasToken(),
                     'checkout_payment_id' => $order->getIncrementId()
                 ];
-                $client->setRawData(json_encode($data), 'application/json');
+                $client->setRawData($this->serializer->serialize($data), 'application/json');
                 $this->setConfig($client);
                 $response = $client->request(Zend_Http_Client::POST)->getBody();
                 if (empty($response)) {

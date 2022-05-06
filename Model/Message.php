@@ -85,4 +85,3 @@ class Message extends AbstractModel implements MessageInterface
         return $this->setData(self::MESSAGE, $message);
     }
 }
-

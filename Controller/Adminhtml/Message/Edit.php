@@ -57,8 +57,9 @@ class Edit extends \Eas\Eucompliance\Controller\Adminhtml\Message
             $id ? __('Edit Message') : __('New Message')
         );
         $resultPage->getConfig()->getTitle()->prepend(__('Messages'));
-        $resultPage->getConfig()->getTitle()->prepend($model->getId() ? __('Edit Message %1', $model->getId()) : __('New Message'));
+        $resultPage->getConfig()->getTitle()->prepend(
+            $model->getId() ? __('Edit Message %1', $model->getId()) : __('New Message')
+        );
         return $resultPage;
     }
 }
-

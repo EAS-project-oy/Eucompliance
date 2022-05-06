@@ -59,4 +59,3 @@ interface MessageRepositoryInterface
      */
     public function deleteById($messageId);
 }
-

@@ -33,8 +33,11 @@ class OrderManagement
      * @return OrderInterface
      * @throws \Exception
      */
-    public function afterPlace(OrderManagementInterface $subject, OrderInterface $result, OrderInterface $order): OrderInterface
-    {
+    public function afterPlace(
+        OrderManagementInterface $subject,
+        OrderInterface $result,
+        OrderInterface $order
+    ): OrderInterface {
         foreach ($result->getItems() as $item) {
             if ($item->getEasWarehouseCode()) {
                 $result->addCommentToStatusHistory(

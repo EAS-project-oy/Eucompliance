@@ -40,8 +40,7 @@ class EasFee extends AbstractTotal
         Quote                       $quote,
         ShippingAssignmentInterface $shippingAssignment,
         Total                       $total
-    ): EasFee
-    {
+    ): EasFee {
         parent::collect($quote, $shippingAssignment, $total);
 
         $items = $shippingAssignment->getItems();
@@ -69,7 +68,6 @@ class EasFee extends AbstractTotal
                 }
             }
         }
-
 
         if ($easTaxAmount) {
             $total->setData('tax_amount', $easTaxAmount);

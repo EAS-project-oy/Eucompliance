@@ -76,7 +76,7 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
         OrderRepositoryInterface           $orderRepository,
         StockByWebsiteIdResolverInterface  $stockByWebsiteIdResolver,
         GetStockItemConfigurationInterface $getStockItemConfiguration,
-                                           $getSourcesByStockIdSkuAndQty,
+        $getSourcesByStockIdSkuAndQty,
         GetSkuFromOrderItemInterface       $getSkuFromOrderItem,
         GetSourcesByOrderIdSkuAndQty       $getSourcesByOrderIdSkuAndQty,
         array                              $meta = [],

@@ -48,8 +48,7 @@ class OrderRepository
     public function afterGet(
         \Magento\Sales\Model\OrderRepository $subject,
         OrderInterface                       $result
-    ): OrderInterface
-    {
+    ): OrderInterface {
         if ($result->getStatus() == 'processing' || $result->getStatus() == 'complete') {
             $this->calculate->confirmOrder($result);
         }
@@ -68,8 +67,7 @@ class OrderRepository
     public function beforeSave(
         \Magento\Sales\Model\OrderRepository $subject,
         OrderInterface                       $entity
-    ): array
-    {
+    ): array {
         if ($entity->getQuoteId()) {
             $quote = $this->cartRepository->get((int)$entity->getQuoteId());
             if ($quote->getEasTotalVat()) {
