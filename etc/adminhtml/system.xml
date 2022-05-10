@@ -72,8 +72,11 @@
                 <field id="api_url" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS API Base URL</label>
-                    <comment><![CDATA[Get your credentials <a href="https://internal1.easproject.com/api"
-                    title="Api Key and API Secret" target="_blank" style="color:#2b7dbd">here</a> ]]></comment>
+                    <comment><![CDATA[Get your credentials in <a href="https://manager.easproject.com"
+                    title="Api Key and API Secret" target="_blank" style="color:#2b7dbd">Dashboard</a>
+                    if you are registered or register <a href="https://registration.easproject.com/"
+                    target="_blank" style="color:#2b7dbd">here</a>
+                    ]]></comment>
                     <config_path>configuration/credentials/api_url</config_path>
                 </field>
 
