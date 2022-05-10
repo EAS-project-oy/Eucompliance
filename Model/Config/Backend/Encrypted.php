@@ -108,18 +108,14 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
 
                     $this->writer->save(
                         Configuration::CONFIGURATION_CREDENTIALS_API_KEY,
-                        $this->_encryptor->encrypt(
-                            $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_API_KEY)
-                        ),
+                        $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_API_KEY),
                         $this->getScope(),
                         $this->getScopeId()
                     );
 
                     $this->writer->save(
                         Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
-                        $this->_encryptor->encrypt(
-                            $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY)
-                        ),
+                        $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY),
                         $this->getScope(),
                         $this->getScopeId()
                     );

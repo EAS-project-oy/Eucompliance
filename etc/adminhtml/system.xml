@@ -7,8 +7,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <tab id="eas" translate="label" sortOrder="120">
-            <label>EAS EU Compliance</label>
+        <tab id="eas" class="eas-extensions-config-tab" translate="label" sortOrder="120">
+            <label>EAS PROJECT EXTENSIONS</label>
         </tab>
 
         <section id="configuration" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1"
@@ -77,17 +77,16 @@
                     <config_path>configuration/credentials/api_url</config_path>
                 </field>
 
-                <field id="api_key" translate="label" type="obscure" sortOrder="2" showInDefault="1" showInWebsite="1"
+                <field id="api_key" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS api key</label>
-                    <backend_model>Eas\Eucompliance\Model\Config\Backend\Encrypted</backend_model>
                 </field>
 
                 <field id="secret_api_key" translate="label" type="obscure" sortOrder="3" showInDefault="1"
                        showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS secret api key</label>
-                    <backend_model>Eas\Eucompliance\Model\Config\Backend\Encrypted</backend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
 
                 <field id="authorize_url" translate="label" type="text" sortOrder="4" showInDefault="1"

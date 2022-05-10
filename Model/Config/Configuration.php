@@ -255,10 +255,10 @@ class Configuration
      */
     public function getApiKeys(): array
     {
-        $apiKey = $this->encryptor->decrypt($this->scopeConfig->getValue(
+        $apiKey = $this->scopeConfig->getValue(
             Configuration::CONFIGURATION_CREDENTIALS_API_KEY,
             ScopeInterface::SCOPE_STORE
-        ));
+        );
         $secretApiKey = $this->encryptor->decrypt($this->scopeConfig->getValue(
             Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
             ScopeInterface::SCOPE_STORE
