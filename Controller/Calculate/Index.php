@@ -1,9 +1,9 @@
 <?php
 
-namespace Eas\Eucompliance\Controller\Calculate;
+namespace Easproject\Eucompliance\Controller\Calculate;
 
-use Eas\Eucompliance\Service\Calculate;
-use Eas\Eucompliance\Model\Config\Configuration;
+use Easproject\Eucompliance\Service\Calculate;
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Firebase\JWT\JWT;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\ActionInterface;

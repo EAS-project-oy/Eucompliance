@@ -1,8 +1,8 @@
 <?php
 
-namespace Eas\Eucompliance\Plugin;
+namespace Easproject\Eucompliance\Plugin;
 
-use Eas\Eucompliance\Service\Calculate;
+use Easproject\Eucompliance\Service\Calculate;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\OfflinePayments\Model\Checkmo;

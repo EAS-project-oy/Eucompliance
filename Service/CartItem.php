@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Service;
+namespace Easproject\Eucompliance\Service;
 
 use Magento\Framework\Model\AbstractModel;
 use Magento\Quote\Api\Data\CartItemInterface;

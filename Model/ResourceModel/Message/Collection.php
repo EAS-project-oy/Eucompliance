@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Model\ResourceModel\Message;
+namespace Easproject\Eucompliance\Model\ResourceModel\Message;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
@@ -23,8 +23,8 @@ class Collection extends AbstractCollection
     protected function _construct()
     {
         $this->_init(
-            \Eas\Eucompliance\Model\Message::class,
-            \Eas\Eucompliance\Model\ResourceModel\Message::class
+            \Easproject\Eucompliance\Model\Message::class,
+            \Easproject\Eucompliance\Model\ResourceModel\Message::class
         );
     }
 }

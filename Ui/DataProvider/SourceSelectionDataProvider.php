@@ -1,6 +1,6 @@
 <?php
 
-namespace Eas\Eucompliance\Ui\DataProvider;
+namespace Easproject\Eucompliance\Ui\DataProvider;
 
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;

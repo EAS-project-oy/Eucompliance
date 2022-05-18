@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Api\Data;
+namespace Easproject\Eucompliance\Api\Data;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
@@ -24,7 +24,7 @@ interface MessageInterface
     /**
      * Set message_id
      * @param string $messageId
-     * @return \Eas\Eucompliance\Message\Api\Data\MessageInterface
+     * @return \Easproject\Eucompliance\Message\Api\Data\MessageInterface
      */
     public function setMessageId($messageId);
 
@@ -37,7 +37,7 @@ interface MessageInterface
     /**
      * Set error_type
      * @param string $errorType
-     * @return \Eas\Eucompliance\Message\Api\Data\MessageInterface
+     * @return \Easproject\Eucompliance\Message\Api\Data\MessageInterface
      */
     public function setErrorType($errorType);
 
@@ -50,7 +50,7 @@ interface MessageInterface
     /**
      * Set response
      * @param string $response
-     * @return \Eas\Eucompliance\Message\Api\Data\MessageInterface
+     * @return \Easproject\Eucompliance\Message\Api\Data\MessageInterface
      */
     public function setResponse($response);
 
@@ -63,7 +63,7 @@ interface MessageInterface
     /**
      * Set message
      * @param string $message
-     * @return \Eas\Eucompliance\Message\Api\Data\MessageInterface
+     * @return \Easproject\Eucompliance\Message\Api\Data\MessageInterface
      */
     public function setMessage($message);
 }

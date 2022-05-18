@@ -1,6 +1,6 @@
 <?php
 
-namespace Eas\Eucompliance\Plugin;
+namespace Easproject\Eucompliance\Plugin;
 
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderManagementInterface;

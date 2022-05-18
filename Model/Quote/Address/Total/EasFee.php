@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Model\Quote\Address\Total;
+namespace Easproject\Eucompliance\Model\Quote\Address\Total;
 
-use Eas\Eucompliance\Model\Config\Configuration;
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;

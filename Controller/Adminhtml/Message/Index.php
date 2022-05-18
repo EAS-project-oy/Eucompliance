@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Controller\Adminhtml\Message;
+namespace Easproject\Eucompliance\Controller\Adminhtml\Message;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.

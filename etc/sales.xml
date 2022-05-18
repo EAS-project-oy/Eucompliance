@@ -9,7 +9,7 @@
     <section name="quote">
         <group name="totals">
             <!-- Set sort order to 451 as we want to calculate after tax adn grand totals-->
-            <item name="eas_fee" instance="Eas\Eucompliance\Model\Quote\Address\Total\EasFee" sort_order="551"/>
+            <item name="eas_fee" instance="Easproject\Eucompliance\Model\Quote\Address\Total\EasFee" sort_order="551"/>
         </group>
     </section>
 </config>

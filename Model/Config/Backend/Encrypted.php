@@ -1,9 +1,9 @@
 <?php
 
-namespace Eas\Eucompliance\Model\Config\Backend;
+namespace Easproject\Eucompliance\Model\Config\Backend;
 
-use Eas\Eucompliance\Model\Config\Configuration;
-use Eas\Eucompliance\Service\Calculate;
+use Easproject\Eucompliance\Model\Config\Configuration;
+use Easproject\Eucompliance\Service\Calculate;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
@@ -42,7 +42,7 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
      * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
-     * @param \Eas\Eucompliance\Service\Calculate $calculate
+     * @param \Easproject\Eucompliance\Service\Calculate $calculate
      * @param \Magento\Framework\App\Config\Storage\WriterInterface $writer
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection

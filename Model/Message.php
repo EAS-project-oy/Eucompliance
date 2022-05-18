@@ -5,9 +5,9 @@
  */
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Model;
+namespace Easproject\Eucompliance\Model;
 
-use Eas\Eucompliance\Api\Data\MessageInterface;
+use Easproject\Eucompliance\Api\Data\MessageInterface;
 use Magento\Framework\Model\AbstractModel;
 
 class Message extends AbstractModel implements MessageInterface
@@ -18,7 +18,7 @@ class Message extends AbstractModel implements MessageInterface
      */
     public function _construct()
     {
-        $this->_init(\Eas\Eucompliance\Model\ResourceModel\Message::class);
+        $this->_init(\Easproject\Eucompliance\Model\ResourceModel\Message::class);
     }
 
     /**

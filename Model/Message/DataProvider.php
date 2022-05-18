@@ -5,9 +5,9 @@
  */
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Model\Message;
+namespace Easproject\Eucompliance\Model\Message;
 
-use Eas\Eucompliance\Model\ResourceModel\Message\CollectionFactory;
+use Easproject\Eucompliance\Model\ResourceModel\Message\CollectionFactory;
 use Magento\Framework\App\Request\DataPersistorInterface;
 use Magento\Ui\DataProvider\AbstractDataProvider;
 

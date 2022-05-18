@@ -1,6 +1,6 @@
 <?php
 
-namespace Eas\Eucompliance\Model\Config;
+namespace Easproject\Eucompliance\Model\Config;
 
 use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Module\Manager;

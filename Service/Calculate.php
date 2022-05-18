@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Service;
+namespace Easproject\Eucompliance\Service;
 
-use Eas\Eucompliance\Api\Data\MessageInterfaceFactory as MessageFactory;
-use Eas\Eucompliance\Api\MessageRepositoryInterface;
+use Easproject\Eucompliance\Api\Data\MessageInterfaceFactory as MessageFactory;
+use Easproject\Eucompliance\Api\MessageRepositoryInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
 use Magento\Framework\Exception\CouldNotSaveException;
@@ -25,7 +25,7 @@ use Magento\InventorySourceSelectionApi\Api\SourceSelectionServiceInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item\Repository;
 use Magento\Quote\Model\QuoteRepository;
-use Eas\Eucompliance\Model\Config\Configuration;
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\UrlInterface;

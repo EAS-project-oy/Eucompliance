@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Ui\Component\Listing\Column;
+namespace Easproject\Eucompliance\Ui\Component\Listing\Column;
 
 class MessageActions extends \Magento\Ui\Component\Listing\Columns\Column
 {

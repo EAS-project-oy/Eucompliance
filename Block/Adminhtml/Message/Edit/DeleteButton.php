@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Block\Adminhtml\Message\Edit;
+namespace Easproject\Eucompliance\Block\Adminhtml\Message\Edit;
 
 use Magento\Framework\View\Element\UiComponent\Control\ButtonProviderInterface;
 

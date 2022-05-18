@@ -102,7 +102,7 @@
                 </editor>
             </settings>
         </column>
-        <actionsColumn name="actions" class="Eas\Eucompliance\Ui\Component\Listing\Column\MessageActions"
+        <actionsColumn name="actions" class="Easproject\Eucompliance\Ui\Component\Listing\Column\MessageActions"
                        sortOrder="50">
             <settings>
                 <indexField>message_id</indexField>

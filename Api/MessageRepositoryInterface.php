@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Api;
+namespace Easproject\Eucompliance\Api;
 
 use Magento\Framework\Api\SearchCriteriaInterface;
 
@@ -14,18 +14,18 @@ interface MessageRepositoryInterface
 
     /**
      * Save message
-     * @param \Eas\Eucompliance\Api\Data\MessageInterface $message
-     * @return \Eas\Eucompliance\Api\Data\MessageInterface
+     * @param \Easproject\Eucompliance\Api\Data\MessageInterface $message
+     * @return \Easproject\Eucompliance\Api\Data\MessageInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function save(
-        \Eas\Eucompliance\Api\Data\MessageInterface $message
+        \Easproject\Eucompliance\Api\Data\MessageInterface $message
     );
 
     /**
      * Retrieve message
      * @param string $messageId
-     * @return \Eas\Eucompliance\Api\Data\MessageInterface
+     * @return \Easproject\Eucompliance\Api\Data\MessageInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function get($messageId);
@@ -33,7 +33,7 @@ interface MessageRepositoryInterface
     /**
      * Retrieve message matching the specified criteria.
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     * @return \Eas\Eucompliance\Api\Data\MessageSearchResultsInterface
+     * @return \Easproject\Eucompliance\Api\Data\MessageSearchResultsInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getList(
@@ -42,12 +42,12 @@ interface MessageRepositoryInterface
 
     /**
      * Delete message
-     * @param \Eas\Eucompliance\Api\Data\MessageInterface $message
+     * @param \Easproject\Eucompliance\Api\Data\MessageInterface $message
      * @return bool true on success
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function delete(
-        \Eas\Eucompliance\Api\Data\MessageInterface $message
+        \Easproject\Eucompliance\Api\Data\MessageInterface $message
     );
 
     /**

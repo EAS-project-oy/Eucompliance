@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Model\ResourceModel;
+namespace Easproject\Eucompliance\Model\ResourceModel;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 

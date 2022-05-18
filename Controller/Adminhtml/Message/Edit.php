@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Controller\Adminhtml\Message;
+namespace Easproject\Eucompliance\Controller\Adminhtml\Message;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  */
-class Edit extends \Eas\Eucompliance\Controller\Adminhtml\Message
+class Edit extends \Easproject\Eucompliance\Controller\Adminhtml\Message
 {
 
     protected $resultPageFactory;
@@ -35,7 +35,7 @@ class Edit extends \Eas\Eucompliance\Controller\Adminhtml\Message
     {
         // 1. Get ID and create model
         $id = $this->getRequest()->getParam('message_id');
-        $model = $this->_objectManager->create(\Eas\Eucompliance\Model\Message::class);
+        $model = $this->_objectManager->create(\Easproject\Eucompliance\Model\Message::class);
 
         // 2. Initial checking
         if ($id) {

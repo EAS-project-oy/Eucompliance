@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Controller\Adminhtml\Message;
+namespace Easproject\Eucompliance\Controller\Adminhtml\Message;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  */
-class Delete extends \Eas\Eucompliance\Controller\Adminhtml\Message
+class Delete extends \Easproject\Eucompliance\Controller\Adminhtml\Message
 {
 
     /**
@@ -24,7 +24,7 @@ class Delete extends \Eas\Eucompliance\Controller\Adminhtml\Message
         if ($id) {
             try {
                 // init model and delete
-                $model = $this->_objectManager->create(\Eas\Eucompliance\Model\Message::class);
+                $model = $this->_objectManager->create(\Easproject\Eucompliance\Model\Message::class);
                 $model->load($id);
                 $model->delete();
                 // display success message

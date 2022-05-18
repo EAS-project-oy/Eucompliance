@@ -9,8 +9,8 @@
 	</argument>
 	<settings>
 		<buttons>
-			<button name="back" class="Eas\Eucompliance\Block\Adminhtml\Message\Edit\BackButton"/>
-			<button name="delete" class="Eas\Eucompliance\Block\Adminhtml\Message\Edit\DeleteButton"/>
+			<button name="back" class="Easproject\Eucompliance\Block\Adminhtml\Message\Edit\BackButton"/>
+			<button name="delete" class="Easproject\Eucompliance\Block\Adminhtml\Message\Edit\DeleteButton"/>
 		</buttons>
 		<namespace>eas_eucompliance_message_form</namespace>
 		<dataScope>data</dataScope>
@@ -24,7 +24,7 @@
 				<item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
 			</item>
 		</argument>
-		<dataProvider name="message_form_data_source" class="Eas\Eucompliance\Model\Message\DataProvider">
+		<dataProvider name="message_form_data_source" class="Easproject\Eucompliance\Model\Message\DataProvider">
 			<settings>
 				<requestFieldName>message_id</requestFieldName>
 				<primaryFieldName>message_id</primaryFieldName>

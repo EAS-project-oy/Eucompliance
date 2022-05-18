@@ -5,14 +5,14 @@
  */
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Model;
+namespace Easproject\Eucompliance\Model;
 
-use Eas\Eucompliance\Api\Data\MessageInterface;
-use Eas\Eucompliance\Api\Data\MessageInterfaceFactory;
-use Eas\Eucompliance\Api\Data\MessageSearchResultsInterfaceFactory;
-use Eas\Eucompliance\Api\MessageRepositoryInterface;
-use Eas\Eucompliance\Model\ResourceModel\Message as ResourceMessage;
-use Eas\Eucompliance\Model\ResourceModel\Message\CollectionFactory as MessageCollectionFactory;
+use Easproject\Eucompliance\Api\Data\MessageInterface;
+use Easproject\Eucompliance\Api\Data\MessageInterfaceFactory;
+use Easproject\Eucompliance\Api\Data\MessageSearchResultsInterfaceFactory;
+use Easproject\Eucompliance\Api\MessageRepositoryInterface;
+use Easproject\Eucompliance\Model\ResourceModel\Message as ResourceMessage;
+use Easproject\Eucompliance\Model\ResourceModel\Message\CollectionFactory as MessageCollectionFactory;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\CouldNotSaveException;

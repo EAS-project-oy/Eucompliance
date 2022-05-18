@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Setup\Patch\Data;
+namespace Easproject\Eucompliance\Setup\Patch\Data;
 
 use Magento\Catalog\Model\Product;
 use Magento\Customer\Model\ResourceModel\Address\Attribute\Source\Country;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
-use Eas\Eucompliance\Model\Config\Configuration;
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Eav\Model\Entity\Attribute\Source\Boolean;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
