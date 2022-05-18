@@ -65,6 +65,7 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
         $this->writer = $writer;
         $this->calculate = $calculate;
         $this->request = $request;
+        $this->cacheTypeList = $cacheTypeList;
         parent::__construct(
             $context,
             $registry,
@@ -81,54 +82,31 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
      * Encrypt value before saving
      *
      * @return void
-     * @throws InputException
+     * @throws \Magento\Framework\Exception\InputException
      */
     public function beforeSave()
     {
-        $this->_dataSaveAllowed = false;
-        $value = (string)$this->getValue();
-        // don't save value, if an obscured value was received. This indicates that data was not changed.
-        if (!preg_match('/^\*+$/', $value) && !empty($value)) {
-
-            $path = $this->getPath();
-            if ($path == Configuration::CONFIGURATION_CREDENTIALS_API_KEY) {
-                $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_API_KEY => $value]);
-            } elseif ($path == Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY) {
-                $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY => $value]);
-            }
-
-            if ($this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_API_KEY) &&
-                $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY)
-            ) {
-                try {
-                    $this->calculate->getAuthorizeToken(
-                        $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_API_KEY),
-                        $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY)
-                    );
-
-                    $this->writer->save(
-                        Configuration::CONFIGURATION_CREDENTIALS_API_KEY,
-                        $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_API_KEY),
-                        $this->getScope(),
-                        $this->getScopeId()
-                    );
-
-                    $this->writer->save(
-                        Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
-                        $this->request->getParam(Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY),
-                        $this->getScope(),
-                        $this->getScopeId()
-                    );
-                } catch (InputException $exception) {
-                    $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_API_KEY => null]);
-                    $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY => null]);
-                    throw new InputException(__($exception->getMessage()));
-                }
-
-                $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_API_KEY => null]);
-                $this->request->setParams([Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY => null]);
-            }
-
+        list($apiKey, $secretKey, $urlBase) = $this->getCredentialsFields();
+        try {
+            $this->calculate->getAuthorizeToken($apiKey, $secretKey, $urlBase);
+        } catch (InputException|\Zend_Http_Client_Exception $e) {
+            throw new InputException(__($e->getMessage()));
         }
+        parent::beforeSave();
+    }
+
+    /**
+     * @return array
+     */
+    public function getCredentialsFields(): array
+    {
+        $credentialsFields = $this->request->getParam('groups')['credentials']['fields'];
+        $secretKey = $credentialsFields['secret_api_key']['value'];
+        if (preg_match('/^\*+$/', $secretKey) && !empty($secretKey)) {
+            $secretKey = null;
+        }
+        $apiKey = $credentialsFields['api_key']['value'];
+        $urlBase = $credentialsFields['api_url']['value'];
+        return [$apiKey, $secretKey, $urlBase];
     }
 }

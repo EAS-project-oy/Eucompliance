@@ -96,7 +96,7 @@ define([
             }
         },
         defaults:{
-            template: 'Eas_Eucompliance/shipping'
+            template: 'Easproject_Eucompliance/shipping'
         },
     };
 

@@ -251,22 +251,6 @@ class Configuration
     }
 
     /**
-     * @return array
-     */
-    public function getApiKeys(): array
-    {
-        $apiKey = $this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_API_KEY,
-            ScopeInterface::SCOPE_STORE
-        );
-        $secretApiKey = $this->encryptor->decrypt($this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
-            ScopeInterface::SCOPE_STORE
-        ));
-        return [$apiKey, $secretApiKey];
-    }
-
-    /**
      * @return string
      */
     public function getTaxLabel(): string
@@ -275,5 +259,27 @@ class Configuration
             Configuration::CONFIGURATION_GENERAL_TAX_NAME,
             ScopeInterface::SCOPE_STORE
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getApiKey()
+    {
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_CREDENTIALS_API_KEY,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecretKey(): string
+    {
+        return $this->encryptor->decrypt($this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
+            ScopeInterface::SCOPE_STORE
+        ));
     }
 }

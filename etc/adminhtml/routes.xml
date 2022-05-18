@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
 	<router id="admin">
 		<route frontName="eas" id="eas">
-			<module before="Magento_Backend" name="Eas_Eucompliance"/>
+			<module before="Magento_Backend" name="Easproject_Eucompliance"/>
 		</route>
 	</router>
 </config>

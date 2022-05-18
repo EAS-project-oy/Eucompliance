@@ -11,7 +11,7 @@ abstract class Message extends \Magento\Backend\App\Action
 {
 
     protected $_coreRegistry;
-    const ADMIN_RESOURCE = 'Eas_Eucompliance::top_level';
+    const ADMIN_RESOURCE = 'Easproject_Eucompliance::top_level';
 
     /**
      * @param \Magento\Backend\App\Action\Context $context

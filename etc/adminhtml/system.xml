@@ -16,7 +16,7 @@
             <class>separator-top</class>
             <label>EAS EU Compliance</label>
             <tab>eas</tab>
-            <resource>Eas_Eucompliance::default</resource>
+            <resource>Easproject_Eucompliance::default</resource>
             <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>General</label>
@@ -89,7 +89,7 @@
                        showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS secret api key</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <backend_model>Easproject\Eucompliance\Model\Config\Backend\Encrypted</backend_model>
                 </field>
 
                 <field id="authorize_url" translate="label" type="text" sortOrder="4" showInDefault="1"

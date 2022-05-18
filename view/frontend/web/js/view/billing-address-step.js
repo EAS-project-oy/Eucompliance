@@ -25,7 +25,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Eas_Eucompliance/billing-step'
+                template: 'Easproject_Eucompliance/billing-step'
             },
 
             isVisible: ko.observable(quote.isVirtual()),

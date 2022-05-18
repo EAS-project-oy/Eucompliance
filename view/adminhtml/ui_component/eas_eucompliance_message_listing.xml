@@ -21,7 +21,7 @@
             </storageConfig>
             <updateUrl path="mui/index/render"/>
         </settings>
-        <aclResource>Eas_Eucompliance::message</aclResource>
+        <aclResource>Easproject_Eucompliance::message</aclResource>
         <dataProvider name="eas_eucompliance_message_listing_data_source"
                       class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
             <settings>

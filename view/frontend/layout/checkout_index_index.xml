@@ -14,7 +14,7 @@
                                             <item name="sortOrder" xsi:type="string">2</item>
                                             <item name="children" xsi:type="array">
                                                 <item name="eas-billing" xsi:type="array">
-                                                    <item name="component" xsi:type="string">Eas_Eucompliance/js/view/billing-address-step</item>
+                                                    <item name="component" xsi:type="string">Easproject_Eucompliance/js/view/billing-address-step</item>
                                                     <item name="config" xsi:type="array">
                                                         <item name="title" xsi:type="string" translate="true">Billing Address</item>
                                                     </item>

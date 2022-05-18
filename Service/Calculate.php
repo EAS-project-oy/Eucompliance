@@ -397,14 +397,14 @@ class Calculate
      * @return string
      * @throws Zend_Http_Client_Exception|InputException
      */
-    public function getAuthorizeToken($apiKey = null, $secretApiKey = null): ?string
+    public function getAuthorizeToken($apiKey = null, $secretApiKey = null, $baseApiUrl = null): ?string
     {
         if (!$this->token) {
             $client = $this->clientFactory->create();
+            $baseApiUrl = $baseApiUrl ?: $this->configuration->getAuthorizeUrl();
+            $apiKey = $apiKey ?: $this->configuration->getApiKey();
+            $secretApiKey = $secretApiKey ?: $this->configuration->getSecretKey();
             $client->setUri($this->configuration->getAuthorizeUrl());
-            if (!$apiKey && !$secretApiKey) {
-                list($apiKey, $secretApiKey) = $this->configuration->getApiKeys();
-            }
             $client->setHeaders([
                 'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
             ]);

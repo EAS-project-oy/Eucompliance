@@ -12,7 +12,7 @@ define([
         } else if (window.location.hash == '#payment') {
             return 'Magento_Checkout/form/element/email';
         }
-        return 'Eas_Eucompliance/empty-email';
+        return 'Easproject_Eucompliance/empty-email';
     }
 
     return function (Component) {

@@ -18,7 +18,7 @@ define(['Magento_Checkout/js/model/quote'],
 
         var mixin = {
             defaults: {
-                detailsTemplate: 'Eas_Eucompliance/billing-address/details',
+                detailsTemplate: 'Easproject_Eucompliance/billing-address/details',
             },
             isVirtual: isVirtual(quote)
         };
