@@ -91,37 +91,6 @@
                     <label>EAS secret api key</label>
                     <backend_model>Easproject\Eucompliance\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-
-                <field id="authorize_url" translate="label" type="text" sortOrder="4" showInDefault="1"
-                       showInWebsite="1"
-                       showInStore="1" canRestore="0">
-                    <label>EAS API authorize URL</label>
-                    <config_path>configuration/credentials/authorize_url</config_path>
-                    <frontend_model>Easproject\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
-                </field>
-
-                <field id="auth_keys_url" translate="label" type="text" sortOrder="5" showInDefault="1"
-                       showInWebsite="1"
-                       showInStore="1" canRestore="0">
-                    <label>EAS API auth keys URL</label>
-                    <config_path>configuration/credentials/auth_keys_url</config_path>
-                    <frontend_model>Easproject\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
-                </field>
-
-                <field id="payment_verify_url" translate="label" type="text" sortOrder="6" showInDefault="1"
-                       showInWebsite="1"
-                       showInStore="1" canRestore="0">
-                    <label>EAS API payment verify URL</label>
-                    <config_path>configuration/credentials/payment_verify_url</config_path>
-                    <frontend_model>Easproject\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
-                </field>
-
-                <field id="calculate" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1"
-                       showInStore="1" canRestore="0">
-                    <label>EAS API calculate URL</label>
-                    <config_path>configuration/credentials/calculate_url</config_path>
-                    <frontend_model>Easproject\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
-                </field>
             </group>
 
             <group id="attributes" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1"
