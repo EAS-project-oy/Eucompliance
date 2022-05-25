@@ -51,6 +51,7 @@ class Configuration
     const COURIER = 'courier';
     const ACCESS_TOKEN = 'access_token';
     const GOODS = "GOODS";
+    const GIFTCARD = "GIFTCARD";
     const TBE = "TBE";
     const VIRTUAL = "virtual";
     const PRODUCT_ENTITY_TYPE = 4;

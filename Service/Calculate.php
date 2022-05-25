@@ -6,6 +6,7 @@ namespace Easproject\Eucompliance\Service;
 
 use Easproject\Eucompliance\Api\Data\MessageInterfaceFactory as MessageFactory;
 use Easproject\Eucompliance\Api\MessageRepositoryInterface;
+use Easproject\Eucompliance\Setup\Patch\Data\AddGiftCardProductAttribute;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
 use Magento\Framework\Exception\CouldNotSaveException;
@@ -323,8 +324,7 @@ class Calculate
                     2
                 ),
                 "weight" => (float)number_format((float)$product->getWeight(), 2),
-                "type_of_goods" => $product->getTypeId() == Configuration::VIRTUAL ?
-                    Configuration::TBE : Configuration::GOODS,
+                "type_of_goods" => $this->getTypeOfGoods($product),
                 Configuration::ACT_AS_DISCLOSED_AGENT => (bool)$this->productResourceModel->getAttributeRawValue(
                     $product->getId(),
                     $this->configuration->getActAsDisclosedAgentAttributeName(),
@@ -332,6 +332,11 @@ class Calculate
                 ),
                 Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->getLocationWarehouse($quote, $product),
             ];
+
+            if ($this->getTypeOfGoods($product) === Configuration::GIFTCARD) {
+                $data['delivery_cost'] = 0.0;
+            }
+
             $originatingCountry = $this->productResourceModel->getAttributeRawValue(
                 $product->getId(),
                 Configuration::COUNTRY_OF_MANUFACTURE,
@@ -709,5 +714,21 @@ class Calculate
             'accept' => 'text/*'
         ]);
         return $client->request(Zend_Http_Client::GET)->getBody();
+    }
+
+    /**
+     * @param $product
+     * @return string
+     */
+    private function getTypeOfGoods($product): string
+    {
+        $result = Configuration::GOODS;
+        if ($product->getTypeId() == Configuration::VIRTUAL) {
+            $result = Configuration::TBE;
+        }
+        if ($product->getData(AddGiftCardProductAttribute::EAS_GIFT_CARD)) {
+            $result = Configuration::GIFTCARD;
+        }
+        return $result;
     }
 }
