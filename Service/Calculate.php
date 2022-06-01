@@ -261,10 +261,15 @@ class Calculate
     {
         if (!$this->token) {
             $client = $this->clientFactory->create();
-            $baseApiUrl = $baseApiUrl ?: $this->configuration->getAuthorizeUrl();
+            if ($baseApiUrl) {
+                $baseApiUrl = $baseApiUrl . Configuration::CREDENTIALS_AUTHORIZE_URL;
+            } else {
+                $baseApiUrl = $this->configuration->getAuthorizeUrl();
+            }
+
             $apiKey = $apiKey ?: $this->configuration->getApiKey();
             $secretApiKey = $secretApiKey ?: $this->configuration->getSecretKey();
-            $client->setUri($this->configuration->getAuthorizeUrl());
+            $client->setUri($baseApiUrl);
             $client->setHeaders([
                 'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
             ]);
