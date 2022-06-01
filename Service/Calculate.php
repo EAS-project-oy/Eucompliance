@@ -229,156 +229,11 @@ class Calculate
             return ['disabled' => true];
         }
 
-        $apiUrl = $this->configuration->getCalculateUrl();
-        $client = $this->clientFactory->create();
-        $client->setUri($apiUrl);
-        $client->setHeaders([
-            'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
-            'x-redirect-uri' => $this->url->getUrl(Configuration::EAS_CALCULATE),
-            'Content-Type' => 'application/json',
-            'accept' => 'text/*'
-        ]);
-        $storeId = $this->storeManager->getStore()->getId();
-
         if (!$quote->getReservedOrderId()) {
             $quote->reserveOrderId();
         }
-        $address = $quote->getIsVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
 
-        $deliveryMethod = Configuration::COURIER;
-
-        if ($this->configuration->getPostalMethods()) {
-            foreach (explode(',', $this->configuration->getPostalMethods()) as $postalMethod) {
-                if ($address->getShippingMethod() == $postalMethod) {
-                    $deliveryMethod = Configuration::POSTAL;
-                }
-            }
-        }
-
-        if ($quote->isVirtual()) {
-            $deliveryMethod = Configuration::POSTAL;
-        }
-
-        $data = [
-            "external_order_id" => $quote->getReservedOrderId(),
-            "delivery_method" => $deliveryMethod,
-            "delivery_cost" => (float)number_format((float)$address->getShippingAmount(), 2),
-            "payment_currency" => $quote->getQuoteCurrencyCode(),
-            "is_delivery_to_person" => true,
-            "recipient_first_name" =>
-                $quote->getCustomerFirstname() ?: $quote->getBillingAddress()->getFirstName(),
-            "recipient_last_name" =>
-                $quote->getCustomerLastname() ?: $quote->getBillingAddress()->getLastName(),
-            "recipient_company_vat" => $address->getVatId(),
-            "delivery_city" => $address->getCity(),
-            "delivery_postal_code" => $address->getPostcode(),
-            "delivery_country" => $address->getCountryId(),
-            "delivery_phone" => $address->getTelephone(),
-            "delivery_email" => $address->getEmail() ?: $quote->getCustomerEmail(),
-            'delivery_state_province' => $address->getRegion() ? $address->getRegion() : ''
-        ];
-
-        if ($address->getCompany()) {
-            $data['recipient_company_name'] = $address->getCompany();
-            $data['is_delivery_to_person'] = false;
-        }
-
-        $prefix = $quote->getCustomerPrefix() ?: $address->getPrefix();
-        if ($prefix) {
-            $data['recipient_title'] = $prefix;
-        }
-
-        /** @TODO need refactoring in future versions */
-        $streets = $address->getStreet();
-        switch (count($streets)) {
-            case 1:
-                $data['delivery_address_line_1'] = $streets[0];
-                break;
-            case 2:
-                $data['delivery_address_line_1'] = $streets[0];
-                $data['delivery_address_line_2'] = $streets[1];
-                break;
-            case 3:
-                $data['delivery_address_line_1'] = $streets[0];
-                $data['delivery_address_line_2'] = $streets[1] . PHP_EOL . $streets[2];
-                break;
-        }
-        $items = [];
-
-        foreach ($quote->getAllVisibleItems() as $item) {
-            /** @var ProductInterface $product */
-            $product = $item->getProduct();
-            // set warehouse code
-            $extAttributes = $item->getExtensionAttributes();
-            $extAttributes->setEasWarehouseCode($this->getWarehouseCode($quote, $product));
-            $item->setExtensionAttributes($extAttributes);
-            $this->quoteItemRepository->save($item);
-            $items[] = [
-                "short_description" => $product->getSku(),
-                "long_description" => $product->getName(),
-                "id_provided_by_em" => $product->getId(),
-                "quantity" => (int)$item->getQty(),
-                "cost_provided_by_em" => (float)number_format(
-                    ($item->getOriginalPrice() *
-                        $item->getQty() - $item->getOriginalDiscountAmount()) / $item->getQty(),
-                    2
-                ),
-                "weight" => (float)number_format((float)$product->getWeight(), 2),
-                "type_of_goods" => $this->getTypeOfGoods($product),
-                Configuration::ACT_AS_DISCLOSED_AGENT => (bool)$this->productResourceModel->getAttributeRawValue(
-                    $product->getId(),
-                    $this->configuration->getActAsDisclosedAgentAttributeName(),
-                    $storeId
-                ),
-                Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->getLocationWarehouse($quote, $product),
-            ];
-
-            if ($this->getTypeOfGoods($product) === Configuration::GIFTCARD) {
-                $data['delivery_cost'] = 0.0;
-            }
-
-            $originatingCountry = $this->productResourceModel->getAttributeRawValue(
-                $product->getId(),
-                Configuration::COUNTRY_OF_MANUFACTURE,
-                $storeId
-            );
-            if ($originatingCountry) {
-                $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] = $originatingCountry;
-            } else {
-                $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] =
-                    $this->configuration->getStoreDefaultCountryCode();
-            }
-
-            $hs6p = $this->productResourceModel->getAttributeRawValue(
-                $product->getId(),
-                $this->configuration->getHscodeAttributeName(),
-                $storeId
-            );
-            if ($hs6p) {
-                $items[array_key_last($items)]['hs6p_received'] = $hs6p;
-            }
-            $sellerRegistrationCountry = $this->productResourceModel->
-            getAttributeRawValue($product->getId(), $this->configuration->getSellerRegistrationName(), $storeId);
-            if ($sellerRegistrationCountry) {
-                $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] = $sellerRegistrationCountry;
-            } else {
-                $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] =
-                    $this->configuration->getStoreDefaultCountryCode();
-            }
-            $reducedTbeVatGroup = (bool)$this->productResourceModel->getAttributeRawValue(
-                $product->getId(),
-                $this->configuration->getReducedVatAttributeName(),
-                $storeId
-            );
-            if ($reducedTbeVatGroup) {
-                $items[array_key_last($items)][Configuration::REDUCED_TBE_VAT_GROUP] = true;
-            }
-        }
-
-        $data['order_breakdown'] = $items;
-        $client->setRawData($this->serializer->serialize($data), 'application/json');
-        $this->setConfig($client);
-        $response = $client->request(Zend_Http_Client::POST)->getBody();
+        list($data, $response) = $this->sendRequest($quote);
         if ($this->configuration->isDebugEnabled()) {
             $this->logger->debug('Eas data send :' . $this->serializer->serialize($data));
             $this->logger->debug('Eas data get :' . $response);
@@ -730,5 +585,168 @@ class Calculate
             $result = Configuration::GIFTCARD;
         }
         return $result;
+    }
+
+    /**
+     * @param \Magento\Quote\Model\Quote $quote
+     * @return array
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Zend_Http_Client_Exception
+     */
+    public function sendRequest(
+        Quote $quote
+    ): array {
+
+        $apiUrl = $this->configuration->getCalculateUrl();
+        $client = $this->clientFactory->create();
+        $client->setUri($apiUrl);
+        $client->setHeaders([
+            'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+            'x-redirect-uri' => $this->url->getUrl(Configuration::EAS_CALCULATE),
+            'Content-Type' => 'application/json',
+            'accept' => 'text/*'
+        ]);
+
+
+        $storeId = $this->storeManager->getStore()->getId();
+        $address = $quote->getIsVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
+
+        $deliveryMethod = Configuration::COURIER;
+
+        if ($this->configuration->getPostalMethods()) {
+            foreach (explode(',', $this->configuration->getPostalMethods()) as $postalMethod) {
+                if ($address->getShippingMethod() == $postalMethod) {
+                    $deliveryMethod = Configuration::POSTAL;
+                }
+            }
+        }
+
+        if ($quote->isVirtual()) {
+            $deliveryMethod = Configuration::POSTAL;
+        }
+
+        $data = [
+            "external_order_id" => $quote->getReservedOrderId(),
+            "delivery_method" => $deliveryMethod,
+            "delivery_cost" => (float)number_format((float)$address->getShippingAmount(), 2),
+            "payment_currency" => $quote->getQuoteCurrencyCode(),
+            "is_delivery_to_person" => true,
+            "recipient_first_name" =>
+                $quote->getCustomerFirstname() ?: $quote->getBillingAddress()->getFirstName(),
+            "recipient_last_name" =>
+                $quote->getCustomerLastname() ?: $quote->getBillingAddress()->getLastName(),
+            "recipient_company_vat" => $address->getVatId(),
+            "delivery_city" => $address->getCity(),
+            "delivery_postal_code" => $address->getPostcode(),
+            "delivery_country" => $address->getCountryId(),
+            "delivery_phone" => $address->getTelephone(),
+            "delivery_email" => $address->getEmail() ?: $quote->getCustomerEmail(),
+            'delivery_state_province' => $address->getRegion() ? $address->getRegion() : ''
+        ];
+
+        if ($address->getCompany()) {
+            $data['recipient_company_name'] = $address->getCompany();
+            $data['is_delivery_to_person'] = false;
+        }
+
+        $prefix = $quote->getCustomerPrefix() ?: $address->getPrefix();
+        if ($prefix) {
+            $data['recipient_title'] = $prefix;
+        }
+
+        /** @TODO need refactoring in future versions */
+        $streets = $address->getStreet();
+        switch (count($streets)) {
+            case 1:
+                $data['delivery_address_line_1'] = $streets[0];
+                break;
+            case 2:
+                $data['delivery_address_line_1'] = $streets[0];
+                $data['delivery_address_line_2'] = $streets[1];
+                break;
+            case 3:
+                $data['delivery_address_line_1'] = $streets[0];
+                $data['delivery_address_line_2'] = $streets[1] . PHP_EOL . $streets[2];
+                break;
+        }
+        $items = [];
+
+        foreach ($quote->getAllVisibleItems() as $item) {
+            /** @var ProductInterface $product */
+            $product = $item->getProduct();
+            // set warehouse code
+            $extAttributes = $item->getExtensionAttributes();
+            $extAttributes->setEasWarehouseCode($this->getWarehouseCode($quote, $product));
+            $item->setExtensionAttributes($extAttributes);
+            $this->quoteItemRepository->save($item);
+            $items[] = [
+                "short_description" => $product->getSku(),
+                "long_description" => $product->getName(),
+                "id_provided_by_em" => $product->getId(),
+                "quantity" => (int)$item->getQty(),
+                "cost_provided_by_em" => (float)number_format(
+                    ($item->getOriginalPrice() *
+                        $item->getQty() - $item->getOriginalDiscountAmount()) / $item->getQty(),
+                    2
+                ),
+                "weight" => (float)number_format((float)$product->getWeight(), 2),
+                "type_of_goods" => $this->getTypeOfGoods($product),
+                Configuration::ACT_AS_DISCLOSED_AGENT => (bool)$this->productResourceModel->getAttributeRawValue(
+                    $product->getId(),
+                    $this->configuration->getActAsDisclosedAgentAttributeName(),
+                    $storeId
+                ),
+                Configuration::LOCATION_WAREHOUSE_COUNTRY => $this->getLocationWarehouse($quote, $product),
+            ];
+
+            if ($this->getTypeOfGoods($product) === Configuration::GIFTCARD) {
+                $data['delivery_cost'] = 0.0;
+            }
+
+            $originatingCountry = $this->productResourceModel->getAttributeRawValue(
+                $product->getId(),
+                Configuration::COUNTRY_OF_MANUFACTURE,
+                $storeId
+            );
+            if ($originatingCountry) {
+                $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] = $originatingCountry;
+            } else {
+                $items[array_key_last($items)][Configuration::ORIGINATING_COUNTRY] =
+                    $this->configuration->getStoreDefaultCountryCode();
+            }
+
+            $hs6p = $this->productResourceModel->getAttributeRawValue(
+                $product->getId(),
+                $this->configuration->getHscodeAttributeName(),
+                $storeId
+            );
+            if ($hs6p) {
+                $items[array_key_last($items)]['hs6p_received'] = $hs6p;
+            }
+            $sellerRegistrationCountry = $this->productResourceModel->
+            getAttributeRawValue($product->getId(), $this->configuration->getSellerRegistrationName(), $storeId);
+            if ($sellerRegistrationCountry) {
+                $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] = $sellerRegistrationCountry;
+            } else {
+                $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] =
+                    $this->configuration->getStoreDefaultCountryCode();
+            }
+            $reducedTbeVatGroup = (bool)$this->productResourceModel->getAttributeRawValue(
+                $product->getId(),
+                $this->configuration->getReducedVatAttributeName(),
+                $storeId
+            );
+            if ($reducedTbeVatGroup) {
+                $items[array_key_last($items)][Configuration::REDUCED_TBE_VAT_GROUP] = true;
+            }
+        }
+
+        $data['order_breakdown'] = $items;
+        $client->setRawData($this->serializer->serialize($data), 'application/json');
+        $this->setConfig($client);
+        $response = $client->request(Zend_Http_Client::POST)->getBody();
+        return [$data, $response];
     }
 }
