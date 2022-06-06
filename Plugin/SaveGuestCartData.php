@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Plugin;
+namespace Easproject\Eucompliance\Plugin;
 
 use Magento\Checkout\Api\Data\ShippingInformationInterface;
 use Magento\Checkout\Model\ShippingInformationManagement;

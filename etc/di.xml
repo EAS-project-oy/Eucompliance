@@ -9,70 +9,70 @@
 
     <type name="Magento\Customer\Model\AccountManagement">
         <plugin name="beforeIsEmailAvailable"
-                type="Eas\Eucompliance\Plugin\SaveGuestEmail"
+                type="Easproject\Eucompliance\Plugin\SaveGuestEmail"
                 sortOrder="1"/>
     </type>
 
     <type name="Magento\Quote\Model\Quote\Item\ToOrderItem">
         <plugin name="eas_eucompliance_sales_quote_item_order_item"
-                type="Eas\Eucompliance\Plugin\SetOrderItemValue"/>
+                type="Easproject\Eucompliance\Plugin\SetOrderItemValue"/>
     </type>
 
     <type name="Magento\Checkout\Model\ShippingInformationManagement">
         <plugin name="beforeSave"
-                type="Eas\Eucompliance\Plugin\SaveGuestCartData"
+                type="Easproject\Eucompliance\Plugin\SaveGuestCartData"
                 sortOrder="1"/>
     </type>
     <type name="Magento\Sales\Model\OrderRepository">
         <plugin name="confirmOrder"
-                type="Eas\Eucompliance\Plugin\OrderRepository" sortOrder="100"/>
+                type="Easproject\Eucompliance\Plugin\OrderRepository" sortOrder="100"/>
     </type>
     <type name="Magento\Tax\Model\Sales\Total\Quote\Shipping">
         <plugin name="setShippingPrice"
-                type="Eas\Eucompliance\Plugin\Tax\Shipping"
+                type="Easproject\Eucompliance\Plugin\Tax\Shipping"
                 sortOrder="1"/>
     </type>
     <type name="Magento\Sales\Api\OrderManagementInterface">
         <plugin name="notify_order-items_warehouse-location"
-                type="Eas\Eucompliance\Plugin\OrderManagement"
+                type="Easproject\Eucompliance\Plugin\OrderManagement"
                 sortOrder="1"/>
     </type>
     <preference for="Magento\InventoryShippingAdminUi\Ui\DataProvider\SourceSelectionDataProvider"
-                type="Eas\Eucompliance\Ui\DataProvider\SourceSelectionDataProvider"/>
+                type="Easproject\Eucompliance\Ui\DataProvider\SourceSelectionDataProvider"/>
     <type name="\Magento\Quote\Model\Quote\Item\Repository">
         <plugin name="setExtensionAttributes"
-                type="Eas\Eucompliance\Plugin\Item"
+                type="Easproject\Eucompliance\Plugin\Item"
                 sortOrder="1"/>
     </type>
     <type name="Magento\Quote\Model\ResourceModel\Quote\Item">
         <plugin name="saveExtensionAttributesValue"
-                type="Eas\Eucompliance\Plugin\Quote\Item"
+                type="Easproject\Eucompliance\Plugin\Quote\Item"
                 sortOrder="1"/>
     </type>
     <type name="Magento\Quote\Model\Quote">
         <plugin name="setExtensionAttributes"
-                type="Eas\Eucompliance\Plugin\Quote\Quote"
+                type="Easproject\Eucompliance\Plugin\Quote\Quote"
                 sortOrder="1"/>
     </type>
     <type name="Magento\Sales\Block\Adminhtml\Order\View\Items\Renderer\DefaultRenderer">
         <plugin name="showEasColumns"
-                type="Eas\Eucompliance\Plugin\DefaultRenderer"
+                type="Easproject\Eucompliance\Plugin\DefaultRenderer"
                 sortOrder="1"/>
     </type>
 
-    <preference for="Eas\Eucompliance\Api\MessageRepositoryInterface" type="Eas\Eucompliance\Model\MessageRepository"/>
-    <preference for="Eas\Eucompliance\Api\Data\MessageInterface" type="Eas\Eucompliance\Model\Message"/>
-    <preference for="Eas\Eucompliance\Api\Data\MessageSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
-    <virtualType name="Eas\Eucompliance\Model\ResourceModel\Message\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <preference for="Easproject\Eucompliance\Api\MessageRepositoryInterface" type="Easproject\Eucompliance\Model\MessageRepository"/>
+    <preference for="Easproject\Eucompliance\Api\Data\MessageInterface" type="Easproject\Eucompliance\Model\Message"/>
+    <preference for="Easproject\Eucompliance\Api\Data\MessageSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    <virtualType name="Easproject\Eucompliance\Model\ResourceModel\Message\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">eas_eucompliance_message</argument>
-            <argument name="resourceModel" xsi:type="string">Eas\Eucompliance\Model\ResourceModel\Message\Collection</argument>
+            <argument name="resourceModel" xsi:type="string">Easproject\Eucompliance\Model\ResourceModel\Message\Collection</argument>
         </arguments>
     </virtualType>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
-                <item name="eas_eucompliance_message_listing_data_source" xsi:type="string">Eas\Eucompliance\Model\ResourceModel\Message\Grid\Collection</item>
+                <item name="eas_eucompliance_message_listing_data_source" xsi:type="string">Easproject\Eucompliance\Model\ResourceModel\Message\Grid\Collection</item>
             </argument>
         </arguments>
     </type>

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Model\Config;
+namespace Easproject\Eucompliance\Model\Config;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
@@ -20,14 +20,15 @@ class Configuration
     const CONFIGURATION_ATTRIBUTES_ACT_AS_DISCLOSED_AGENT = 'configuration/attributes/act_as_disclosed_agent';
     const CONFIGURATION_ATTRIBUTES_SELLER_REGISTRATION_COUNTRY = 'configuration/attributes/seller_registration_country';
     const CONFIGURATION_ADVANCED_DEBUG = 'configuration/advanced/debug';
-    const CONFIGURATION_CREDENTIALS_AUTH_KEYS_URL = 'configuration/credentials/auth_keys_url';
-    const CONFIGURATION_CREDENTIALS_AUTHORIZE_URL = 'configuration/credentials/authorize_url';
+    const CONFIGURATION_CREDENTIALS_BASE_URL = 'configuration/credentials/api_url';
+    const CREDENTIALS_AUTH_KEYS_URL = '/auth/keys';
+    const CREDENTIALS_AUTHORIZE_URL = '/auth/open-id/connect';
     const CONFIGURATION_GENERAL_TAX_NAME = 'configuration/general/tax_name';
     const CONFIGURATION_CREDENTIALS_API_KEY = 'configuration/credentials/api_key';
     const CONFIGURATION_CREDENTIALS_SECRET_API_KEY = 'configuration/credentials/secret_api_key';
     const CONFIGURATION_GENERAL_ENABLE = 'configuration/general/enable';
-    const CONFIGURATION_CREDENTIALS_CALCULATE_URL = 'configuration/credentials/calculate_url';
-    const CONFIGURATION_CREDENTIALS_PAYMENT_VERIFY_URL = 'configuration/credentials/payment_verify_url';
+    const CREDENTIALS_CALCULATE_URL = '/calculate';
+    const CREDENTIALS_PAYMENT_VERIFY_URL = '/payment/verify';
     const CONFIGURATION_GENERAL_POST_SHIPPING = 'configuration/general/post_shipping';
     const INVENTORY_MODULE = 'Magento_Inventory';
     const EAS_CHECKOUT_TOKEN = 'eas_checkout_token';
@@ -50,6 +51,7 @@ class Configuration
     const COURIER = 'courier';
     const ACCESS_TOKEN = 'access_token';
     const GOODS = "GOODS";
+    const GIFTCARD = "GIFTCARD";
     const TBE = "TBE";
     const VIRTUAL = "virtual";
     const PRODUCT_ENTITY_TYPE = 4;
@@ -79,6 +81,11 @@ class Configuration
      * @var Manager
      */
     private Manager $moduleManager;
+
+    /**
+     * @var string
+     */
+    private string $baseUrl = '';
 
     /**
      * @param ScopeConfigInterface $scopeConfig
@@ -111,10 +118,7 @@ class Configuration
      */
     public function getCalculateUrl(): ?string
     {
-        return $this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_CALCULATE_URL,
-            ScopeInterface::SCOPE_STORE
-        );
+        return $this->getBaseUrl() . self::CREDENTIALS_CALCULATE_URL;
     }
 
     /**
@@ -122,10 +126,7 @@ class Configuration
      */
     public function getPaymentVerifyUrl(): ?string
     {
-        return $this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_PAYMENT_VERIFY_URL,
-            ScopeInterface::SCOPE_STORE
-        );
+        return $this->getBaseUrl() . self::CREDENTIALS_PAYMENT_VERIFY_URL;
     }
 
     /**
@@ -233,10 +234,22 @@ class Configuration
      */
     public function getApiKeysUrl(): ?string
     {
-        return $this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_AUTH_KEYS_URL,
+        return $this->getBaseUrl() . self::CREDENTIALS_AUTH_KEYS_URL;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getBaseUrl() : ?string
+    {
+        if ($this->baseUrl) {
+            return $this->baseUrl;
+        }
+        $this->baseUrl = $this->scopeConfig->getValue(
+            self::CONFIGURATION_CREDENTIALS_BASE_URL,
             ScopeInterface::SCOPE_STORE
         );
+        return $this->baseUrl;
     }
 
     /**
@@ -244,26 +257,7 @@ class Configuration
      */
     public function getAuthorizeUrl(): ?string
     {
-        return $this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_AUTHORIZE_URL,
-            ScopeInterface::SCOPE_STORE
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function getApiKeys(): array
-    {
-        $apiKey = $this->encryptor->decrypt($this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_API_KEY,
-            ScopeInterface::SCOPE_STORE
-        ));
-        $secretApiKey = $this->encryptor->decrypt($this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
-            ScopeInterface::SCOPE_STORE
-        ));
-        return [$apiKey, $secretApiKey];
+        return $this->getBaseUrl() . self::CREDENTIALS_AUTHORIZE_URL;
     }
 
     /**
@@ -275,5 +269,27 @@ class Configuration
             Configuration::CONFIGURATION_GENERAL_TAX_NAME,
             ScopeInterface::SCOPE_STORE
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getApiKey()
+    {
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_CREDENTIALS_API_KEY,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecretKey(): string
+    {
+        return $this->encryptor->decrypt($this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
+            ScopeInterface::SCOPE_STORE
+        ));
     }
 }

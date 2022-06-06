@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Eas\Eucompliance\Model\Source;
+namespace Easproject\Eucompliance\Model\Source;
 
-use Eas\Eucompliance\Model\Config\Configuration;
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Eav\Model\ResourceModel\Entity\Attribute\CollectionFactory as AttributeCollectionFactory;
 

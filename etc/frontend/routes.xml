@@ -8,7 +8,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
     <router id="standard">
         <route id="eas" frontName="eas">
-            <module name="Eas_Eucompliance"/>
+            <module name="Easproject_Eucompliance"/>
         </route>
     </router>
 </config>

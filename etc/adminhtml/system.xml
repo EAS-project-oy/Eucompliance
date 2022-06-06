@@ -7,8 +7,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <tab id="eas" translate="label" sortOrder="120">
-            <label>EAS EU Compliance</label>
+        <tab id="eas" class="eas-extensions-config-tab" translate="label" sortOrder="120">
+            <label>EAS PROJECT EXTENSIONS</label>
         </tab>
 
         <section id="configuration" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1"
@@ -16,7 +16,7 @@
             <class>separator-top</class>
             <label>EAS EU Compliance</label>
             <tab>eas</tab>
-            <resource>Eas_Eucompliance::default</resource>
+            <resource>Easproject_Eucompliance::default</resource>
             <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>General</label>
@@ -46,8 +46,8 @@
                        showInWebsite="1"
                        showInStore="1">
                     <label>Msi algorithm used for stock selection</label>
-                    <frontend_model>Eas\Eucompliance\Block\System\Config\Form\Field\Msi</frontend_model>
-                    <source_model>Eas\Eucompliance\Model\Config\Msi</source_model>
+                    <frontend_model>Easproject\Eucompliance\Block\System\Config\Form\Field\Msi</frontend_model>
+                    <source_model>Easproject\Eucompliance\Model\Config\Msi</source_model>
                     <config_path>configuration/msi/msi_algorithm</config_path>
                     <depends>
                         <field id="msi_enable">1</field>
@@ -72,53 +72,24 @@
                 <field id="api_url" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS API Base URL</label>
-                    <comment><![CDATA[Get your credentials <a href="https://internal1.easproject.com/api"
-                    title="Api Key and API Secret" target="_blank" style="color:#2b7dbd">here</a> ]]></comment>
+                    <comment><![CDATA[Get your credentials in <a href="https://dashboard.easproject.com/"
+                    title="Api Key and API Secret" target="_blank" style="color:#2b7dbd">Dashboard</a>
+                    if you are registered or register <a href="https://registration.easproject.com/"
+                    target="_blank" style="color:#2b7dbd">here</a>
+                    ]]></comment>
                     <config_path>configuration/credentials/api_url</config_path>
                 </field>
 
-                <field id="api_key" translate="label" type="obscure" sortOrder="2" showInDefault="1" showInWebsite="1"
+                <field id="api_key" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS api key</label>
-                    <backend_model>Eas\Eucompliance\Model\Config\Backend\Encrypted</backend_model>
                 </field>
 
                 <field id="secret_api_key" translate="label" type="obscure" sortOrder="3" showInDefault="1"
                        showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS secret api key</label>
-                    <backend_model>Eas\Eucompliance\Model\Config\Backend\Encrypted</backend_model>
-                </field>
-
-                <field id="authorize_url" translate="label" type="text" sortOrder="4" showInDefault="1"
-                       showInWebsite="1"
-                       showInStore="1" canRestore="0">
-                    <label>EAS API authorize URL</label>
-                    <config_path>configuration/credentials/authorize_url</config_path>
-                    <frontend_model>Eas\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
-                </field>
-
-                <field id="auth_keys_url" translate="label" type="text" sortOrder="5" showInDefault="1"
-                       showInWebsite="1"
-                       showInStore="1" canRestore="0">
-                    <label>EAS API auth keys URL</label>
-                    <config_path>configuration/credentials/auth_keys_url</config_path>
-                    <frontend_model>Eas\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
-                </field>
-
-                <field id="payment_verify_url" translate="label" type="text" sortOrder="6" showInDefault="1"
-                       showInWebsite="1"
-                       showInStore="1" canRestore="0">
-                    <label>EAS API payment verify URL</label>
-                    <config_path>configuration/credentials/payment_verify_url</config_path>
-                    <frontend_model>Eas\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
-                </field>
-
-                <field id="calculate" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1"
-                       showInStore="1" canRestore="0">
-                    <label>EAS API calculate URL</label>
-                    <config_path>configuration/credentials/calculate_url</config_path>
-                    <frontend_model>Eas\Eucompliance\Block\System\Config\Form\Field\Disable</frontend_model>
+                    <backend_model>Easproject\Eucompliance\Model\Config\Backend\Encrypted</backend_model>
                 </field>
             </group>
 
@@ -128,7 +99,7 @@
 
                 <field id="hscode" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
                        showInStore="1">
-                    <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
+                    <source_model>Easproject\Eucompliance\Model\Source\Attributes</source_model>
                     <label>HSCODE</label>
                     <comment>Use eas_hscode, if you don't have one</comment>
                 </field>
@@ -136,28 +107,28 @@
                 <field id="reduced_vat" translate="label" type="select" sortOrder="2" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Reduced vat</label>
-                    <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
+                    <source_model>Easproject\Eucompliance\Model\Source\Attributes</source_model>
                     <comment>Use eas_reduced_vat, if you don't have one</comment>
                 </field>
 
                 <field id="seller_registration_country" translate="label" type="select" sortOrder="2" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Seller registration</label>
-                    <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
+                    <source_model>Easproject\Eucompliance\Model\Source\Attributes</source_model>
                     <comment>Use eas_seller_registration_country, if you don't have one</comment>
                 </field>
 
                 <field id="act_as_disclosed_agent" translate="label" type="select" sortOrder="2" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Act as disclosed agent</label>
-                    <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
+                    <source_model>Easproject\Eucompliance\Model\Source\Attributes</source_model>
                     <comment>Use eas_act_as_disclosed_agent, if you don't have one</comment>
                 </field>
 
                 <field id="warehouse_country" translate="label" type="select" sortOrder="3" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Warehouse country</label>
-                    <source_model>Eas\Eucompliance\Model\Source\Attributes</source_model>
+                    <source_model>Easproject\Eucompliance\Model\Source\Attributes</source_model>
                     <comment>Use eas_warehouse_country, if you don't have one</comment>
                 </field>
 
