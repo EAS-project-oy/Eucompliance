@@ -79,6 +79,8 @@ class Quote
             );
             $quote->setData(Configuration::EAS_TOTAL_AMOUNT, $data['total_order_amount']);
             $quote->setData(Configuration::EAS_TOKEN, $tokenData[Configuration::EAS_CHECKOUT_TOKEN]);
+            $quote->setGrandTotal($data['total_order_amount']);
+            $quote->setBaseGrandTotal($data['total_order_amount']);
 
             foreach ($data['items'] as $item) {
                 $items = $quote->getAllItems();
