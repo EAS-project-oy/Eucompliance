@@ -109,6 +109,7 @@ class Quote
 
             $this->quoteRepository->save($quote);
             $quote->setTotalsCollectedFlag(false)->collectTotals();
+            $this->quoteRepository->save($quote);
             return true;
         }
         return false;
