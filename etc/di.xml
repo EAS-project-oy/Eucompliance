@@ -81,4 +81,11 @@
                 type="Easproject\Eucompliance\Plugin\Coupon"
                 sortOrder="10"/>
     </type>
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="orderProcessor" xsi:type="object">Easproject\Eucompliance\Console\OrderProcessor</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
