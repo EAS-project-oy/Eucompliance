@@ -13,8 +13,8 @@ class Edit extends \Easproject\Eucompliance\Controller\Adminhtml\Message
     protected $resultPageFactory;
 
     /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\Registry $coreRegistry
+     * @param \Magento\Backend\App\Action\Context        $context
+     * @param \Magento\Framework\Registry                $coreRegistry
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      */
     public function __construct(
@@ -42,7 +42,9 @@ class Edit extends \Easproject\Eucompliance\Controller\Adminhtml\Message
             $model->load($id);
             if (!$model->getId()) {
                 $this->messageManager->addErrorMessage(__('This Message no longer exists.'));
-                /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+                /**
+                 * @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect
+                 */
                 $resultRedirect = $this->resultRedirectFactory->create();
                 return $resultRedirect->setPath('*/*/');
             }
@@ -50,7 +52,9 @@ class Edit extends \Easproject\Eucompliance\Controller\Adminhtml\Message
         $this->_coreRegistry->register('eas_eucompliance_message', $model);
 
         // 3. Build edit form
-        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
+        /**
+ * @var \Magento\Backend\Model\View\Result\Page $resultPage
+*/
         $resultPage = $this->resultPageFactory->create();
         $this->initPage($resultPage)->addBreadcrumb(
             $id ? __('Edit Message') : __('New Message'),

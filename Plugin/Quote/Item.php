@@ -24,8 +24,8 @@ class Item
     }
 
     /**
-     * @param \Magento\Quote\Model\ResourceModel\Quote\Item $subject
-     * @param AbstractModel $cartItem
+     * @param  \Magento\Quote\Model\ResourceModel\Quote\Item $subject
+     * @param  AbstractModel                                 $cartItem
      * @return array
      */
     public function beforeSave(\Magento\Quote\Model\ResourceModel\Quote\Item $subject, AbstractModel $cartItem): array

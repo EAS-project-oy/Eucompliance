@@ -1,7 +1,8 @@
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  */
-define([
+define(
+    [
     'jquery',
     'mage/url',
     'underscore',
@@ -26,81 +27,88 @@ define([
     'uiRegistry',
     'mage/translate',
     'Magento_Checkout/js/model/shipping-rate-service'
-], function (
-    $,
-    url,
-    _,
-    Component,
-    ko,
-    customer,
-    addressList,
-    addressConverter,
-    quote,
-    createShippingAddress,
-    selectShippingAddress,
-    shippingRatesValidator,
-    formPopUpState,
-    shippingService,
-    selectShippingMethodAction,
-    rateRegistry,
-    setShippingInformationAction,
-    stepNavigator,
-    modal,
-    checkoutDataResolver,
-    checkoutData,
-    registry,
-    $t
-) {
-    'use strict';
+    ], function (
+        $,
+        url,
+        _,
+        Component,
+        ko,
+        customer,
+        addressList,
+        addressConverter,
+        quote,
+        createShippingAddress,
+        selectShippingAddress,
+        shippingRatesValidator,
+        formPopUpState,
+        shippingService,
+        selectShippingMethodAction,
+        rateRegistry,
+        setShippingInformationAction,
+        stepNavigator,
+        modal,
+        checkoutDataResolver,
+        checkoutData,
+        registry,
+        $t
+    ) {
+        'use strict';
 
-    var mixin = {
-        setShippingInformation: function () {
-            if (this.validateShippingInformation()) {
-                quote.billingAddress(null);
-                checkoutDataResolver.resolveBillingAddress();
-                registry.async('checkoutProvider')(function (checkoutProvider) {
-                    var shippingAddressData = checkoutData.getShippingAddressFromData();
+        var mixin = {
+            setShippingInformation: function () {
+                if (this.validateShippingInformation()) {
+                    quote.billingAddress(null);
+                    checkoutDataResolver.resolveBillingAddress();
+                    registry.async('checkoutProvider')(
+                        function (checkoutProvider) {
+                            var shippingAddressData = checkoutData.getShippingAddressFromData();
 
-                    if (shippingAddressData) {
-                        checkoutProvider.set(
-                            'shippingAddress',
-                            $.extend(true, {}, checkoutProvider.get('shippingAddress'), shippingAddressData)
-                        );
-                    }
-                });
-                setShippingInformationAction().done(
-                    function () {
-                        $.ajax({
-                            type: "POST",
-                            url: url.build('eas'),
-                            cache: true,
-                            dataType: 'json',
-                            context: this,
-                            data: {},
-                            success: function (data, textStatus) {
-                                if (data.redirect) {
-                                    window.location.href = data.redirect;
-                                } else if(data.error) {
-                                    let messageContainer = registry.get('checkout.errors').messageContainer;
-                                    messageContainer.addErrorMessage({
-                                        message: $t(data.error)
-                                    })
-                                }
-                                else if (data.disabled) {
-                                    stepNavigator.next();
-                                }
+                            if (shippingAddressData) {
+                                checkoutProvider.set(
+                                    'shippingAddress',
+                                    $.extend(true, {}, checkoutProvider.get('shippingAddress'), shippingAddressData)
+                                );
                             }
-                        });
-                    }
-                );
-            }
-        },
-        defaults:{
-            template: 'Easproject_Eucompliance/shipping'
-        },
-    };
+                        }
+                    );
+                    setShippingInformationAction().done(
+                        function () {
+                            $.ajax(
+                                {
+                                    type: "POST",
+                                    url: url.build('eas'),
+                                    cache: true,
+                                    dataType: 'json',
+                                    context: this,
+                                    data: {},
+                                    success: function (data, textStatus) {
+                                        if (data.redirect) {
+                                            window.location.href = data.redirect;
+                                        } else if(data.error) {
+                                            let messageContainer = registry.get('checkout.errors').messageContainer;
+                                            messageContainer.addErrorMessage(
+                                                {
+                                                    message: $t(data.error)
+                                                }
+                                            )
+                                        }
+                                        else if (data.disabled) {
+                                            stepNavigator.next();
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    );
+                }
+            },
+            defaults:{
+                template: 'Easproject_Eucompliance/shipping'
+            },
+        };
 
-    return function (target) {
-        return target.extend(mixin);
+        return function (target) {
+            return target.extend(mixin);
+        }
     }
-});
+);

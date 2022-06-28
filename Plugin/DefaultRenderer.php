@@ -12,9 +12,9 @@ class DefaultRenderer
     /**
      * @param \Magento\Sales\Block\Adminhtml\Order\View\Items\Renderer\DefaultRenderer $subject
      * @param string $result
-     * @param DataObject|Item $item
+     * @param \Magento\Framework\DataObject $item
      * @param string $column
-     * @param $field
+     * @param null $field
      * @return string
      */
     public function afterGetColumnHtml(

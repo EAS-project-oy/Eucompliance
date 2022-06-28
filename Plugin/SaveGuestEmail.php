@@ -27,7 +27,8 @@ class SaveGuestEmail
 
     /**
      * SaveGuestEmail constructor.
-     * @param Session $session
+     *
+     * @param Session         $session
      * @param QuoteRepository $quoteRepository
      */
     public function __construct(
@@ -39,9 +40,9 @@ class SaveGuestEmail
     }
 
     /**
-     * @param AccountManagement $subject
-     * @param $customerEmail
-     * @param null $websiteId
+     * @param  AccountManagement $subject
+     * @param  $customerEmail
+     * @param  null              $websiteId
      * @return array
      * @throws LocalizedException
      * @throws NoSuchEntityException

@@ -21,6 +21,7 @@ class Attributes implements OptionSourceInterface
 
     /**
      * Attributes constructor.
+     *
      * @param AttributeCollectionFactory $collectionFactory
      */
     public function __construct(

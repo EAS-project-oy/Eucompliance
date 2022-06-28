@@ -33,7 +33,7 @@ class AddGiftCardProductAttribute implements DataPatchInterface, PatchRevertable
      * Constructor
      *
      * @param ModuleDataSetupInterface $moduleDataSetup
-     * @param EavSetupFactory $eavSetupFactory
+     * @param EavSetupFactory          $eavSetupFactory
      */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
@@ -49,7 +49,6 @@ class AddGiftCardProductAttribute implements DataPatchInterface, PatchRevertable
     public function apply()
     {
         $this->moduleDataSetup->getConnection()->startSetup();
-        /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
         $eavSetup->addAttribute(
             \Magento\Catalog\Model\Product::ENTITY,
@@ -78,17 +77,17 @@ class AddGiftCardProductAttribute implements DataPatchInterface, PatchRevertable
                 'is_used_in_grid' => true,
                 'is_visible_in_grid' => false,
                 'is_filterable_in_grid' => false,
-                'option' => array('values' => array(""))
+                'option' => ['values' => [""]]
             ]
         );
 
         $this->moduleDataSetup->getConnection()->endSetup();
+        return $this;
     }
 
     public function revert()
     {
         $this->moduleDataSetup->getConnection()->startSetup();
-        /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
         $eavSetup->removeAttribute(\Magento\Catalog\Model\Product::ENTITY, 'gift_card');
 

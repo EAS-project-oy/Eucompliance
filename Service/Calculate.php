@@ -155,6 +155,7 @@ class Calculate
 
     /**
      * Calculate constructor.
+     *
      * @param ZendClientFactory $clientFactory
      * @param StoreManagerInterface $storeManager
      * @param Product $productResourceModel
@@ -241,16 +242,15 @@ class Calculate
         if (filter_var(str_replace('"', '', $response), FILTER_VALIDATE_URL)) {
             $this->quoteRepository->save($quote);
             return ['redirect' => str_replace('"', '', $response)];
-        } else {
-            $this->logger->critical('Eas calculate failed' . $response);
-            $errors = $this->serializer->unserialize($response);
-            if (array_key_exists('type', $errors)) {
-                return $this->getErrorResult($errors);
-            }
-            $errors = array_key_exists('errors', $errors) ? $errors['errors'] :
-                (array_key_exists('message', $errors) ? $errors['message'] : $errors['messages']);
+        }
+        $this->logger->critical('Eas calculate failed' . $response);
+        $errors = $this->serializer->unserialize($response);
+        if (array_key_exists('type', $errors)) {
             return $this->getErrorResult($errors);
         }
+        $errors = array_key_exists('errors', $errors) ? $errors['errors'] :
+            (array_key_exists('message', $errors) ? $errors['message'] : $errors['messages']);
+        return $this->getErrorResult($errors);
     }
 
     /**
@@ -270,9 +270,11 @@ class Calculate
             $apiKey = $apiKey ?: $this->configuration->getApiKey();
             $secretApiKey = $secretApiKey ?: $this->configuration->getSecretKey();
             $client->setUri($baseApiUrl);
-            $client->setHeaders([
-                'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
-            ]);
+            $client->setHeaders(
+                [
+                    'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
+                ]
+            );
 
             $client->setParameterPost('grant_type', 'client_credentials');
             $this->setConfig($client);
@@ -334,10 +336,12 @@ class Calculate
 
         foreach ($quote->getAllVisibleItems() as $item) {
             if ($item->getSku() == $product->getSku()) {
-                $requestItems[] = $this->itemRequestInterfaceFactory->create([
-                    'sku' => $item->getSku(),
-                    'qty' => $item->getQty()
-                ]);
+                $requestItems[] = $this->itemRequestInterfaceFactory->create(
+                    [
+                        'sku' => $item->getSku(),
+                        'qty' => $item->getQty()
+                    ]
+                );
             }
         }
         $inventoryRequest = $this->inventoryRequestInterfaceFactory->create(
@@ -363,7 +367,9 @@ class Calculate
      */
     private function getAddressFromQuote(Quote $quote): ?AddressInterface
     {
-        /** @var AddressInterface $address */
+        /**
+         * @var AddressInterface $address
+         */
         $address = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
         if ($address === null) {
             return null;
@@ -401,7 +407,7 @@ class Calculate
     }
 
     /**
-     * @param $error
+     * @param  $error
      * @return bool[]|string[]
      */
     private function getErrorResult($error): array
@@ -419,7 +425,7 @@ class Calculate
     }
 
     /**
-     * @param $error
+     * @param  $error
      * @return \Magento\Framework\Phrase
      */
     private function getUserMessage($error): \Magento\Framework\Phrase
@@ -434,7 +440,7 @@ class Calculate
     }
 
     /**
-     * @param $error
+     * @param  $error
      * @return string
      */
     public function getFullMessage($error): string
@@ -447,7 +453,7 @@ class Calculate
     }
 
     /**
-     * @param $error
+     * @param  $error
      * @return string
      */
     public function getErrorMessage($error): string
@@ -463,7 +469,7 @@ class Calculate
     }
 
     /**
-     * @param $error
+     * @param  $error
      * @return string
      */
     public function getMessage($error): string
@@ -490,7 +496,7 @@ class Calculate
     }
 
     /**
-     * @param $error
+     * @param  $error
      * @param string $message
      * @return string
      */
@@ -506,7 +512,7 @@ class Calculate
     }
 
     /**
-     * @param $error
+     * @param  $error
      * @return void
      */
     private function sendToAdmin($error)
@@ -538,11 +544,13 @@ class Calculate
                 $apiUrl = $this->configuration->getPaymentVerifyUrl();
                 $client = $this->clientFactory->create();
                 $client->setUri($apiUrl);
-                $client->setHeaders([
-                    'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
-                    'Content-Type' => 'application/json',
-                    'accept' => 'text/*'
-                ]);
+                $client->setHeaders(
+                    [
+                        'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+                        'Content-Type' => 'application/json',
+                        'accept' => 'text/*'
+                    ]
+                );
 
                 $data = [
                     'token' => $quote->getEasToken(),
@@ -555,8 +563,10 @@ class Calculate
                     $quote->setEasConfirmationSent(true);
                     $this->quoteRepository->save($quote);
                 } else {
-                    $this->logger->debug('EAS: quote with id ' . $quote->getEntityId() .
-                        'failed confirmation. Response body ' . $response);
+                    $this->logger->debug(
+                        'EAS: quote with id ' . $quote->getEntityId() .
+                        'failed confirmation. Response body ' . $response
+                    );
                 }
             }
         }
@@ -568,16 +578,18 @@ class Calculate
         $client = $this->clientFactory->create();
         $client->setUri($apiUrl);
         $this->setConfig($client);
-        $client->setHeaders([
-            'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
-            'Content-Type' => 'application/json',
-            'accept' => 'text/*'
-        ]);
+        $client->setHeaders(
+            [
+                'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+                'Content-Type' => 'application/json',
+                'accept' => 'text/*'
+            ]
+        );
         return $client->request(Zend_Http_Client::GET)->getBody();
     }
 
     /**
-     * @param $product
+     * @param  $product
      * @return string
      */
     private function getTypeOfGoods($product): string
@@ -607,13 +619,14 @@ class Calculate
         $apiUrl = $this->configuration->getCalculateUrl();
         $client = $this->clientFactory->create();
         $client->setUri($apiUrl);
-        $client->setHeaders([
-            'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
-            'x-redirect-uri' => $this->url->getUrl(Configuration::EAS_CALCULATE),
-            'Content-Type' => 'application/json',
-            'accept' => 'text/*'
-        ]);
-
+        $client->setHeaders(
+            [
+                'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+                'x-redirect-uri' => $this->url->getUrl(Configuration::EAS_CALCULATE),
+                'Content-Type' => 'application/json',
+                'accept' => 'text/*'
+            ]
+        );
 
         $storeId = $this->storeManager->getStore()->getId();
         $address = $quote->getIsVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
@@ -661,7 +674,9 @@ class Calculate
             $data['recipient_title'] = $prefix;
         }
 
-        /** @TODO need refactoring in future versions */
+        /**
+         * @TODO need refactoring in future versions
+         */
         $streets = $address->getStreet();
         switch (count($streets)) {
             case 1:
@@ -679,7 +694,9 @@ class Calculate
         $items = [];
 
         foreach ($quote->getAllVisibleItems() as $item) {
-            /** @var ProductInterface $product */
+            /**
+             * @var ProductInterface $product
+             */
             $product = $item->getProduct();
             // set warehouse code
             $extAttributes = $item->getExtensionAttributes();
@@ -730,8 +747,8 @@ class Calculate
             if ($hs6p) {
                 $items[array_key_last($items)]['hs6p_received'] = $hs6p;
             }
-            $sellerRegistrationCountry = $this->productResourceModel->
-            getAttributeRawValue($product->getId(), $this->configuration->getSellerRegistrationName(), $storeId);
+            $sellerRegistrationCountry = $this->productResourceModel
+                ->getAttributeRawValue($product->getId(), $this->configuration->getSellerRegistrationName(), $storeId);
             if ($sellerRegistrationCountry) {
                 $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] = $sellerRegistrationCountry;
             } else {

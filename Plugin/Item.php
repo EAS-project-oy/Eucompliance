@@ -29,8 +29,8 @@ class Item
     }
 
     /**
-     * @param Repository $subject
-     * @param CartItemInterface $cartItem
+     * @param  Repository        $subject
+     * @param  CartItemInterface $cartItem
      * @return array
      */
     public function beforeSave(Repository $subject, CartItemInterface $cartItem): array
@@ -40,9 +40,9 @@ class Item
     }
 
     /**
-     * @param Repository $subject
-     * @param array $result
-     * @param $cartId
+     * @param  Repository $subject
+     * @param  array      $result
+     * @param  $cartId
      * @return array
      */
     public function afterGetList(Repository $subject, array $result, $cartId): array

@@ -55,18 +55,18 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
     private GetStockItemConfigurationInterface $getStockItemConfiguration;
 
     /**
-     * @param string $name
-     * @param string $primaryFieldName
-     * @param string $requestFieldName
-     * @param RequestInterface $request
-     * @param OrderRepositoryInterface $orderRepository
-     * @param StockByWebsiteIdResolverInterface $stockByWebsiteIdResolver
+     * @param string                             $name
+     * @param string                             $primaryFieldName
+     * @param string                             $requestFieldName
+     * @param RequestInterface                   $request
+     * @param OrderRepositoryInterface           $orderRepository
+     * @param StockByWebsiteIdResolverInterface  $stockByWebsiteIdResolver
      * @param GetStockItemConfigurationInterface $getStockItemConfiguration
      * @param $getSourcesByStockIdSkuAndQty
-     * @param GetSkuFromOrderItemInterface $getSkuFromOrderItem
-     * @param GetSourcesByOrderIdSkuAndQty|null $getSourcesByOrderIdSkuAndQty
-     * @param array $meta
-     * @param array $data
+     * @param GetSkuFromOrderItemInterface       $getSkuFromOrderItem
+     * @param GetSourcesByOrderIdSkuAndQty|null  $getSourcesByOrderIdSkuAndQty
+     * @param array                              $meta
+     * @param array                              $data
      */
     public function __construct(
         string                             $name,
@@ -111,7 +111,9 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
     {
         $data = [];
         $orderId = (int)$this->request->getParam('order_id');
-        /** @var Order $order */
+        /**
+ * @var Order $order
+*/
         $order = $this->orderRepository->get($orderId);
         $websiteId = $order->getStore()->getWebsiteId();
         $stockId = (int)$this->stockByWebsiteIdResolver->execute((int)$websiteId)->getStockId();
@@ -119,7 +121,8 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
         foreach ($order->getAllItems() as $orderItem) {
             if ($orderItem->getIsVirtual()
                 || $orderItem->getLockedDoShip()
-                || $orderItem->getHasChildren()) {
+                || $orderItem->getHasChildren()
+            ) {
                 continue;
             }
 
@@ -163,9 +166,9 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
     /**
      * Get sources
      *
-     * @param int $orderId
-     * @param string $sku
-     * @param float $qty
+     * @param  int    $orderId
+     * @param  string $sku
+     * @param  float  $qty
      * @return array
      * @throws NoSuchEntityException
      */
@@ -179,8 +182,8 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
     }
 
     /**
-     * @param Item $item
-     * @param string|int|float $qty
+     * @param  Item             $item
+     * @param  string|int|float $qty
      * @return float|int
      */
     private function castQty(Item $item, $qty)
@@ -196,16 +199,19 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
 
     /**
      * Generate display product name
-     * @param Item $item
+     *
+     * @param  Item $item
      * @return null|string
      */
     private function getProductName(Item $item)
     {
         $name = $item->getName();
-        if ($parentItem = $item->getParentItem()) {
+        $parentItem = $item->getParentItem();
+        if ($parentItem) {
             $name = $parentItem->getName();
             $options = [];
-            if ($productOptions = $parentItem->getProductOptions()) {
+            $productOptions = $parentItem->getProductOptions();
+            if ($productOptions) {
                 if (isset($productOptions['options'])) {
                     $options = array_merge($options, $productOptions['options']);
                 }
@@ -229,8 +235,8 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
     }
 
     /**
-     * @param $itemSku
-     * @param $stockId
+     * @param  $itemSku
+     * @param  $stockId
      * @return bool
      * @throws LocalizedException
      */

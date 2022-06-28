@@ -49,9 +49,9 @@ class CartItem
     ];
 
     /**
-     * @param CartItemInterface|AbstractModel $cartItem
-     * @param string $mode
-     * @param array $attributes
+     * @param  CartItemInterface|AbstractModel $cartItem
+     * @param  string                          $mode
+     * @param  array                           $attributes
      * @return CartItemInterface
      */
     public function handleAttributes($cartItem, string $mode = self::SAVE, array $attributes = self::ATTRIBUTE_NAMES)
@@ -78,11 +78,11 @@ class CartItem
     }
 
     /**
-     * @param $cartItem
-     * @param string|null $key
-     * @param string $attribute
-     * @param $extAttributes
-     * @param string $mode
+     * @param  $cartItem
+     * @param  string|null $key
+     * @param  string      $attribute
+     * @param  $extAttributes
+     * @param  string      $mode
      * @return mixed
      */
     private function handleAttribute(
@@ -116,7 +116,8 @@ class CartItem
 
     /**
      * Converst string to camel case
-     * @param $string
+     *
+     * @param  $string
      * @return string
      */
     private function toCamelCase($string): string

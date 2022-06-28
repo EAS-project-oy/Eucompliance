@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Controller\Adminhtml\Message;
 
+use Easproject\Eucompliance\Controller\Adminhtml\Message;
+
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  */
-class Delete extends \Easproject\Eucompliance\Controller\Adminhtml\Message
+class Delete extends Message
 {
 
     /**
@@ -17,7 +19,9 @@ class Delete extends \Easproject\Eucompliance\Controller\Adminhtml\Message
      */
     public function execute()
     {
-        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+        /**
+         * @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect
+         */
         $resultRedirect = $this->resultRedirectFactory->create();
         // check if we know what should be deleted
         $id = $this->getRequest()->getParam('message_id');

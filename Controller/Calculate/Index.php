@@ -41,11 +41,12 @@ class Index implements ActionInterface
 
     /**
      * Index constructor.
-     * @param \Magento\Framework\Webapi\Rest\Request $request
-     * @param \Magento\Framework\App\ResponseInterface $response
-     * @param \Magento\Framework\UrlInterface $url
+     *
+     * @param \Magento\Framework\Webapi\Rest\Request              $request
+     * @param \Magento\Framework\App\ResponseInterface            $response
+     * @param \Magento\Framework\UrlInterface                     $url
      * @param \Easproject\Eucompliance\Model\Config\Configuration $configuration
-     * @param \Easproject\Eucompliance\Service\Quote $serviceQuote
+     * @param \Easproject\Eucompliance\Service\Quote              $serviceQuote
      */
     public function __construct(
         Request                 $request,
@@ -70,8 +71,7 @@ class Index implements ActionInterface
         $params = $this->request->getParams();
         if ($this->serviceQuote->saveQuoteData($params)) {
             return $this->response->setRedirect($this->url->getUrl('checkout/') . '#payment');
-        } else {
-            return $this->response->setRedirect($this->url->getUrl('checkout/cart'));
         }
+        return $this->response->setRedirect($this->url->getUrl('checkout/cart'));
     }
 }

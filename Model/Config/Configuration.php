@@ -89,8 +89,8 @@ class Configuration
 
     /**
      * @param ScopeConfigInterface $scopeConfig
-     * @param Manager $moduleManager
-     * @param EncryptorInterface $encryptor
+     * @param Manager              $moduleManager
+     * @param EncryptorInterface   $encryptor
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -178,8 +178,9 @@ class Configuration
      */
     public function getMSIWarehouseLocation(): ?string
     {
-        if ($this->scopeConfig->getValue(self::CONFIGURATION_MSI_ENABLE, ScopeInterface::SCOPE_STORE) &&
-            $this->moduleManager->isEnabled(self::INVENTORY_MODULE)) {
+        if ($this->scopeConfig->getValue(self::CONFIGURATION_MSI_ENABLE, ScopeInterface::SCOPE_STORE)
+            && $this->moduleManager->isEnabled(self::INVENTORY_MODULE)
+        ) {
             return $this->scopeConfig->getValue(self::CONFIGURATION_MSI_MSI_ALGORITHM, ScopeInterface::SCOPE_STORE);
         }
         return null;
@@ -287,9 +288,11 @@ class Configuration
      */
     public function getSecretKey(): string
     {
-        return $this->encryptor->decrypt($this->scopeConfig->getValue(
-            Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
-            ScopeInterface::SCOPE_STORE
-        ));
+        return $this->encryptor->decrypt(
+            $this->scopeConfig->getValue(
+                Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
+                ScopeInterface::SCOPE_STORE
+            )
+        );
     }
 }

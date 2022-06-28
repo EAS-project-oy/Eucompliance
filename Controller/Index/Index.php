@@ -35,9 +35,10 @@ class Index implements ActionInterface
 
     /**
      * Index constructor.
+     *
      * @param JsonFactory $jsonResultFactory
-     * @param Session $session
-     * @param Calculate $calculate
+     * @param Session     $session
+     * @param Calculate   $calculate
      */
     public function __construct(
         JsonFactory $jsonResultFactory,

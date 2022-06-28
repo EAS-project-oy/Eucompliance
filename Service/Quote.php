@@ -34,10 +34,10 @@ class Quote
     private CartRepositoryInterface $quoteRepository;
 
     /**
-     * @param \Firebase\JWT\JWT $jwt
+     * @param \Firebase\JWT\JWT                          $jwt
      * @param \Easproject\Eucompliance\Service\Calculate $calculate
      * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
-     * @param \Magento\Checkout\Model\Session $session
+     * @param \Magento\Checkout\Model\Session            $session
      */
     public function __construct(
         JWT                     $jwt,
@@ -52,7 +52,7 @@ class Quote
     }
 
     /**
-     * @param $tokenData
+     * @param  $tokenData
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -88,13 +88,17 @@ class Quote
                         $quoteItem->setCustomPrice($item['unit_cost_excl_vat']);
                         $quoteItem->setOriginalCustomPrice($item['unit_cost_excl_vat']);
                         $extAttributes = $quoteItem->getExtensionAttributes();
-                        $extAttributes->setEasTaxAmount($item['item_duties_and_taxes'] - $item['item_customs_duties']
-                            - $item['item_eas_fee'] - $item['item_eas_fee_vat'] - $item['item_delivery_charge_vat']);
+                        $extAttributes->setEasTaxAmount(
+                            $item['item_duties_and_taxes'] - $item['item_customs_duties']
+                            - $item['item_eas_fee'] - $item['item_eas_fee_vat'] - $item['item_delivery_charge_vat']
+                        );
                         $extAttributes->setEasRowTotal($item['unit_cost_excl_vat'] * $quoteItem->getQty());
 
-                        $extAttributes->setEasRowTotalInclTax($item['unit_cost_excl_vat'] * $quoteItem->getQty() +
+                        $extAttributes->setEasRowTotalInclTax(
+                            $item['unit_cost_excl_vat'] * $quoteItem->getQty() +
                             $extAttributes->getEasTaxAmount() + $item['item_customs_duties'] +
-                            $item['item_eas_fee'] + $item['item_eas_fee_vat']);
+                            $item['item_eas_fee'] + $item['item_eas_fee_vat']
+                        );
 
                         $extAttributes->setEasTaxPercent($item['vat_rate']);
                         $extAttributes->setEasFee($item['item_eas_fee']);
@@ -112,7 +116,10 @@ class Quote
         return false;
     }
 
-
+    /**
+     * @param \Magento\Quote\Model\Quote\Item $item
+     * @return void
+     */
     private function clear(Item $item)
     {
         $item->setEasTaxAmount(0);
