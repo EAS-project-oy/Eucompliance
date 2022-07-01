@@ -39,10 +39,10 @@ class LayoutProcessor
 
     /**
      * @param AttributeMetadataDataProvider $attributeMetadataDataProvider
-     * @param AttributeMapper $attributeMapper
-     * @param AttributeMerger $merger
-     * @param Options $options
-     * @param Configuration $configuration
+     * @param AttributeMapper               $attributeMapper
+     * @param AttributeMerger               $merger
+     * @param Options                       $options
+     * @param Configuration                 $configuration
      */
     public function __construct(
         AttributeMetadataDataProvider $attributeMetadataDataProvider,
@@ -68,10 +68,13 @@ class LayoutProcessor
 
     /**
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function getAddressAttributes()
     {
-        /** @var \Magento\Eav\Api\Data\AttributeInterface[] $attributes */
+        /**
+         * @var \Magento\Eav\Api\Data\AttributeInterface[] $attributes
+         */
         $attributes = $this->attributeMetadataDataProvider->loadAttributesCollection(
             'customer_address',
             'customer_register_address'
@@ -95,8 +98,8 @@ class LayoutProcessor
     /**
      * Convert elements(like prefix and suffix) from inputs to selects when necessary
      *
-     * @param array $elements address attributes
-     * @param array $attributesToConvert fields and their callbacks
+     * @param  array $elements            address attributes
+     * @param  array $attributesToConvert fields and their callbacks
      * @return array
      */
     private function convertElementsToSelect($elements, $attributesToConvert)
@@ -128,15 +131,18 @@ class LayoutProcessor
     /**
      * Process js Layout of block
      *
-     * @param array $jsLayout
-     * @return array
+     * @param $jsLayout
+     *
+     * @return array|mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function process($jsLayout)
     {
         if (!$this->configuration->isEnabled()) {
             return $jsLayout;
         }
-        /** Rename tax */
+
+        //Rename tax
         $jsLayout['components']['checkout']['children']['sidebar']['children']
         ['summary']['children']['totals']['children']['tax']['config']['title'] =
             __($this->configuration->getTaxLabel());
@@ -148,8 +154,9 @@ class LayoutProcessor
 
         $elements = $this->getAddressAttributes();
         $elements = $this->convertElementsToSelect($elements, $attributesToConvert);
-        if (isset($jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children']
-            ['eas-billing']['children'])) {
+        if (isset($jsLayout['components']['checkout']['children']['steps']['children']
+            ['eas-billing-step']['children']['eas-billing']['children'])
+        ) {
             $jsLayout['components']['checkout']['children']['steps']
             ['children']['eas-billing-step']['children']['customer-email'] =
                 [
@@ -202,7 +209,7 @@ class LayoutProcessor
         array $newStepsLayout,
         array $elements
     ) {
-
+        $component = [];
         if (!isset($newStepsLayout['afterMethods']['children'])) {
             $newStepsLayout['afterMethods']['children'] = [];
         }
@@ -224,7 +231,7 @@ class LayoutProcessor
      * Gets billing address component details
      *
      * @param string $paymentCode
-     * @param array $elements
+     * @param array  $elements
      *
      * @return array
      */

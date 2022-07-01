@@ -24,8 +24,8 @@ class Quote
     }
 
     /**
-     * @param \Magento\Quote\Model\Quote $subject
-     * @param Item[] $result
+     * @param  \Magento\Quote\Model\Quote $subject
+     * @param  Item[]                     $result
      * @return Item[]
      */
     public function afterGetAllVisibleItems(\Magento\Quote\Model\Quote $subject, array $result): array

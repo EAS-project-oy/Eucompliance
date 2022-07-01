@@ -16,9 +16,9 @@ class Shipping extends CommonTaxCollector
     /**
      * @param \Magento\Tax\Model\Sales\Total\Quote\Shipping $subject
      * @param $result
-     * @param Quote $quote
-     * @param ShippingAssignmentInterface $shippingAssignment
-     * @param Total $total
+     * @param Quote                                         $quote
+     * @param ShippingAssignmentInterface                   $shippingAssignment
+     * @param Total                                         $total
      */
     public function afterCollect(
         \Magento\Tax\Model\Sales\Total\Quote\Shipping $subject,

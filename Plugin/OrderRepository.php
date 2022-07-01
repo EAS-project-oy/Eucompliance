@@ -26,7 +26,7 @@ class OrderRepository
     private CartRepositoryInterface $cartRepository;
 
     /**
-     * @param Calculate $calculate
+     * @param Calculate               $calculate
      * @param CartRepositoryInterface $cartRepository
      */
     public function __construct(
@@ -39,7 +39,8 @@ class OrderRepository
 
     /**
      * @param \Magento\Sales\Model\OrderRepository $subject
-     * @param OrderInterface $result
+     * @param OrderInterface                       $result
+     *
      * @return OrderInterface
      * @throws InputException
      * @throws NoSuchEntityException
@@ -57,8 +58,8 @@ class OrderRepository
     }
 
     /**
-     * @param \Magento\Sales\Model\OrderRepository $subject
-     * @param OrderInterface $entity
+     * @param  \Magento\Sales\Model\OrderRepository $subject
+     * @param  OrderInterface                       $entity
      * @return array
      * @throws InputException
      * @throws NoSuchEntityException
@@ -75,7 +76,7 @@ class OrderRepository
             }
         }
 
-        /** Confirm order */
+        //Confirm order
         if (!$entity->getEntityId() && $entity->getPayment()->getMethod() !== Checkmo::PAYMENT_METHOD_CHECKMO_CODE) {
             if ($entity->getStatus() == self::PENDING) {
                 $this->calculate->confirmOrder($entity);

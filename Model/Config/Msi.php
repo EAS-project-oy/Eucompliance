@@ -26,7 +26,7 @@ class Msi implements OptionSourceInterface
 
     /**
      * @param GetSourceSelectionAlgorithmList $getSourceSelectionAlgorithmList
-     * @param Manager $moduleManager
+     * @param Manager                         $moduleManager
      */
     public function __construct(
         GetSourceSelectionAlgorithmList $getSourceSelectionAlgorithmList,

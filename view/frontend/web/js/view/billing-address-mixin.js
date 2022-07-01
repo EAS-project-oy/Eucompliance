@@ -1,8 +1,10 @@
-define(['Magento_Checkout/js/model/quote'],
+define(
+    ['Magento_Checkout/js/model/quote'],
     function (quote) {
         'use strict';
 
-        function isVirtual(quote) {
+        function isVirtual(quote)
+        {
             if (window.location.hash == '#eas-billing' || !window.location.hash) {
                 // render billing address edit button on those pages
                 return false;
@@ -27,4 +29,5 @@ define(['Magento_Checkout/js/model/quote'],
             return target.extend(mixin);
         }
 
-    });
+    }
+);

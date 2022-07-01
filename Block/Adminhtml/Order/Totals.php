@@ -64,8 +64,8 @@ class Totals extends \Magento\Sales\Block\Adminhtml\Order\Totals
     }
 
     /**
-     * @param string $method
-     * @param OrderInterface $order
+     * @param  string         $method
+     * @param  OrderInterface $order
      * @return float
      */
     private function getOrderItemAggregatedValue(string $method, OrderInterface $order): float

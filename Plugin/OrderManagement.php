@@ -27,9 +27,9 @@ class OrderManagement
     }
 
     /**
-     * @param OrderManagementInterface $subject
-     * @param OrderInterface $result
-     * @param OrderInterface $order
+     * @param  OrderManagementInterface $subject
+     * @param  OrderInterface           $result
+     * @param  OrderInterface           $order
      * @return OrderInterface
      * @throws \Exception
      */

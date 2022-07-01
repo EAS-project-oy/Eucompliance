@@ -9,6 +9,7 @@ namespace Easproject\Eucompliance\Model;
 
 use Easproject\Eucompliance\Api\Data\MessageInterface;
 use Easproject\Eucompliance\Api\Data\MessageInterfaceFactory;
+use Easproject\Eucompliance\Api\Data\MessageSearchResultsInterface;
 use Easproject\Eucompliance\Api\Data\MessageSearchResultsInterfaceFactory;
 use Easproject\Eucompliance\Api\MessageRepositoryInterface;
 use Easproject\Eucompliance\Model\ResourceModel\Message as ResourceMessage;
@@ -47,11 +48,11 @@ class MessageRepository implements MessageRepositoryInterface
     protected $resource;
 
     /**
-     * @param ResourceMessage $resource
-     * @param MessageInterfaceFactory $messageFactory
-     * @param MessageCollectionFactory $messageCollectionFactory
+     * @param ResourceMessage                      $resource
+     * @param MessageInterfaceFactory              $messageFactory
+     * @param MessageCollectionFactory             $messageCollectionFactory
      * @param MessageSearchResultsInterfaceFactory $searchResultsFactory
-     * @param CollectionProcessorInterface $collectionProcessor
+     * @param CollectionProcessorInterface         $collectionProcessor
      */
     public function __construct(
         ResourceMessage $resource,
@@ -70,15 +71,17 @@ class MessageRepository implements MessageRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function save(MessageInterface $message)
+    public function save(MessageInterface $message): MessageInterface
     {
         try {
             $this->resource->save($message);
         } catch (\Exception $exception) {
-            throw new CouldNotSaveException(__(
-                'Could not save the message: %1',
-                $exception->getMessage()
-            ));
+            throw new CouldNotSaveException(
+                __(
+                    'Could not save the message: %1',
+                    $exception->getMessage()
+                )
+            );
         }
         return $message;
     }
@@ -86,7 +89,7 @@ class MessageRepository implements MessageRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function get($messageId)
+    public function get(string $messageId): MessageInterface
     {
         $message = $this->messageFactory->create();
         $this->resource->load($message, $messageId);
@@ -101,7 +104,7 @@ class MessageRepository implements MessageRepositoryInterface
      */
     public function getList(
         \Magento\Framework\Api\SearchCriteriaInterface $criteria
-    ) {
+    ): MessageSearchResultsInterface {
         $collection = $this->messageCollectionFactory->create();
 
         $this->collectionProcessor->process($criteria, $collection);
@@ -122,17 +125,19 @@ class MessageRepository implements MessageRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function delete(MessageInterface $message)
+    public function delete(MessageInterface $message): bool
     {
         try {
             $messageModel = $this->messageFactory->create();
             $this->resource->load($messageModel, $message->getMessageId());
             $this->resource->delete($messageModel);
         } catch (\Exception $exception) {
-            throw new CouldNotDeleteException(__(
-                'Could not delete the message: %1',
-                $exception->getMessage()
-            ));
+            throw new CouldNotDeleteException(
+                __(
+                    'Could not delete the message: %1',
+                    $exception->getMessage()
+                )
+            );
         }
         return true;
     }
@@ -140,7 +145,7 @@ class MessageRepository implements MessageRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function deleteById($messageId)
+    public function deleteById(string $messageId): bool
     {
         return $this->delete($this->get($messageId));
     }

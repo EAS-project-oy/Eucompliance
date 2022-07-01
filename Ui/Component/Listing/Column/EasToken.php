@@ -24,9 +24,9 @@ class EasToken extends Column
 
     /**
      * @param \Magento\Framework\View\Element\UiComponent\ContextInterface $context
-     * @param \Magento\Framework\View\Element\UiComponentFactory $uiComponentFactory
-     * @param array $components
-     * @param array $data
+     * @param \Magento\Framework\View\Element\UiComponentFactory           $uiComponentFactory
+     * @param array                                                        $components
+     * @param array                                                        $data
      */
     public function __construct(
         ContextInterface   $context,

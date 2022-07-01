@@ -18,13 +18,13 @@ class Message extends AbstractModel implements MessageInterface
      */
     public function _construct()
     {
-        $this->_init(\Easproject\Eucompliance\Model\ResourceModel\Message::class);
+        $this->_init(ResourceModel\Message::class);
     }
 
     /**
      * @inheritDoc
      */
-    public function getMessageId()
+    public function getMessageId(): ?string
     {
         return $this->getData(self::MESSAGE_ID);
     }
@@ -32,7 +32,7 @@ class Message extends AbstractModel implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function setMessageId($messageId)
+    public function setMessageId(string $messageId): MessageInterface
     {
         return $this->setData(self::MESSAGE_ID, $messageId);
     }
@@ -40,7 +40,7 @@ class Message extends AbstractModel implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function getErrorType()
+    public function getErrorType(): ?string
     {
         return $this->getData(self::ERROR_TYPE);
     }
@@ -48,7 +48,7 @@ class Message extends AbstractModel implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function setErrorType($errorType)
+    public function setErrorType(string $errorType): MessageInterface
     {
         return $this->setData(self::ERROR_TYPE, $errorType);
     }
@@ -56,7 +56,7 @@ class Message extends AbstractModel implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function getResponse()
+    public function getResponse(): ?string
     {
         return $this->getData(self::RESPONSE);
     }
@@ -64,7 +64,7 @@ class Message extends AbstractModel implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function setResponse($response)
+    public function setResponse(string $response): MessageInterface
     {
         return $this->setData(self::RESPONSE, $response);
     }
@@ -72,7 +72,7 @@ class Message extends AbstractModel implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function getMessage()
+    public function getMessage(): ?string
     {
         return $this->getData(self::MESSAGE);
     }
@@ -80,7 +80,7 @@ class Message extends AbstractModel implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function setMessage($message)
+    public function setMessage(string $message): MessageInterface
     {
         return $this->setData(self::MESSAGE, $message);
     }
