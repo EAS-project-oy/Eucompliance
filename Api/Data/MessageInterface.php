@@ -1,4 +1,14 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ * PHP version 7
+ *
+ * @category Module
+ * @package  Easproject_Eucompliance
+ * @author   EAS Project <magento@easproject.org>
+ * @license  https://github.com/EAS-project-oy/eascompliance/ General License
+ * @link     https://github.com/EAS-project-oy/eascompliance
+ */
 
 declare(strict_types=1);
 
@@ -6,6 +16,10 @@ namespace Easproject\Eucompliance\Api\Data;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
+ *
+ * @author  EAS Project <magento@easproject.org>
+ * @license https://github.com/EAS-project-oy/eascompliance/ General License
+ * @link    https://github.com/EAS-project-oy/eascompliance
  */
 interface MessageInterface
 {
@@ -17,53 +31,65 @@ interface MessageInterface
 
     /**
      * Get message_id
+     *
      * @return string|null
      */
-    public function getMessageId();
+    public function getMessageId(): ?string;
 
     /**
      * Set message_id
-     * @param string $messageId
-     * @return \Easproject\Eucompliance\Message\Api\Data\MessageInterface
+     *
+     * @param string $messageId message id
+     *
+     * @return $this
      */
-    public function setMessageId($messageId);
+    public function setMessageId(string $messageId): MessageInterface;
 
     /**
      * Get error_type
+     *
      * @return string|null
      */
-    public function getErrorType();
+    public function getErrorType(): ?string;
 
     /**
      * Set error_type
-     * @param string $errorType
-     * @return \Easproject\Eucompliance\Message\Api\Data\MessageInterface
+     *
+     * @param string $errorType error type
+     *
+     * @return $this
      */
-    public function setErrorType($errorType);
+    public function setErrorType(string $errorType): MessageInterface;
 
     /**
      * Get response
+     *
      * @return string|null
      */
-    public function getResponse();
+    public function getResponse(): ?string;
 
     /**
      * Set response
-     * @param string $response
-     * @return \Easproject\Eucompliance\Message\Api\Data\MessageInterface
+     *
+     * @param string $response response
+     *
+     * @return $this
      */
-    public function setResponse($response);
+    public function setResponse(string $response): MessageInterface;
 
     /**
      * Get message
+     *
      * @return string|null
      */
-    public function getMessage();
+    public function getMessage(): ?string;
 
     /**
      * Set message
-     * @param string $message
-     * @return \Easproject\Eucompliance\Message\Api\Data\MessageInterface
+     *
+     * @param string $message message
+     *
+     * @return $this
      */
-    public function setMessage($message);
+    public function setMessage(string $message): MessageInterface;
 }

@@ -56,12 +56,12 @@ class ChangeAttributeGroup implements DataPatchInterface
     /**
      * Constructor
      *
-     * @param ModuleDataSetupInterface $moduleDataSetup
-     * @param EavSetupFactory $eavSetupFactory
+     * @param ModuleDataSetupInterface                                      $moduleDataSetup
+     * @param EavSetupFactory                                               $eavSetupFactory
      * @param \Magento\Catalog\Api\ProductAttributeGroupRepositoryInterface $productAttributeGroup
-     * @param \Magento\Eav\Api\AttributeManagementInterface $attributeManagement
-     * @param \Magento\Catalog\Model\Config $config
-     * @param \Magento\Eav\Api\AttributeGroupRepositoryInterface $attributeGroupRepository
+     * @param \Magento\Eav\Api\AttributeManagementInterface                 $attributeManagement
+     * @param \Magento\Catalog\Model\Config                                 $config
+     * @param \Magento\Eav\Api\AttributeGroupRepositoryInterface            $attributeGroupRepository
      */
     public function __construct(
         ModuleDataSetupInterface                 $moduleDataSetup,
@@ -81,12 +81,12 @@ class ChangeAttributeGroup implements DataPatchInterface
 
     /**
      * {@inheritdoc}
+     *
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function apply()
     {
         $this->moduleDataSetup->getConnection()->startSetup();
-        /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
         $entityTypeId = $eavSetup->getEntityTypeId(Product::ENTITY);
@@ -124,7 +124,7 @@ class ChangeAttributeGroup implements DataPatchInterface
     }
 
     /**
-     * @param $attributeSetId
+     * @param  $attributeSetId
      * @return void
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */

@@ -10,11 +10,11 @@ use Magento\Framework\DataObject;
 class DefaultRenderer
 {
     /**
-     * @param \Magento\Sales\Block\Adminhtml\Order\View\Items\Renderer\DefaultRenderer $subject
-     * @param string $result
-     * @param DataObject|Item $item
-     * @param string $column
-     * @param $field
+     * @param  \Magento\Sales\Block\Adminhtml\Order\View\Items\Renderer\DefaultRenderer $subject
+     * @param  string                                                                   $result
+     * @param  \Magento\Framework\DataObject                                            $item
+     * @param  string                                                                   $column
+     * @param  null                                                                     $field
      * @return string
      */
     public function afterGetColumnHtml(

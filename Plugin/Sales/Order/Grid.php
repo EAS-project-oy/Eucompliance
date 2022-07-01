@@ -19,8 +19,8 @@ class Grid
     public static $leftJoinTable = 'quote';
 
     /**
-     * @param $intercepter
-     * @param $collection
+     * @param  $intercepter
+     * @param  $collection
      * @return mixed
      */
     public function afterSearch($intercepter, $collection)

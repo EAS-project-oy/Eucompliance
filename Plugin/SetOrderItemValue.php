@@ -12,10 +12,10 @@ use Magento\Quote\Model\Quote\Item\ToOrderItem;
 class SetOrderItemValue
 {
     /**
-     * @param ToOrderItem $subject
-     * @param callable $proceed
-     * @param Item|AddressItem $quoteItem
-     * @param $data
+     * @param  ToOrderItem      $subject
+     * @param  callable         $proceed
+     * @param  Item|AddressItem $quoteItem
+     * @param  $data
      * @return mixed
      */
     public function aroundConvert(ToOrderItem $subject, callable $proceed, $quoteItem, $data)

@@ -15,7 +15,7 @@ abstract class Message extends \Magento\Backend\App\Action
 
     /**
      * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\Registry $coreRegistry
+     * @param \Magento\Framework\Registry         $coreRegistry
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -28,7 +28,7 @@ abstract class Message extends \Magento\Backend\App\Action
     /**
      * Init page
      *
-     * @param \Magento\Backend\Model\View\Result\Page $resultPage
+     * @param  \Magento\Backend\Model\View\Result\Page $resultPage
      * @return \Magento\Backend\Model\View\Result\Page
      */
     public function initPage($resultPage)

@@ -31,9 +31,9 @@ class EasFee extends AbstractTotal
     }
 
     /**
-     * @param Quote $quote
-     * @param ShippingAssignmentInterface $shippingAssignment
-     * @param Total $total
+     * @param  Quote                       $quote
+     * @param  ShippingAssignmentInterface $shippingAssignment
+     * @param  Total                       $total
      * @return EasFee
      */
     public function collect(
@@ -83,8 +83,8 @@ class EasFee extends AbstractTotal
     }
 
     /**
-     * @param Quote $quote
-     * @param Total $total
+     * @param  Quote $quote
+     * @param  Total $total
      * @return array
      */
     public function fetch(Quote $quote, Total $total): array
@@ -93,7 +93,7 @@ class EasFee extends AbstractTotal
     }
 
     /**
-     * @param float $easFee
+     * @param  float $easFee
      * @return array
      */
     private function getEasFeeTotal(float $easFee): array

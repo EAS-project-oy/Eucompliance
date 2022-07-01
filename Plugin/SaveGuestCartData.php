@@ -21,6 +21,7 @@ class SaveGuestCartData
 
     /**
      * SaveGuestCartData constructor.
+     *
      * @param QuoteRepository $quoteRepository
      */
     public function __construct(
@@ -30,9 +31,9 @@ class SaveGuestCartData
     }
 
     /**
-     * @param ShippingInformationManagement $subject
-     * @param int $cartId
-     * @param ShippingInformationInterface $addressInformation
+     * @param  ShippingInformationManagement $subject
+     * @param  int                           $cartId
+     * @param  ShippingInformationInterface  $addressInformation
      * @return array
      * @throws NoSuchEntityException
      */

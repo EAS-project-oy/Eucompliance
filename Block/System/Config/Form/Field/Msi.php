@@ -23,9 +23,9 @@ class Msi extends Field
     private Manager $moduleManager;
 
     /**
-     * @param Manager $moduleManager
-     * @param Context $context
-     * @param array $data
+     * @param Manager                 $moduleManager
+     * @param Context                 $context
+     * @param array                   $data
      * @param SecureHtmlRenderer|null $secureRenderer
      */
     public function __construct(

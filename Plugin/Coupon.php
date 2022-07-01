@@ -31,7 +31,7 @@ class Coupon
     private Quote $serviceQuote;
 
     /**
-     * @param \Magento\Checkout\Model\Session $session
+     * @param \Magento\Checkout\Model\Session            $session
      * @param \Easproject\Eucompliance\Service\Calculate $calculate
      */
     public function __construct(
@@ -45,10 +45,10 @@ class Coupon
     }
 
     /**
-     * @param CouponManagement $subject
-     * @param bool $result
-     * @param int $cartId
-     * @param string $couponCode
+     * @param  CouponManagement $subject
+     * @param  bool             $result
+     * @param  int              $cartId
+     * @param  string           $couponCode
      * @return bool
      */
     public function afterSet(CouponManagement $subject, bool $result, $cartId, $couponCode): bool
@@ -62,7 +62,7 @@ class Coupon
                 $tempResponse = $response[1];
                 $response = [];
                 $response[Configuration::EAS_CHECKOUT_TOKEN] = $tempResponse;
-                $this->serviceQuote->saveQuoteData($response);
+                $this->serviceQuote->saveQuoteData($response, true);
             }
         } catch (CouldNotSaveException
         |InputException

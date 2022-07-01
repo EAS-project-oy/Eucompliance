@@ -37,17 +37,17 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
     private RequestInterface $request;
 
     /**
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
-     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
-     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
-     * @param \Easproject\Eucompliance\Service\Calculate $calculate
-     * @param \Magento\Framework\App\Config\Storage\WriterInterface $writer
+     * @param \Magento\Framework\Model\Context                             $context
+     * @param \Magento\Framework\Registry                                  $registry
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface           $config
+     * @param \Magento\Framework\App\Cache\TypeListInterface               $cacheTypeList
+     * @param \Magento\Framework\Encryption\EncryptorInterface             $encryptor
+     * @param \Easproject\Eucompliance\Service\Calculate                   $calculate
+     * @param \Magento\Framework\App\Config\Storage\WriterInterface        $writer
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param \Magento\Framework\App\RequestInterface $request
-     * @param array $data
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
+     * @param \Magento\Framework\App\RequestInterface                      $request
+     * @param array                                                        $data
      */
     public function __construct(
         Context              $context,

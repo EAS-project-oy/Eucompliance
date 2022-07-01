@@ -48,11 +48,12 @@ class AddEasAttributes implements DataPatchInterface
 
     /**
      * AddEasAttributes constructor.
-     * @param ModuleDataSetupInterface $moduleDataSetup
-     * @param EavSetupFactory $eavSetupFactory
-     * @param AttributeGroupInterfaceFactory $attributeGroupFactory
+     *
+     * @param ModuleDataSetupInterface          $moduleDataSetup
+     * @param EavSetupFactory                   $eavSetupFactory
+     * @param AttributeGroupInterfaceFactory    $attributeGroupFactory
      * @param AttributeGroupRepositoryInterface $attributeGroupRepository
-     * @param Product $product
+     * @param Product                           $product
      */
     public function __construct(
         ModuleDataSetupInterface          $moduleDataSetup,
