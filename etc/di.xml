@@ -76,4 +76,9 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Quote\Model\CouponManagement">
+        <plugin name="easproject_eucompliance::coupon"
+                type="Easproject\Eucompliance\Plugin\Coupon"
+                sortOrder="10"/>
+    </type>
 </config>

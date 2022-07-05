@@ -53,8 +53,8 @@ class Edit extends \Easproject\Eucompliance\Controller\Adminhtml\Message
 
         // 3. Build edit form
         /**
- * @var \Magento\Backend\Model\View\Result\Page $resultPage
-*/
+         * @var \Magento\Backend\Model\View\Result\Page $resultPage
+         */
         $resultPage = $this->resultPageFactory->create();
         $this->initPage($resultPage)->addBreadcrumb(
             $id ? __('Edit Message') : __('New Message'),

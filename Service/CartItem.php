@@ -54,8 +54,12 @@ class CartItem
      * @param  array                           $attributes
      * @return CartItemInterface
      */
-    public function handleAttributes($cartItem, string $mode = self::SAVE, array $attributes = self::ATTRIBUTE_NAMES)
-    {
+    public function handleAttributes(
+        $cartItem,
+        string $mode = self::SAVE,
+        array $attributes =
+        self::ATTRIBUTE_NAMES
+    ) {
         $extAttributes = $cartItem->getExtensionAttributes() ?: $this->cartItemInterfaceFactory->create();
 
         foreach ($attributes as $key => $attributeName) {

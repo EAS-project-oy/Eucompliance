@@ -38,8 +38,8 @@ class OrderRepository
     }
 
     /**
-     * @param  \Magento\Sales\Model\OrderRepository $subject
-     * @param  OrderInterface                       $result
+     * @param \Magento\Sales\Model\OrderRepository $subject
+     * @param OrderInterface                       $result
      *
      * @return OrderInterface
      * @throws InputException

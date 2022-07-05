@@ -19,9 +19,9 @@ use Magento\Framework\Api\SearchResultsInterface;
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  *
- * @author   EAS Project <magento@easproject.org>
- * @license  https://github.com/EAS-project-oy/eascompliance/ General License
- * @link     https://github.com/EAS-project-oy/eascompliance
+ * @author  EAS Project <magento@easproject.org>
+ * @license https://github.com/EAS-project-oy/eascompliance/ General License
+ * @link    https://github.com/EAS-project-oy/eascompliance
  */
 interface MessageSearchResultsInterface extends SearchResultsInterface
 {

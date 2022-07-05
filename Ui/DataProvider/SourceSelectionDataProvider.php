@@ -112,8 +112,8 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
         $data = [];
         $orderId = (int)$this->request->getParam('order_id');
         /**
- * @var Order $order
-*/
+         * @var Order $order
+         */
         $order = $this->orderRepository->get($orderId);
         $websiteId = $order->getStore()->getWebsiteId();
         $stockId = (int)$this->stockByWebsiteIdResolver->execute((int)$websiteId)->getStockId();

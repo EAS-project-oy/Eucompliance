@@ -17,9 +17,9 @@ namespace Easproject\Eucompliance\Api\Data;
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  *
- * @author   EAS Project <magento@easproject.org>
- * @license  https://github.com/EAS-project-oy/eascompliance/ General License
- * @link     https://github.com/EAS-project-oy/eascompliance
+ * @author  EAS Project <magento@easproject.org>
+ * @license https://github.com/EAS-project-oy/eascompliance/ General License
+ * @link    https://github.com/EAS-project-oy/eascompliance
  */
 interface MessageInterface
 {

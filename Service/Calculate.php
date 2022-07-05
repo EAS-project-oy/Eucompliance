@@ -156,24 +156,24 @@ class Calculate
     /**
      * Calculate constructor.
      *
-     * @param ZendClientFactory $clientFactory
-     * @param StoreManagerInterface $storeManager
-     * @param Product $productResourceModel
-     * @param QuoteRepository $quoteRepository
-     * @param LoggerInterface $logger
-     * @param UrlInterface $url
-     * @param AddressInterfaceFactory $addressInterfaceFactory
-     * @param StockByWebsiteIdResolverInterface $stockByWebsiteId
-     * @param ItemRequestInterfaceFactory $itemRequestInterfaceFactory
-     * @param InventoryRequestInterfaceFactory $inventoryRequestInterfaceFactory
+     * @param ZendClientFactory                         $clientFactory
+     * @param StoreManagerInterface                     $storeManager
+     * @param Product                                   $productResourceModel
+     * @param QuoteRepository                           $quoteRepository
+     * @param LoggerInterface                           $logger
+     * @param UrlInterface                              $url
+     * @param AddressInterfaceFactory                   $addressInterfaceFactory
+     * @param StockByWebsiteIdResolverInterface         $stockByWebsiteId
+     * @param ItemRequestInterfaceFactory               $itemRequestInterfaceFactory
+     * @param InventoryRequestInterfaceFactory          $inventoryRequestInterfaceFactory
      * @param InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory
-     * @param SourceSelectionServiceInterface $sourceSelectionService
-     * @param SourceRepositoryInterface $sourceRepository
-     * @param Repository $quoteItemRepository
-     * @param Configuration $configuration
-     * @param MessageRepositoryInterface $messageRepository
-     * @param MessageFactory $messageFactory
-     * @param SerializerInterface $serializer
+     * @param SourceSelectionServiceInterface           $sourceSelectionService
+     * @param SourceRepositoryInterface                 $sourceRepository
+     * @param Repository                                $quoteItemRepository
+     * @param Configuration                             $configuration
+     * @param MessageRepositoryInterface                $messageRepository
+     * @param MessageFactory                            $messageFactory
+     * @param SerializerInterface                       $serializer
      */
     public function __construct(
         ZendClientFactory                         $clientFactory,
@@ -217,7 +217,7 @@ class Calculate
     }
 
     /**
-     * @param Quote $quote
+     * @param  Quote $quote
      * @return array
      * @throws InputException
      * @throws NoSuchEntityException
@@ -301,8 +301,8 @@ class Calculate
     }
 
     /**
-     * @param Quote $quote
-     * @param ProductInterface $product
+     * @param  Quote            $quote
+     * @param  ProductInterface $product
      * @return string
      */
     private function getWarehouseCode(Quote $quote, ProductInterface $product)
@@ -323,8 +323,8 @@ class Calculate
     }
 
     /**
-     * @param Quote $quote
-     * @param ProductInterface $product
+     * @param  Quote            $quote
+     * @param  ProductInterface $product
      * @return mixed
      * @throws NoSuchEntityException
      */
@@ -362,7 +362,7 @@ class Calculate
     }
 
     /**
-     * @param Quote $quote
+     * @param  Quote $quote
      * @return AddressInterface|null
      */
     private function getAddressFromQuote(Quote $quote): ?AddressInterface
@@ -387,8 +387,8 @@ class Calculate
     }
 
     /**
-     * @param Quote $quote
-     * @param ProductInterface $product
+     * @param  Quote            $quote
+     * @param  ProductInterface $product
      * @return array|bool|string|null
      * @throws NoSuchEntityException
      */
@@ -497,7 +497,7 @@ class Calculate
 
     /**
      * @param  $error
-     * @param string $message
+     * @param  string $message
      * @return string
      */
     public function getKeyMessage($error, string $message): string
@@ -605,7 +605,7 @@ class Calculate
     }
 
     /**
-     * @param \Magento\Quote\Model\Quote $quote
+     * @param  \Magento\Quote\Model\Quote $quote
      * @return array
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      * @throws \Magento\Framework\Exception\InputException

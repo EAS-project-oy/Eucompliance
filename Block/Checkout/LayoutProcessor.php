@@ -73,8 +73,8 @@ class LayoutProcessor
     private function getAddressAttributes()
     {
         /**
- * @var \Magento\Eav\Api\Data\AttributeInterface[] $attributes
-*/
+         * @var \Magento\Eav\Api\Data\AttributeInterface[] $attributes
+         */
         $attributes = $this->attributeMetadataDataProvider->loadAttributesCollection(
             'customer_address',
             'customer_register_address'
@@ -131,17 +131,18 @@ class LayoutProcessor
     /**
      * Process js Layout of block
      *
-     * @param  array $jsLayout
-     * @return array
+     * @param $jsLayout
+     *
+     * @return array|mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function process($jsLayout)
     {
         if (!$this->configuration->isEnabled()) {
             return $jsLayout;
         }
-        /**
- * Rename tax
-*/
+
+        //Rename tax
         $jsLayout['components']['checkout']['children']['sidebar']['children']
         ['summary']['children']['totals']['children']['tax']['config']['title'] =
             __($this->configuration->getTaxLabel());
