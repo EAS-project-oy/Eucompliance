@@ -34,7 +34,7 @@ class Collection
                 ['sales_order_address'],
                 'main_table.entity_id = sales_order_address.parent_id',
                 []
-            )->where("quote.eas_token IS NULL AND main_table.total_paid IS NULL AND sales_order_address.address_type = 'shipping'");
+            )->where("quote.eas_token IS NULL AND sales_order_address.address_type = 'shipping'");
         return $collection->getItems();
     }
 
