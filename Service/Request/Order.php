@@ -112,10 +112,14 @@ class Order
     private \Psr\Log\LoggerInterface $logger;
 
     /**
+     * @var \Magento\Sales\Model\Order
+     */
+    private \Magento\Sales\Model\Order $orderModel;
+
+    /**
      * @var array
      */
     private array $massOrdersData = [];
-
 
     /**
      * @param \Easproject\Eucompliance\Model\Config\Configuration $configuration
@@ -134,6 +138,7 @@ class Order
      * @param \Magento\Framework\Filesystem\Io\File $file
      * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
      * @param \Psr\Log\LoggerInterface $logger
+     * @param \Magento\Sales\Model\Order $orderModel
      */
     public function __construct(
         Configuration                             $configuration,
@@ -151,7 +156,8 @@ class Order
         Filesystem                                $filesystem,
         File                                      $file,
         CartRepositoryInterface                   $quoteRepository,
-        \Psr\Log\LoggerInterface $logger
+        \Psr\Log\LoggerInterface                  $logger,
+        \Magento\Sales\Model\Order                $orderModel
     ) {
         $this->configuration = $configuration;
         $this->clientFactory = $clientFactory;
@@ -169,6 +175,7 @@ class Order
         $this->file = $file;
         $this->quoteRepository = $quoteRepository;
         $this->logger = $logger;
+        $this->orderModel = $orderModel;
     }
 
     /**
@@ -183,7 +190,9 @@ class Order
         foreach ($orders as $order) {
             if ($this->checkVat($order)) {
                 $response = $this->createOrder($order);
-                $this->saveCheckoutToken($response, $order);
+                if (!isset($response->errors)) {
+                    $this->saveCheckoutToken($response, $order);
+                }
             } else {
                 $this->prepareOrderData($order);
             }
@@ -249,10 +258,8 @@ class Order
             "delivery_cost" => (float)number_format((float)$order->getData('shipping_amount'), 2),
             "payment_currency" => $order->getData('order_currency_code'),
             "is_delivery_to_person" => true,
-            "recipient_first_name" =>
-                $order->getData('customer_firstname'),
-            "recipient_last_name" =>
-                $order->getData('customer_lastname'),
+            "recipient_first_name" => $order->getData('customer_firstname'),
+            "recipient_last_name" => $order->getData('customer_lastname'),
             "recipient_company_vat" => $order->getData("vat_id"),
             "delivery_city" => $order->getData("city"),
             "delivery_postal_code" => $order->getData("postcode"),
@@ -272,7 +279,7 @@ class Order
         }
 
         $streets = $order->getData("street");
-        switch (count($streets)) {
+        switch (is_array($streets) && count($streets)) {
             case 1:
                 $data['delivery_address_line_1'] = $streets[0];
                 break;
@@ -285,18 +292,21 @@ class Order
                 $data['delivery_address_line_2'] = $streets[1] . PHP_EOL . $streets[2];
                 break;
         }
-
+        if (!is_array($streets)) {
+            $data['delivery_address_line_1'] = $streets;
+        }
         $items = [];
 
-
+        $incrId = $order->getIncrementId();
+        $order = $this->orderModel->loadByIncrementId($incrId);
         foreach ($order->getItems() as $item) {
             $storeId = $item->getStoreId();
             /** @var ProductInterface $product */
             $product = $item->getProduct();
             $items[] = [
-                "short_description" => $item->getSku(),
-                "long_description" => $item->getName(),
-                "id_provided_by_em" => $item->getId(),
+                "short_description" => $product->getSku(),
+                "long_description" => $product->getName(),
+                "id_provided_by_em" => $product->getId(),
                 "quantity" => (int)$item->getData("qty_ordered"),
                 "cost_provided_by_em" => (float)number_format(
                     ($item->getOriginalPrice() *
@@ -304,9 +314,9 @@ class Order
                     2
                 ),
                 "weight" => (float)number_format((float)$item->getWeight(), 2),
-                "type_of_goods" => $this->getTypeOfGoods($item),
+                "type_of_goods" => $this->getTypeOfGoods($product),
                 Configuration::ACT_AS_DISCLOSED_AGENT => (bool)$this->productResourceModel->getAttributeRawValue(
-                    $item->getId(),
+                    $product->getId(),
                     $this->configuration->getActAsDisclosedAgentAttributeName(),
                     $storeId
                 ),
@@ -318,7 +328,7 @@ class Order
             }
 
             $originatingCountry = $this->productResourceModel->getAttributeRawValue(
-                $item->getId(),
+                $product->getId(),
                 Configuration::COUNTRY_OF_MANUFACTURE,
                 $storeId
             );
@@ -330,7 +340,7 @@ class Order
             }
 
             $hs6p = $this->productResourceModel->getAttributeRawValue(
-                $item->getId(),
+                $product->getId(),
                 $this->configuration->getHscodeAttributeName(),
                 $storeId
             );
@@ -338,7 +348,7 @@ class Order
                 $items[array_key_last($items)]['hs6p_received'] = $hs6p;
             }
             $sellerRegistrationCountry = $this->productResourceModel->
-            getAttributeRawValue($item->getId(), $this->configuration->getSellerRegistrationName(), $storeId);
+            getAttributeRawValue($product->getId(), $this->configuration->getSellerRegistrationName(), $storeId);
             if ($sellerRegistrationCountry) {
                 $items[array_key_last($items)][Configuration::SELLER_REGISTRATION_COUNTRY] = $sellerRegistrationCountry;
             } else {
@@ -346,7 +356,7 @@ class Order
                     $this->configuration->getStoreDefaultCountryCode();
             }
             $reducedTbeVatGroup = (bool)$this->productResourceModel->getAttributeRawValue(
-                $item->getId(),
+                $product->getId(),
                 $this->configuration->getReducedVatAttributeName(),
                 $storeId
             );
@@ -631,7 +641,6 @@ class Order
             foreach ($response['order_response_list'] as $orderData) {
                 $this->saveCheckoutToken($response['checkout_token'], false, $orderData['external_order_id']);
             }
-
         }
     }
 
