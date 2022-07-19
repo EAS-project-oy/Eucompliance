@@ -313,7 +313,10 @@ class Calculate
                 $request,
                 $this->configuration->getMSIWarehouseLocation()
             )->getSourceSelectionItems();
-            return $sourceSelectionItems[array_key_first($sourceSelectionItems)]->getSourceCode();
+            if (count($sourceSelectionItems)) {
+                return $sourceSelectionItems[array_key_first($sourceSelectionItems)]->getSourceCode();
+            }
+            return 'default';
         }
         return $this->productResourceModel->getAttributeRawValue(
             $product->getId(),
