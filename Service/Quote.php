@@ -89,8 +89,8 @@ class Quote
                 foreach ($items as $quoteItem) {
                     if ($item['item_id'] == $quoteItem->getProductId()) {
                         $this->clear($quoteItem);
-                        $quoteItem->setCustomPrice($item['unit_cost_excl_vat']);
-                        $quoteItem->setOriginalCustomPrice($item['unit_cost_excl_vat']);
+                       // $quoteItem->setCustomPrice($item['unit_cost_excl_vat']);
+                        //$quoteItem->setOriginalCustomPrice($item['unit_cost_excl_vat']);
                         $extAttributes = $quoteItem->getExtensionAttributes();
                         $extAttributes->setEasTaxAmount(
                             $item['item_duties_and_taxes'] - $item['item_customs_duties']
