@@ -89,8 +89,10 @@ class Quote
                 foreach ($items as $quoteItem) {
                     if ($item['item_id'] == $quoteItem->getProductId()) {
                         $this->clear($quoteItem);
-                       // $quoteItem->setCustomPrice($item['unit_cost_excl_vat']);
-                        //$quoteItem->setOriginalCustomPrice($item['unit_cost_excl_vat']);
+                        if ($data['merchandise_cost_vat_excl'] < $data['merchandise_cost']) {
+                            $quoteItem->setCustomPrice($item['unit_cost_excl_vat']);
+                            $quoteItem->setOriginalCustomPrice($item['unit_cost_excl_vat']);
+                        }
                         $extAttributes = $quoteItem->getExtensionAttributes();
                         $extAttributes->setEasTaxAmount(
                             $item['item_duties_and_taxes'] - $item['item_customs_duties']
@@ -128,16 +130,44 @@ class Quote
                     $quote->setData('base_subtotal_with_discount', $totalOrder);
                     $quote->setData('subtotal_with_discount', $totalOrder);
                     $quote->setData('base_subtotal', $totalOrder);
+                    $quote->setData('shipping_amount', $data['delivery_charge_vat_excl']);
+                    $quote->setData('base_shipping_amount', $data['delivery_charge_vat_excl']);
                     $discountPerByProduct = $discountPrice / $countProduct;
 
                     foreach ($quote->getAllItems() as $productItem) {
-                        $productItem->setOriginalCustomPrice($productItem->getPrice() + $discountPerByProduct);
+                        //$productItem->setOriginalCustomPrice($productItem->getPrice() + $discountPerByProduct);
                     }
-                }
+                }//base_subtotal_with_discount, //subtotal_with_discount
             }
             $this->quoteRepository->save($quote);
+            $quote->save();
             $quote->setTotalsCollectedFlag(false)->collectTotals();
+            if ($data['merchandise_cost_vat_excl'] < $data['merchandise_cost'] && isset($totalOrder)) {
+                $this->session->setData('custom_shipping_price', $data['delivery_charge_vat_excl']);
+
+                if ($this->session->getData('custom_data_eas') != 1) {
+                    $this->session->setData('custom_data_eas', '1');
+                    $this->session->setData('custom_price_price', $quote->getData('base_subtotal'));
+                    $this->session->setData('custom_discount_price', $quote->getData('base_subtotal') - $data['merchandise_cost_vat_excl']);
+                    $testShipping = $quote->getShippingAddress();
+                    $testShipping->setData('subtotal_with_discount',  $quote->getData('base_subtotal'));
+                    $testShipping->setData('base_subtotal_with_discount',  $quote->getData('base_subtotal'));
+                    $testShipping->setData('base_shipping_amount', $data['delivery_charge_vat_excl']);
+                    $testShipping->setData('shipping_amount', $data['delivery_charge_vat_excl']);
+                    $testShipping->setData('shipping_tax_calculation_amount', $data['delivery_charge_vat_excl']);
+                    $testShipping->setData('base_shipping_tax_calculation_amount', $data['delivery_charge_vat_excl']);
+                    $testShipping->setData('shipping_incl_tax', $data['delivery_charge_vat_excl']);
+                    $testShipping->setData('base_shipping_incl_tax', $data['delivery_charge_vat_excl']);
+                    $quote->setShippingAddress($testShipping);
+                    $quote->save();
+                }
+
+                $quote->setData('base_subtotal_with_discount', $totalOrder);
+                $quote->setData('subtotal_with_discount', $totalOrder);
+                $quote->save();
+            }
             $this->quoteRepository->save($quote);
+            $quote->save();
             return true;
         }
         return false;
