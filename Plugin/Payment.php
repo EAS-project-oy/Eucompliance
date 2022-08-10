@@ -25,9 +25,9 @@ class Payment
      */
     public function afterImportData(\Magento\Quote\Model\Quote\Payment $subject, $result, array $data)
     {
-        $this->session->getData('custom_shipping_price', true);
-        $this->session->getData('custom_price_price', true);
-        $this->session->getData('custom_discount_price', true);
+        //$this->session->getData('custom_shipping_price', true);
+        //$this->session->getData('custom_price_price', true);
+        //$this->session->getData('custom_discount_price', true);
         return $result;
     }
 }

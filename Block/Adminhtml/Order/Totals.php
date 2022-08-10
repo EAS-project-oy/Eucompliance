@@ -44,7 +44,7 @@ class Totals extends \Magento\Sales\Block\Adminhtml\Order\Totals
                 'strong' => true,
                 'value' => $this->getOrderItemAggregatedValue('getEasFee', $this->getSource()),
                 'base_value' => $this->getOrderItemAggregatedValue('getEasFee', $this->getSource()),
-                'label' => __('Total EAS fee'),
+                'label' => __('Total Other fees'),
                 'area' => 'footer',
             ]
         );
@@ -55,7 +55,7 @@ class Totals extends \Magento\Sales\Block\Adminhtml\Order\Totals
                 'strong' => true,
                 'value' => $this->getOrderItemAggregatedValue('getVatOnEasFee', $this->getSource()),
                 'base_value' => $this->getOrderItemAggregatedValue('getVatOnEasFee', $this->getSource()),
-                'label' => __('Total EAS fee VAT'),
+                'label' => __('Total Other fees VAT'),
                 'area' => 'footer',
             ]
         );

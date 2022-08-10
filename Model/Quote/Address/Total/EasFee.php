@@ -87,7 +87,7 @@ class EasFee extends AbstractTotal
             $total->setGrandTotal($easTotalAmount);
             $total->setBaseGrandTotal($easTotalAmount);
         }
-        if ($quote->getData('coupon_code') && $quote->getData('eas_total_amount') && $this->checkoutSession->getData('custom_data_eas')) {
+        if ($this->checkoutSession->getData('custom_price_price')) {
             $total->setData('subtotal', $this->checkoutSession->getData('custom_price_price'));
             $total->setData('base_subtotal_total_incl_tax', $this->checkoutSession->getData('custom_price_price'));
             $total->setData('subtotal_incl_tax', $this->checkoutSession->getData('custom_price_price'));

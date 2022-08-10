@@ -117,7 +117,6 @@ class Quote
 
             if ($coupon) {
                 if ($data['merchandise_cost_vat_excl'] < $data['merchandise_cost']) {
-
                     $countProduct = count($quote->getAllItems());
                     $discountSubtotal = $quote->getData('base_subtotal_with_discount');
                     $quote->getData('subtotal_with_discount');
@@ -139,19 +138,31 @@ class Quote
                     }
                 }//base_subtotal_with_discount, //subtotal_with_discount
             }
+            $this->session->setData('custom_data_eas', '2');
+            $this->session->setData('custom_price_price', $data['merchandise_cost_vat_excl']);
+            $this->session->setData('custom_shipping_price', $data['delivery_charge_vat_excl']);
+            $testShipping = $quote->getShippingAddress();
+            $testShipping->setData('base_shipping_amount', $data['delivery_charge_vat_excl']);
+            $testShipping->setData('shipping_amount', $data['delivery_charge_vat_excl']);
+            $testShipping->setData('shipping_tax_calculation_amount', $data['delivery_charge_vat_excl']);
+            $testShipping->setData('base_shipping_tax_calculation_amount', $data['delivery_charge_vat_excl']);
+            $testShipping->setData('shipping_incl_tax', $data['delivery_charge_vat_excl']);
+            $testShipping->setData('base_shipping_incl_tax', $data['delivery_charge_vat_excl']);
+            $quote->setShippingAddress($testShipping);
+            $quote->save();
+
             $this->quoteRepository->save($quote);
             $quote->save();
             $quote->setTotalsCollectedFlag(false)->collectTotals();
             if ($data['merchandise_cost_vat_excl'] < $data['merchandise_cost'] && isset($totalOrder)) {
-                $this->session->setData('custom_shipping_price', $data['delivery_charge_vat_excl']);
 
                 if ($this->session->getData('custom_data_eas') != 1) {
                     $this->session->setData('custom_data_eas', '1');
                     $this->session->setData('custom_price_price', $quote->getData('base_subtotal'));
                     $this->session->setData('custom_discount_price', $quote->getData('base_subtotal') - $data['merchandise_cost_vat_excl']);
                     $testShipping = $quote->getShippingAddress();
-                    $testShipping->setData('subtotal_with_discount',  $quote->getData('base_subtotal'));
-                    $testShipping->setData('base_subtotal_with_discount',  $quote->getData('base_subtotal'));
+                    $testShipping->setData('subtotal_with_discount', $quote->getData('base_subtotal'));
+                    $testShipping->setData('base_subtotal_with_discount', $quote->getData('base_subtotal'));
                     $testShipping->setData('base_shipping_amount', $data['delivery_charge_vat_excl']);
                     $testShipping->setData('shipping_amount', $data['delivery_charge_vat_excl']);
                     $testShipping->setData('shipping_tax_calculation_amount', $data['delivery_charge_vat_excl']);
