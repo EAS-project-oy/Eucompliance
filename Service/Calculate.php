@@ -6,34 +6,34 @@ namespace Easproject\Eucompliance\Service;
 
 use Easproject\Eucompliance\Api\Data\MessageInterfaceFactory as MessageFactory;
 use Easproject\Eucompliance\Api\MessageRepositoryInterface;
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Easproject\Eucompliance\Setup\Patch\Data\AddGiftCardProductAttribute;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Checkout\Model\Session;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\HTTP\ZendClientFactory;
-use Magento\Framework\Mail\MessageInterfaceFactory;
+use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Framework\UrlInterface;
 use Magento\InventoryApi\Api\SourceRepositoryInterface;
+use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\AddressInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\AddressInterfaceFactory;
 use Magento\InventorySourceSelectionApi\Api\Data\InventoryRequestExtensionInterfaceFactory;
 use Magento\InventorySourceSelectionApi\Api\Data\InventoryRequestInterfaceFactory;
-use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\ItemRequestInterfaceFactory;
 use Magento\InventorySourceSelectionApi\Api\SourceSelectionServiceInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item\Repository;
 use Magento\Quote\Model\QuoteRepository;
-use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\UrlInterface;
 use Psr\Log\LoggerInterface;
 use Zend_Http_Client;
 use Zend_Http_Client_Exception;
-use Magento\Framework\Serialize\SerializerInterface;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
@@ -137,6 +137,11 @@ class Calculate
     private SerializerInterface $serializer;
 
     /**
+     * @var Session
+     */
+    private Session $checkoutSession;
+
+    /**
      * @var string[]
      */
     private $keyMapping = [
@@ -156,24 +161,25 @@ class Calculate
     /**
      * Calculate constructor.
      *
-     * @param ZendClientFactory                         $clientFactory
-     * @param StoreManagerInterface                     $storeManager
-     * @param Product                                   $productResourceModel
-     * @param QuoteRepository                           $quoteRepository
-     * @param LoggerInterface                           $logger
-     * @param UrlInterface                              $url
-     * @param AddressInterfaceFactory                   $addressInterfaceFactory
-     * @param StockByWebsiteIdResolverInterface         $stockByWebsiteId
-     * @param ItemRequestInterfaceFactory               $itemRequestInterfaceFactory
-     * @param InventoryRequestInterfaceFactory          $inventoryRequestInterfaceFactory
+     * @param ZendClientFactory $clientFactory
+     * @param StoreManagerInterface $storeManager
+     * @param Product $productResourceModel
+     * @param QuoteRepository $quoteRepository
+     * @param LoggerInterface $logger
+     * @param UrlInterface $url
+     * @param AddressInterfaceFactory $addressInterfaceFactory
+     * @param StockByWebsiteIdResolverInterface $stockByWebsiteId
+     * @param ItemRequestInterfaceFactory $itemRequestInterfaceFactory
+     * @param InventoryRequestInterfaceFactory $inventoryRequestInterfaceFactory
      * @param InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory
-     * @param SourceSelectionServiceInterface           $sourceSelectionService
-     * @param SourceRepositoryInterface                 $sourceRepository
-     * @param Repository                                $quoteItemRepository
-     * @param Configuration                             $configuration
-     * @param MessageRepositoryInterface                $messageRepository
-     * @param MessageFactory                            $messageFactory
-     * @param SerializerInterface                       $serializer
+     * @param SourceSelectionServiceInterface $sourceSelectionService
+     * @param SourceRepositoryInterface $sourceRepository
+     * @param Repository $quoteItemRepository
+     * @param Configuration $configuration
+     * @param MessageRepositoryInterface $messageRepository
+     * @param MessageFactory $messageFactory
+     * @param SerializerInterface $serializer
+     * @param Session $checkoutSession
      */
     public function __construct(
         ZendClientFactory                         $clientFactory,
@@ -193,7 +199,8 @@ class Calculate
         Configuration                             $configuration,
         MessageRepositoryInterface                $messageRepository,
         MessageFactory                            $messageFactory,
-        SerializerInterface                       $serializer
+        SerializerInterface                       $serializer,
+        Session                                   $checkoutSession
     ) {
         $this->sourceRepository = $sourceRepository;
         $this->sourceSelectionService = $sourceSelectionService;
@@ -214,6 +221,7 @@ class Calculate
         $this->messageRepository = $messageRepository;
         $this->messageFactory = $messageFactory;
         $this->serializer = $serializer;
+        $this->checkoutSession = $checkoutSession;
     }
 
     /**
@@ -284,7 +292,6 @@ class Calculate
             } else {
                 throw new InputException(__('Wrong auth keys provided'));
             }
-
         }
         return $this->token;
     }
@@ -618,7 +625,6 @@ class Calculate
     public function sendRequest(
         Quote $quote
     ): array {
-
         $apiUrl = $this->configuration->getCalculateUrl();
         $client = $this->clientFactory->create();
         $client->setUri($apiUrl);
@@ -648,16 +654,21 @@ class Calculate
             $deliveryMethod = Configuration::POSTAL;
         }
 
+        if ($this->checkoutSession->getData('original_shipping_price')) {
+            $shippingPrice = $this->checkoutSession->getData('original_shipping_price');
+        } else {
+            $shippingPrice = (float)number_format((float)$address->getShippingAmount(), 2);
+            $this->checkoutSession->setData('original_shipping_price', $shippingPrice);
+        }
+
         $data = [
             "external_order_id" => $quote->getReservedOrderId(),
             "delivery_method" => $deliveryMethod,
-            "delivery_cost" => (float)number_format((float)$address->getShippingAmount(), 2),
+            "delivery_cost" => $shippingPrice,
             "payment_currency" => $quote->getQuoteCurrencyCode(),
             "is_delivery_to_person" => true,
-            "recipient_first_name" =>
-                $quote->getCustomerFirstname() ?: $quote->getBillingAddress()->getFirstName(),
-            "recipient_last_name" =>
-                $quote->getCustomerLastname() ?: $quote->getBillingAddress()->getLastName(),
+            "recipient_first_name" => $quote->getCustomerFirstname() ?: $quote->getBillingAddress()->getFirstName(),
+            "recipient_last_name" => $quote->getCustomerLastname() ?: $quote->getBillingAddress()->getLastName(),
             "recipient_company_vat" => $address->getVatId(),
             "delivery_city" => $address->getCity(),
             "delivery_postal_code" => $address->getPostcode(),
