@@ -91,6 +91,7 @@ define(
                                             }
                                         )
                                     } else if (data.disabled) {
+                                        $('.form-login').css("display", "none");
                                         stepNavigator.next();
                                     }
                                 }
