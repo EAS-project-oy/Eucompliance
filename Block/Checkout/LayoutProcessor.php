@@ -157,7 +157,7 @@ class LayoutProcessor
         if (isset($jsLayout['components']['checkout']['children']['steps']['children']
             ['eas-billing-step']['children']['eas-billing']['children'])
         ) {
-            /*$jsLayout['components']['checkout']['children']['steps']
+            $jsLayout['components']['checkout']['children']['steps']
             ['children']['eas-billing-step']['children']['customer-email'] =
                 [
                     'component' => 'Magento_Checkout/js/view/form/element/email',
@@ -175,7 +175,7 @@ class LayoutProcessor
                             'displayArea' => 'additional-login-form-fields'
                         ]
                     ]
-                ];*/
+                ];
 
             $jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children']
             ['eas-billing']['children'] = $this->processNewStepsChildrenComponents(
