@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Easproject\Eucompliance\Model\Quote\Address\Total;
 
 use Easproject\Eucompliance\Model\Config\Configuration;
+use Magento\Checkout\Model\Session;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
-use \Magento\Quote\Model\Quote\Item\Repository;
+use Magento\Quote\Model\Quote\Item\Repository;
 
 /**
  * Copyright © EAS Project Oy. All rights reserved.
@@ -22,12 +23,20 @@ class EasFee extends AbstractTotal
     private Repository $repository;
 
     /**
+     * @var Session
+     */
+    private Session $checkoutSession;
+
+    /**
      * EasFee constructor.
      */
-    public function __construct(Repository $repository)
-    {
+    public function __construct(
+        Repository $repository,
+        Session $checkoutSession
+    ) {
         $this->repository = $repository;
         $this->setCode(Configuration::EAS_FEE);
+        $this->checkoutSession = $checkoutSession;
     }
 
     /**
@@ -77,6 +86,23 @@ class EasFee extends AbstractTotal
         if ($easTotalAmount) {
             $total->setGrandTotal($easTotalAmount);
             $total->setBaseGrandTotal($easTotalAmount);
+        }
+        if ($this->checkoutSession->getData('custom_price_price')) {
+            $total->setData('subtotal', $this->checkoutSession->getData('custom_price_price'));
+            $total->setData('base_subtotal_total_incl_tax', $this->checkoutSession->getData('custom_price_price'));
+            $total->setData('subtotal_incl_tax', $this->checkoutSession->getData('custom_price_price'));
+            $total->setData('base_subtotal_incl_tax', $this->checkoutSession->getData('custom_price_price'));
+            $total->setData('base_subtotal', $this->checkoutSession->getData('custom_price_price'));
+            $total->setData('subtotal_with_discount', $this->checkoutSession->getData('custom_price_price'));
+            $total->setData('base_subtotal_with_discount', $this->checkoutSession->getData('custom_price_price'));
+            $total->setData('base_shipping_amount', $this->checkoutSession->getData('custom_shipping_price'));
+            $total->setData('shipping_amount', $this->checkoutSession->getData('custom_shipping_price'));
+            $total->setData('shipping_tax_calculation_amount', $this->checkoutSession->getData('custom_shipping_price'));
+            $total->setData('base_shipping_tax_calculation_amount', $this->checkoutSession->getData('custom_shipping_price'));
+            $total->setData('shipping_incl_tax', $this->checkoutSession->getData('custom_shipping_price'));
+            $total->setData('base_shipping_incl_tax', $this->checkoutSession->getData('custom_shipping_price'));
+            $quote->save();
+            $this->checkoutSession->getData('custom_data_eas', true);
         }
 
         return $this;

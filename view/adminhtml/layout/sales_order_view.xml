@@ -29,8 +29,8 @@
                                 <item name="total" xsi:type="string" translate="true">Row Total</item>
 
                                 <item name="eas_custom_duties" xsi:type="string" translate="true">Customs duties</item>
-                                <item name="eas_fee" xsi:type="string" translate="true">EAS fee</item>
-                                <item name="vat_on_eas_fee" xsi:type="string" translate="true">VAT on EAS fee</item>
+                                <item name="eas_fee" xsi:type="string" translate="true">Other fees</item>
+                                <item name="vat_on_eas_fee" xsi:type="string" translate="true">VAT on Other fees</item>
 
                             </argument>
                         </arguments>

@@ -2,6 +2,8 @@
 
 namespace Easproject\Eucompliance\Plugin\Sales\Order;
 
+use Zend_Db_Select;
+
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  */
@@ -37,7 +39,7 @@ class Grid
                     ]
                 );
 
-            $where = $collection->getSelect()->getPart('where');
+            $where = $collection->getSelect()->getPart(Zend_Db_Select::WHERE);
 
             foreach ($where as $key => $condition) {
                 if (strripos($condition, self::EAS_CONDITION_YES)) {
@@ -63,7 +65,7 @@ class Grid
                 $where[$key] = $newCondition;
             }
 
-            $collection->getSelect()->setPart('where', $where);
+            $collection->getSelect()->setPart(Zend_Db_Select::WHERE, $where);
 
         }
         return $collection;

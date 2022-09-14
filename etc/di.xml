@@ -53,6 +53,9 @@
         <plugin name="setExtensionAttributes"
                 type="Easproject\Eucompliance\Plugin\Quote\Quote"
                 sortOrder="1"/>
+        <plugin name="quote_collect_custom"
+                type="Easproject\Eucompliance\Plugin\QuoteCollect"
+                sortOrder="20"/>
     </type>
     <type name="Magento\Sales\Block\Adminhtml\Order\View\Items\Renderer\DefaultRenderer">
         <plugin name="showEasColumns"
@@ -80,5 +83,19 @@
         <plugin name="easproject_eucompliance::coupon"
                 type="Easproject\Eucompliance\Plugin\Coupon"
                 sortOrder="10"/>
+    </type>
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="orderProcessor" xsi:type="object">Easproject\Eucompliance\Console\OrderProcessor</item>
+            </argument>
+        </arguments>
+    </type>
+    <preference for="Magento\Quote\Model\Quote\Address\Total\Shipping"
+                type="Easproject\Eucompliance\Model\Quote\Address\Total\Shipping"/>
+    <type name="Magento\Quote\Model\Quote\Payment">
+        <plugin name="eas_eucompliance_paymetnImportData"
+                type="Easproject\Eucompliance\Plugin\Payment"
+                sortOrder="20"/>
     </type>
 </config>

@@ -17,5 +17,12 @@ var config = {
                 'Easproject_Eucompliance/js/view/messages-mixin': true
             }
         }
-    }
+    },
+    map:
+        {
+            '*':
+                {
+                    'Magento_Checkout/js/view/form/element/email':'Easproject_Eucompliance/js/view/form/element/email'
+                }
+        }
 };
