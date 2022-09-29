@@ -29,19 +29,17 @@ You should get following result
 
 ### **To install this module using git**
 
-Firstly,  create Eas package in app/code directory
+Login in to your web server shell.
+Navigate to the root magento 2 installation directory
 
-`mkdir app/code/Eas
-`
+After that navigate to the magetno code directorу.
 
-After that navigate to the newly created directory
-
-`cd app/code/Eas
+`cd app/code/
 `
 
 And clone module
 
-`git clone https://github.com//EAS-project-oy/eascompliance  Magento
+`git clone https://github.com//EAS-project-oy/eascompliance
 `
 
 After installation from root magento folder,
