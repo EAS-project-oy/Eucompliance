@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="EAS" width="600px" src="doc/static/Plugin_logo.png" />
+    <img alt="EAS" width="150px" src="doc/static/Plugin_logo.png" />
 </p>
 
 
