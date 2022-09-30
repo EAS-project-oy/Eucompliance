@@ -36,10 +36,15 @@ After that navigate to the magetno code directorу.
 
 `cd app/code/
 `
+Create directory Easproject
+`mkdir Easproject
+
+`
+
 
 And clone module
 
-`git clone https://github.com//EAS-project-oy/eascompliance
+`git clone https://github.com//EAS-project-oy/eucompliance
 `
 
 After installation from root magento folder,
