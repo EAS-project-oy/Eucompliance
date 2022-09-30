@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="EAS" width="600px" src="doc/static/plugin_logo.png" />
+    <img alt="EAS" width="150px" src="doc/static/Plugin_logo.png" />
 </p>
 
 
@@ -29,19 +29,22 @@ You should get following result
 
 ### **To install this module using git**
 
-Firstly,  create Eas package in app/code directory
+Login in to your web server shell.
+Navigate to the root magento 2 installation directory
 
-`mkdir app/code/Eas
+After that navigate to the magetno code directorу.
+
+`cd app/code/
+`
+Create directory Easproject
+`mkdir Easproject
+
 `
 
-After that navigate to the newly created directory
-
-`cd app/code/Eas
-`
 
 And clone module
 
-`git clone https://github.com//EAS-project-oy/eascompliance  Magento
+`git clone https://github.com//EAS-project-oy/eucompliance
 `
 
 After installation from root magento folder,
