@@ -30,7 +30,15 @@ You should get following result
 ### **To install this module using git**
 
 Login in to your web server shell.
+Be sure that PHP JWT plugin installed.
+
 Navigate to the root magento 2 installation directory
+
+You can install PHP JWT using command
+
+`composer require firebase/php-jwt
+`
+
 
 After that navigate to the magetno code directorу.
 
