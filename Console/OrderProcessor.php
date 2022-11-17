@@ -2,68 +2,100 @@
 
 namespace Easproject\Eucompliance\Console;
 
+use Easproject\Eucompliance\Service\Request\Order;
+use Magento\Framework\App\State;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Magento\Framework\ObjectManagerInterface;
 
 class OrderProcessor extends Command
 {
     /**
-     * @var \Easproject\Eucompliance\Service\Request\Order
+     * @var Order
      */
-    private \Easproject\Eucompliance\Service\Request\Order $order;
+    private $requestOrder;
 
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    private \Psr\Log\LoggerInterface $logger;
+    private LoggerInterface $logger;
 
     /**
-     * @var \Magento\Framework\App\State
+     * @var State
      */
-    private \Magento\Framework\App\State $state;
+    private State $state;
 
     /**
-     * @param \Easproject\Eucompliance\Service\Request\Order $order
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \Magento\Framework\App\State $state
+     * @var ObjectManagerInterface
+     */
+    protected ObjectManagerInterface $objectManager;
+
+    /**
+     * Constructor for order processing
+     *
+     * @param State $state
+     * @param ObjectManagerInterface $objectManager
+     * @param LoggerInterface $logger
      * @param string|null $name
      */
     public function __construct(
-        \Easproject\Eucompliance\Service\Request\Order $order,
-        \Psr\Log\LoggerInterface $logger,
-        \Magento\Framework\App\State $state,
+        State $state,
+        ObjectManagerInterface $objectManager,
+        LoggerInterface $logger,
         string $name = null
     ) {
         parent::__construct($name);
-        $this->order = $order;
-        $this->logger = $logger;
         $this->state = $state;
+        $this->objectManager = $objectManager;
+        $this->logger = $logger;
     }
 
     /**
-     * {@inheritdoc}
+     * Run order processor
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return void
      */
-    protected function execute(
-        InputInterface $input,
-        OutputInterface $output
-    ) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         $output->writeln("Completed order processing");
         try {
-            $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
-            $this->order->processOrders();
-        } catch (FileSystemException|InputException|NoSuchEntityException|\Zend_Http_Client_Exception $e) {
-            $this->logger->critical('error with process orders: ' . $e->getMessage());
+            $this->state->emulateAreaCode(
+                \Magento\Framework\App\Area::AREA_ADMINHTML,
+                [$this, "executeProcessOrders"],
+                [$input, $output]
+            );
+        } catch (\Exception $e) {
+            $this->logger->critical('error with run process orders: ' . $e->getMessage());
         }
-
         $output->writeln("Order processing completed successfully");
     }
 
     /**
-     * {@inheritdoc}
+     * Run processOrders with area emulate
+     *
+     * @return void
+     */
+    public function executeProcessOrders()
+    {
+        try {
+            $this->requestOrder = $this->objectManager->create(Order::class);
+            $this->requestOrder->processOrders();
+        } catch (FileSystemException|InputException|NoSuchEntityException|\Zend_Http_Client_Exception $e) {
+            $this->logger->critical('error with process orders: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Command configuration
+     *
+     * @return void
      */
     protected function configure()
     {
