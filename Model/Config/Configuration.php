@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -9,63 +12,61 @@ use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Framework\Module\Manager;
 use Magento\Store\Model\ScopeInterface;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Configuration
 {
-    const CONFIGURATION_ATTRIBUTES_REDUCED_VAT = 'configuration/attributes/reduced_vat';
-    const CONFIGURATION_ATTRIBUTES_HSCODE = 'configuration/attributes/hscode';
-    const CONFIGURATION_ATTRIBUTES_WAREHOUSE_COUNTRY = 'configuration/attributes/warehouse_country';
-    const CONFIGURATION_ATTRIBUTES_ACT_AS_DISCLOSED_AGENT = 'configuration/attributes/act_as_disclosed_agent';
-    const CONFIGURATION_ATTRIBUTES_SELLER_REGISTRATION_COUNTRY = 'configuration/attributes/seller_registration_country';
-    const CONFIGURATION_ADVANCED_DEBUG = 'configuration/advanced/debug';
-    const CONFIGURATION_CREDENTIALS_BASE_URL = 'configuration/credentials/api_url';
-    const CREDENTIALS_AUTH_KEYS_URL = '/auth/keys';
-    const CREDENTIALS_AUTHORIZE_URL = '/auth/open-id/connect';
-    const CONFIGURATION_GENERAL_TAX_NAME = 'configuration/general/tax_name';
-    const CONFIGURATION_CREDENTIALS_API_KEY = 'configuration/credentials/api_key';
-    const CONFIGURATION_CREDENTIALS_SECRET_API_KEY = 'configuration/credentials/secret_api_key';
-    const CONFIGURATION_GENERAL_ENABLE = 'configuration/general/enable';
-    const CREDENTIALS_CALCULATE_URL = '/calculate';
-    const CREDENTIALS_PAYMENT_VERIFY_URL = '/payment/verify';
-    const CONFIGURATION_GENERAL_POST_SHIPPING = 'configuration/general/post_shipping';
-    const INVENTORY_MODULE = 'Magento_Inventory';
-    const EAS_CHECKOUT_TOKEN = 'eas_checkout_token';
-    const COUNTRY_CODE_PATH = 'general/country/default';
-    const STORE_COUNTRY_CODE = 'general/store_information/country_id';
-    const EAS_REDUCED_VAT = 'eas_reduced_vat';
-    const SELLER_REGISTRATION_COUNTRY = 'seller_registration_country';
-    const EAS_SELLER_REGISTRATION_COUNTRY = 'eas_seller_registration_country';
-    const EAS_ACT_AS_DISCLOSED_AGENT = 'eas_act_as_disclosed_agent';
-    const ACT_AS_DISCLOSED_AGENT = 'act_as_disclosed_agent';
-    const EAS_HSCODE = 'eas_hscode';
-    const EAS_FEE = 'eas_fee';
-    const LOCATION_WAREHOUSE_COUNTRY = 'location_warehouse_country';
-    const ORIGINATING_COUNTRY = 'originating_country';
-    const EAS_WAREHOUSE_COUNTRY = 'eas_warehouse_country';
-    const REDUCED_TBE_VAT_GROUP = 'reduced_tbe_vat_group';
-    const COUNTRY_OF_MANUFACTURE = 'country_of_manufacture';
-    const EAS_CALCULATE = 'eas/calculate';
-    const POSTAL = 'postal';
-    const COURIER = 'courier';
-    const ACCESS_TOKEN = 'access_token';
-    const GOODS = "GOODS";
-    const GIFTCARD = "GIFTCARD";
-    const TBE = "TBE";
-    const VIRTUAL = "virtual";
-    const PRODUCT_ENTITY_TYPE = 4;
-    const ATTRIBUTE_CODE = 'attribute_code';
-    const EAS = 'eas';
-    const EAS_TOKEN = 'eas_token';
-    const EAS_SHIPPING_COST = 'eas_shipping_cost';
-    const EAS_TOTAL_VAT = 'eas_total_vat';
-    const EAS_TOTAL_TAX = 'eas_total_tax';
-    const EAS_TOTAL_AMOUNT = 'eas_total_amount';
-    const EAS_ADDITIONAL_ATTRIBUTES = 'EAS additional attributes';
-    const VERIFYPEER = 'verifypeer';
-    const CONFIGURATION_MSI_ENABLE = 'configuration/msi/enable';
-    const CONFIGURATION_MSI_MSI_ALGORITHM = 'configuration/msi/msi_algorithm';
+    public const CONFIGURATION_ATTRIBUTES_REDUCED_VAT = 'configuration/attributes/reduced_vat';
+    public const CONFIGURATION_ATTRIBUTES_HSCODE = 'configuration/attributes/hscode';
+    public const CONFIGURATION_ATTRIBUTES_WAREHOUSE_COUNTRY = 'configuration/attributes/warehouse_country';
+    public const CONFIGURATION_ATTRIBUTES_ACT_AS_DISCLOSED_AGENT = 'configuration/attributes/act_as_disclosed_agent';
+    public const CONFIGURATION_ATTRIBUTES_SELLER_REGISTRATION_COUNTRY
+        = 'configuration/attributes/seller_registration_country';
+    public const CONFIGURATION_ADVANCED_DEBUG = 'configuration/advanced/debug';
+    public const CONFIGURATION_CREDENTIALS_BASE_URL = 'configuration/credentials/api_url';
+    public const CREDENTIALS_AUTH_KEYS_URL = '/auth/keys';
+    public const CREDENTIALS_AUTHORIZE_URL = '/auth/open-id/connect';
+    public const CONFIGURATION_GENERAL_TAX_NAME = 'configuration/general/tax_name';
+    public const CONFIGURATION_CREDENTIALS_API_KEY = 'configuration/credentials/api_key';
+    public const CONFIGURATION_CREDENTIALS_SECRET_API_KEY = 'configuration/credentials/secret_api_key';
+    public const CONFIGURATION_GENERAL_ENABLE = 'configuration/general/enable';
+    public const CREDENTIALS_CALCULATE_URL = '/calculate';
+    public const CREDENTIALS_PAYMENT_VERIFY_URL = '/payment/verify';
+    public const CONFIGURATION_GENERAL_POST_SHIPPING = 'configuration/general/post_shipping';
+    public const INVENTORY_MODULE = 'Magento_Inventory';
+    public const EAS_CHECKOUT_TOKEN = 'eas_checkout_token';
+    public const COUNTRY_CODE_PATH = 'general/country/default';
+    public const STORE_COUNTRY_CODE = 'general/store_information/country_id';
+    public const EAS_REDUCED_VAT = 'eas_reduced_vat';
+    public const SELLER_REGISTRATION_COUNTRY = 'seller_registration_country';
+    public const EAS_SELLER_REGISTRATION_COUNTRY = 'eas_seller_registration_country';
+    public const EAS_ACT_AS_DISCLOSED_AGENT = 'eas_act_as_disclosed_agent';
+    public const ACT_AS_DISCLOSED_AGENT = 'act_as_disclosed_agent';
+    public const EAS_HSCODE = 'eas_hscode';
+    public const EAS_FEE = 'eas_fee';
+    public const LOCATION_WAREHOUSE_COUNTRY = 'location_warehouse_country';
+    public const ORIGINATING_COUNTRY = 'originating_country';
+    public const EAS_WAREHOUSE_COUNTRY = 'eas_warehouse_country';
+    public const REDUCED_TBE_VAT_GROUP = 'reduced_tbe_vat_group';
+    public const COUNTRY_OF_MANUFACTURE = 'country_of_manufacture';
+    public const EAS_CALCULATE = 'eas/calculate';
+    public const POSTAL = 'postal';
+    public const COURIER = 'courier';
+    public const ACCESS_TOKEN = 'access_token';
+    public const GOODS = "GOODS";
+    public const GIFTCARD = "GIFTCARD";
+    public const TBE = "TBE";
+    public const VIRTUAL = "virtual";
+    public const PRODUCT_ENTITY_TYPE = 4;
+    public const ATTRIBUTE_CODE = 'attribute_code';
+    public const EAS = 'eas';
+    public const EAS_TOKEN = 'eas_token';
+    public const EAS_SHIPPING_COST = 'eas_shipping_cost';
+    public const EAS_TOTAL_VAT = 'eas_total_vat';
+    public const EAS_TOTAL_TAX = 'eas_total_tax';
+    public const EAS_TOTAL_AMOUNT = 'eas_total_amount';
+    public const EAS_ADDITIONAL_ATTRIBUTES = 'EAS additional attributes';
+    public const VERIFYPEER = 'verifypeer';
+    public const CONFIGURATION_MSI_ENABLE = 'configuration/msi/enable';
+    public const CONFIGURATION_MSI_MSI_ALGORITHM = 'configuration/msi/msi_algorithm';
 
     /**
      * @var ScopeConfigInterface
@@ -88,6 +89,8 @@ class Configuration
     private string $baseUrl = '';
 
     /**
+     * Configuration constructor
+     *
      * @param ScopeConfigInterface $scopeConfig
      * @param Manager              $moduleManager
      * @param EncryptorInterface   $encryptor
@@ -103,6 +106,8 @@ class Configuration
     }
 
     /**
+     * Check is Enabled
+     *
      * @return bool
      */
     public function isEnabled(): bool
@@ -114,6 +119,8 @@ class Configuration
     }
 
     /**
+     * Get Calculate Url
+     *
      * @return string|null
      */
     public function getCalculateUrl(): ?string
@@ -122,6 +129,8 @@ class Configuration
     }
 
     /**
+     * Get Payment Verify Url
+     *
      * @return string|null
      */
     public function getPaymentVerifyUrl(): ?string
@@ -130,6 +139,8 @@ class Configuration
     }
 
     /**
+     * Get Postal Methods
+     *
      * @return string|null
      */
     public function getPostalMethods(): ?string
@@ -141,6 +152,8 @@ class Configuration
     }
 
     /**
+     * Get Warehouse Attribute Name
+     *
      * @return string|null
      */
     public function getWarehouseAttributeName(): ?string
@@ -152,6 +165,8 @@ class Configuration
     }
 
     /**
+     * Get Act As Disclosed Agent Attribute Name
+     *
      * @return string|null
      */
     public function getActAsDisclosedAgentAttributeName(): ?string
@@ -163,6 +178,8 @@ class Configuration
     }
 
     /**
+     * Get Store Default Country Code
+     *
      * @return string|null
      */
     public function getStoreDefaultCountryCode(): ?string
@@ -174,6 +191,8 @@ class Configuration
     }
 
     /**
+     * Get MSI Warehouse Location
+     *
      * @return string|null
      */
     public function getMSIWarehouseLocation(): ?string
@@ -187,6 +206,8 @@ class Configuration
     }
 
     /**
+     * Get Hscode Attribute Name
+     *
      * @return string|null
      */
     public function getHscodeAttributeName(): ?string
@@ -198,6 +219,8 @@ class Configuration
     }
 
     /**
+     * Get Reduced Vat Attribute Name
+     *
      * @return string|null
      */
     public function getReducedVatAttributeName(): ?string
@@ -209,6 +232,8 @@ class Configuration
     }
 
     /**
+     * Get Seller Registration Name
+     *
      * @return string|null
      */
     public function getSellerRegistrationName(): ?string
@@ -220,6 +245,8 @@ class Configuration
     }
 
     /**
+     * Check is Debug Enabled
+     *
      * @return bool
      */
     public function isDebugEnabled(): bool
@@ -231,6 +258,8 @@ class Configuration
     }
 
     /**
+     * Get Api Keys Url
+     *
      * @return string|null
      */
     public function getApiKeysUrl(): ?string
@@ -239,6 +268,8 @@ class Configuration
     }
 
     /**
+     * Get Base Url
+     *
      * @return string|null
      */
     public function getBaseUrl() : ?string
@@ -254,6 +285,8 @@ class Configuration
     }
 
     /**
+     * Get Authorize Url
+     *
      * @return string|null
      */
     public function getAuthorizeUrl(): ?string
@@ -262,6 +295,8 @@ class Configuration
     }
 
     /**
+     * Get Tax Label
+     *
      * @return string
      */
     public function getTaxLabel(): string
@@ -273,6 +308,8 @@ class Configuration
     }
 
     /**
+     * Get Api Key
+     *
      * @return mixed
      */
     public function getApiKey()
@@ -284,6 +321,8 @@ class Configuration
     }
 
     /**
+     * Get Secret Key
+     *
      * @return string
      */
     public function getSecretKey(): string

@@ -1,25 +1,32 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Controller\Adminhtml;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Registry;
+
 abstract class Message extends \Magento\Backend\App\Action
 {
 
-    protected $_coreRegistry;
-    const ADMIN_RESOURCE = 'Easproject_Eucompliance::top_level';
+    /**
+     * @var Registry
+     */
+    protected Registry $_coreRegistry;
+
+    public const ADMIN_RESOURCE = 'Easproject_Eucompliance::top_level';
 
     /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\Registry         $coreRegistry
+     * @param Context $context
+     * @param Registry $coreRegistry
      */
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Registry $coreRegistry
+        Context $context,
+        Registry $coreRegistry
     ) {
         $this->_coreRegistry = $coreRegistry;
         parent::__construct($context);

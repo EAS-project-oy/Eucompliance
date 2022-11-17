@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -11,9 +14,6 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\Module\Manager;
 use Magento\Framework\View\Helper\SecureHtmlRenderer;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Msi extends Field
 {
 
@@ -23,6 +23,8 @@ class Msi extends Field
     private Manager $moduleManager;
 
     /**
+     * Msi Constructor
+     *
      * @param Manager                 $moduleManager
      * @param Context                 $context
      * @param array                   $data
@@ -38,6 +40,12 @@ class Msi extends Field
         parent::__construct($context, $data, $secureRenderer);
     }
 
+    /**
+     * Render element
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
     public function render(AbstractElement $element)
     {
         if (!$this->moduleManager->isEnabled(Configuration::INVENTORY_MODULE)) {

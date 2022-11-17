@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -11,6 +14,8 @@ class Totals extends \Magento\Sales\Block\Adminhtml\Order\Totals
 {
 
     /**
+     * Initialize order totals array
+     *
      * @return $this|Totals
      */
     protected function _initTotals()
@@ -64,6 +69,8 @@ class Totals extends \Magento\Sales\Block\Adminhtml\Order\Totals
     }
 
     /**
+     * Calculate order item agreement value
+     *
      * @param  string         $method
      * @param  OrderInterface $order
      * @return float

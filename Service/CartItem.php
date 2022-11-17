@@ -27,10 +27,10 @@ class CartItem
         $this->cartItemInterfaceFactory = $cartItemInterfaceFactory;
     }
 
-    const SAVE = 'save';
-    const SET = 'set';
-    const GET = 'get_';
-    const ATTRIBUTE_NAMES = [
+    public const SAVE = 'save';
+    public const SET = 'set';
+    public const GET = 'get_';
+    public const ATTRIBUTE_NAMES = [
         "eas_tax_amount" => "eas_tax_amount",
         "eas_tax_percent" => "eas_tax_percent",
         "eas_row_total" => "eas_row_total",

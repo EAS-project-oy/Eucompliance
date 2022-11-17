@@ -18,7 +18,7 @@ use Magento\Framework\Setup\Patch\PatchRevertableInterface;
 class AddGiftCardProductAttribute implements DataPatchInterface, PatchRevertableInterface
 {
 
-    const EAS_GIFT_CARD = 'gift_card';
+    public const EAS_GIFT_CARD = 'gift_card';
 
     /**
      * @var ModuleDataSetupInterface

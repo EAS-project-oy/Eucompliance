@@ -10,8 +10,8 @@ namespace Easproject\Eucompliance\Ui\Component\Listing\Column;
 class MessageActions extends \Magento\Ui\Component\Listing\Columns\Column
 {
 
-    const URL_PATH_EDIT = 'eas/message/edit';
-    const URL_PATH_DELETE = 'eas/message/delete';
+    public const URL_PATH_EDIT = 'eas/message/edit';
+    public const URL_PATH_DELETE = 'eas/message/delete';
     protected $urlBuilder;
 
     /**

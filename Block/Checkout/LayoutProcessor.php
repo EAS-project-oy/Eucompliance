@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -15,17 +18,17 @@ class LayoutProcessor
     /**
      * @var AttributeMetadataDataProvider
      */
-    private $attributeMetadataDataProvider;
+    private AttributeMetadataDataProvider $attributeMetadataDataProvider;
 
     /**
      * @var AttributeMapper
      */
-    protected $attributeMapper;
+    protected AttributeMapper $attributeMapper;
 
     /**
      * @var AttributeMerger
      */
-    protected $merger;
+    protected AttributeMerger $merger;
 
     /**
      * @var Options
@@ -59,18 +62,22 @@ class LayoutProcessor
     }
 
     /**
+     * Return options
+     *
      * @return Options
      */
-    private function getOptions()
+    private function getOptions(): Options
     {
         return $this->options;
     }
 
     /**
+     * Customer address attributes
+     *
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function getAddressAttributes()
+    private function getAddressAttributes(): array
     {
         /**
          * @var \Magento\Eav\Api\Data\AttributeInterface[] $attributes
@@ -131,7 +138,7 @@ class LayoutProcessor
     /**
      * Process js Layout of block
      *
-     * @param $jsLayout
+     * @param array $jsLayout
      *
      * @return array|mixed
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -200,8 +207,8 @@ class LayoutProcessor
      * Appends billing address form component to payment layout
      *
      * @param array $paymentLayout
+     * @param array $newStepsLayout
      * @param array $elements
-     *
      * @return array
      */
     private function processNewStepsChildrenComponents(

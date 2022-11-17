@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Controller\Index;
 
@@ -13,9 +16,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Zend_Http_Client_Exception;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Index implements ActionInterface
 {
     /**
@@ -51,6 +51,8 @@ class Index implements ActionInterface
     }
 
     /**
+     * Calculation execute
+     *
      * @return Json
      * @throws LocalizedException
      * @throws NoSuchEntityException

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -6,9 +9,6 @@ namespace Easproject\Eucompliance\Controller\Adminhtml\Message;
 
 use Easproject\Eucompliance\Controller\Adminhtml\Message;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Delete extends Message
 {
 

@@ -1,29 +1,43 @@
 <?php
-
-namespace Easproject\Eucompliance\Plugin\Sales\Order;
-
-use Zend_Db_Select;
-
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  */
+
+declare(strict_types=1);
+
+namespace Easproject\Eucompliance\Plugin\Sales\Order;
+
+use Magento\Sales\Model\ResourceModel\Order\Grid\Collection;
+use Magento\Framework\DB\Select;
+use Magento\Framework\View\Element\UiComponent\DataProvider\Reporting;
+
 class Grid
 {
-    const EAS_TOKEN_IS_NOT_NULL = '`eas_token` IS NOT NULL';
-    const EAS_TOKEN_IS_NULL = '`eas_token` IS NULL';
+    public const EAS_TOKEN_IS_NOT_NULL = '`eas_token` IS NOT NULL';
+    public const EAS_TOKEN_IS_NULL = '`eas_token` IS NULL';
 
-    const EAS_CONDITION_YES = "`eas_token` LIKE '%Yes%'";
-    const EAS_CONDITION_NO = "`eas_token` LIKE '%No%'";
-
-    public static $table = 'sales_order_grid';
-    public static $leftJoinTable = 'quote';
+    public const EAS_CONDITION_YES = "`eas_token` LIKE '%Yes%'";
+    public const EAS_CONDITION_NO = "`eas_token` LIKE '%No%'";
 
     /**
-     * @param  $intercepter
-     * @param  $collection
-     * @return mixed
+     * @var string
      */
-    public function afterSearch($intercepter, $collection)
+    public static string $table = 'sales_order_grid';
+
+    /**
+     * @var string
+     */
+    public static string $leftJoinTable = 'quote';
+
+    /**
+     * Add eas_token to collection
+     *
+     * @param Reporting $subject
+     * @param Collection $collection
+     * @return Collection
+     * @throws \Zend_Db_Select_Exception
+     */
+    public function afterSearch(Reporting $subject, Collection $collection): Collection
     {
         if ($collection->getMainTable() === $collection->getConnection()->getTableName(self::$table)) {
 
@@ -39,7 +53,7 @@ class Grid
                     ]
                 );
 
-            $where = $collection->getSelect()->getPart(Zend_Db_Select::WHERE);
+            $where = $collection->getSelect()->getPart(Select::WHERE);
 
             foreach ($where as $key => $condition) {
                 if (strripos($condition, self::EAS_CONDITION_YES)) {
@@ -65,7 +79,7 @@ class Grid
                 $where[$key] = $newCondition;
             }
 
-            $collection->getSelect()->setPart(Zend_Db_Select::WHERE, $where);
+            $collection->getSelect()->setPart(Select::WHERE, $where);
 
         }
         return $collection;

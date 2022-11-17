@@ -1,8 +1,10 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Model\Config\Backend;
 
-use Easproject\Eucompliance\Model\Config\Configuration;
 use Easproject\Eucompliance\Service\Calculate;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -15,9 +17,6 @@ use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
 {
 
@@ -96,6 +95,8 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
     }
 
     /**
+     * Get Credentials Fields
+     *
      * @return array
      */
     public function getCredentialsFields(): array

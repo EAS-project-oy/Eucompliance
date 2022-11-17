@@ -14,7 +14,7 @@ use Magento\Sales\Api\Data\OrderInterface;
  */
 class OrderRepository
 {
-    const PENDING = 'pending';
+    public const PENDING = 'pending';
     /**
      * @var Calculate
      */

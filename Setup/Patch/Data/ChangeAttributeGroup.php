@@ -21,7 +21,7 @@ use Magento\Eav\Api\AttributeGroupRepositoryInterface;
 class ChangeAttributeGroup implements DataPatchInterface
 {
 
-    const EAS_GIFT_CARD = 'gift_card';
+    public const EAS_GIFT_CARD = 'gift_card';
 
     /**
      * @var ModuleDataSetupInterface

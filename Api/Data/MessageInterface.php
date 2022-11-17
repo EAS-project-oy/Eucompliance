@@ -24,10 +24,10 @@ namespace Easproject\Eucompliance\Api\Data;
 interface MessageInterface
 {
 
-    const ERROR_TYPE = 'error_type';
-    const MESSAGE = 'message';
-    const MESSAGE_ID = 'message_id';
-    const RESPONSE = 'response';
+    public const ERROR_TYPE = 'error_type';
+    public const MESSAGE = 'message';
+    public const MESSAGE_ID = 'message_id';
+    public const RESPONSE = 'response';
 
     /**
      * Get message_id

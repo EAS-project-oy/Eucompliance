@@ -1,16 +1,15 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Model\Config;
 
 use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Module\Manager;
-use Magento\Inventory\Model\ResourceModel\Source\Collection;
 use Magento\Inventory\Model\ResourceModel\Source\CollectionFactory;
 use Magento\InventorySourceSelectionApi\Model\GetSourceSelectionAlgorithmList;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Msi implements OptionSourceInterface
 {
 
@@ -37,6 +36,8 @@ class Msi implements OptionSourceInterface
     }
 
     /**
+     * Options data
+     *
      * @return array
      */
     public function toOptionArray()

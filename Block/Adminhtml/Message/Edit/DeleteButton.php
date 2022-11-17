@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -6,13 +9,12 @@ namespace Easproject\Eucompliance\Block\Adminhtml\Message\Edit;
 
 use Magento\Framework\View\Element\UiComponent\Control\ButtonProviderInterface;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class DeleteButton extends GenericButton implements ButtonProviderInterface
 {
 
     /**
+     * Add Delete Message button
+     *
      * @return array
      */
     public function getButtonData()

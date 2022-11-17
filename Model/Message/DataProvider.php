@@ -1,8 +1,8 @@
 <?php
 /**
- * Copyright ©  All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © EAS Project Oy. All rights reserved.
  */
+
 declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Model\Message;
@@ -17,14 +17,15 @@ class DataProvider extends AbstractDataProvider
     /**
      * @var DataPersistorInterface
      */
-    protected $dataPersistor;
+    protected DataPersistorInterface $dataPersistor;
 
     /**
      * @var array
      */
-    protected $loadedData;
+    protected array $loadedData;
+
     /**
-     * @inheritDoc
+     * @var Easproject\Eucompliance\Model\ResourceModel\Message\Collection
      */
     protected $collection;
 

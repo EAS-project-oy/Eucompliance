@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -12,9 +15,6 @@ use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote\Item\Repository;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class EasFee extends AbstractTotal
 {
     /**
@@ -29,6 +29,9 @@ class EasFee extends AbstractTotal
 
     /**
      * EasFee constructor.
+     *
+     * @param Repository $repository
+     * @param Session $checkoutSession
      */
     public function __construct(
         Repository $repository,
@@ -40,10 +43,13 @@ class EasFee extends AbstractTotal
     }
 
     /**
-     * @param  Quote                       $quote
-     * @param  ShippingAssignmentInterface $shippingAssignment
-     * @param  Total                       $total
-     * @return EasFee
+     * Collect
+     *
+     * @param Quote $quote
+     * @param ShippingAssignmentInterface $shippingAssignment
+     * @param Total $total
+     * @return $this
+     * @throws \Exception
      */
     public function collect(
         Quote                       $quote,
@@ -97,8 +103,14 @@ class EasFee extends AbstractTotal
             $total->setData('base_subtotal_with_discount', $this->checkoutSession->getData('custom_price_price'));
             $total->setData('base_shipping_amount', $this->checkoutSession->getData('custom_shipping_price'));
             $total->setData('shipping_amount', $this->checkoutSession->getData('custom_shipping_price'));
-            $total->setData('shipping_tax_calculation_amount', $this->checkoutSession->getData('custom_shipping_price'));
-            $total->setData('base_shipping_tax_calculation_amount', $this->checkoutSession->getData('custom_shipping_price'));
+            $total->setData(
+                'shipping_tax_calculation_amount',
+                $this->checkoutSession->getData('custom_shipping_price')
+            );
+            $total->setData(
+                'base_shipping_tax_calculation_amount',
+                $this->checkoutSession->getData('custom_shipping_price')
+            );
             $total->setData('shipping_incl_tax', $this->checkoutSession->getData('custom_shipping_price'));
             $total->setData('base_shipping_incl_tax', $this->checkoutSession->getData('custom_shipping_price'));
             $quote->save();
@@ -109,6 +121,8 @@ class EasFee extends AbstractTotal
     }
 
     /**
+     * Fetch fee total
+     *
      * @param  Quote $quote
      * @param  Total $total
      * @return array
@@ -119,6 +133,8 @@ class EasFee extends AbstractTotal
     }
 
     /**
+     * Get eas fee total
+     *
      * @param  float $easFee
      * @return array
      */

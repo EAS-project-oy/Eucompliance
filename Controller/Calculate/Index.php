@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Controller\Calculate;
 
@@ -9,9 +12,6 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\Webapi\Rest\Request;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Index implements ActionInterface
 {
     /**
@@ -62,6 +62,13 @@ class Index implements ActionInterface
         $this->serviceQuote = $serviceQuote;
     }
 
+    /**
+     * Calculate
+     *
+     * @return ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function execute()
     {
         if (!$this->configuration->isEnabled()) {

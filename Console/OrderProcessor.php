@@ -87,7 +87,7 @@ class OrderProcessor extends Command
         try {
             $this->requestOrder = $this->objectManager->create(Order::class);
             $this->requestOrder->processOrders();
-        } catch (FileSystemException|InputException|NoSuchEntityException|\Zend_Http_Client_Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->critical('error with process orders: ' . $e->getMessage());
         }
     }

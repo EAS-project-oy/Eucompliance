@@ -1,8 +1,8 @@
 <?php
 /**
- * Copyright ©  All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © EAS Project Oy. All rights reserved.
  */
+
 declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Model\ResourceModel\Message;
@@ -13,7 +13,7 @@ class Collection extends AbstractCollection
 {
 
     /**
-     * @inheritDoc
+     * @var string
      */
     protected $_idFieldName = 'message_id';
 
