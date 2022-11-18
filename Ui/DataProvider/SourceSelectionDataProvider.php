@@ -1,4 +1,9 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
+
+declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Ui\DataProvider;
 
@@ -13,9 +18,6 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\DataProvider\SourceSelectionDataProvider
 {
 
@@ -55,18 +57,18 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
     private GetStockItemConfigurationInterface $getStockItemConfiguration;
 
     /**
-     * @param string                             $name
-     * @param string                             $primaryFieldName
-     * @param string                             $requestFieldName
-     * @param RequestInterface                   $request
-     * @param OrderRepositoryInterface           $orderRepository
-     * @param StockByWebsiteIdResolverInterface  $stockByWebsiteIdResolver
+     * @param string $name
+     * @param string $primaryFieldName
+     * @param string $requestFieldName
+     * @param RequestInterface $request
+     * @param OrderRepositoryInterface $orderRepository
+     * @param StockByWebsiteIdResolverInterface $stockByWebsiteIdResolver
      * @param GetStockItemConfigurationInterface $getStockItemConfiguration
-     * @param $getSourcesByStockIdSkuAndQty
-     * @param GetSkuFromOrderItemInterface       $getSkuFromOrderItem
-     * @param GetSourcesByOrderIdSkuAndQty|null  $getSourcesByOrderIdSkuAndQty
-     * @param array                              $meta
-     * @param array                              $data
+     * @param null $getSourcesByStockIdSkuAndQty @deprecated
+     * @param GetSkuFromOrderItemInterface $getSkuFromOrderItem
+     * @param GetSourcesByOrderIdSkuAndQty $getSourcesByOrderIdSkuAndQty
+     * @param array $meta
+     * @param array $data
      */
     public function __construct(
         string                             $name,
@@ -182,8 +184,10 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
     }
 
     /**
-     * @param  Item             $item
-     * @param  string|int|float $qty
+     * Cast Qty
+     *
+     * @param Item $item
+     * @param string|int|float $qty
      * @return float|int
      */
     private function castQty(Item $item, $qty)
@@ -235,10 +239,13 @@ class SourceSelectionDataProvider extends \Magento\InventoryShippingAdminUi\Ui\D
     }
 
     /**
-     * @param  $itemSku
-     * @param  $stockId
+     * Check Is Manage Stock
+     *
+     * @param string $itemSku
+     * @param int $stockId
      * @return bool
      * @throws LocalizedException
+     * @throws \Magento\InventoryConfigurationApi\Exception\SkuIsNotAssignedToStockException
      */
     private function isManageStock($itemSku, $stockId)
     {

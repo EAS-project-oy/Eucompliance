@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Plugin;
 
@@ -7,7 +10,9 @@ use Magento\Checkout\Model\Session;
 
 class QuoteCollect
 {
-
+    /**
+     * @var Session
+     */
     private Session $session;
 
     /**
@@ -19,8 +24,10 @@ class QuoteCollect
     }
 
     /**
+     * Plugin After Collect Totals
+     *
      * @param Quote $subject
-     * @param $result
+     * @param Quote $result
      * @return mixed
      * @throws \Exception
      */

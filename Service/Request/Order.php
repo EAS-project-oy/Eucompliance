@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Service\Request;
 
@@ -13,6 +16,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Io\File;
 use Magento\Framework\HTTP\ZendClientFactory;
+use Magento\Framework\Filesystem\DriverInterface;
 use Magento\InventoryApi\Api\SourceRepositoryInterface;
 use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\AddressInterface;
@@ -22,6 +26,7 @@ use Magento\InventorySourceSelectionApi\Api\Data\InventoryRequestInterfaceFactor
 use Magento\InventorySourceSelectionApi\Api\Data\ItemRequestInterfaceFactory;
 use Magento\InventorySourceSelectionApi\Api\SourceSelectionServiceInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Sales\Model\Order\Item;
 use Zend_Http_Client;
 
 class Order
@@ -35,11 +40,6 @@ class Order
      * @var ZendClientFactory
      */
     private ZendClientFactory $clientFactory;
-
-    /**
-     * @var ZendClientFactory
-     */
-    private ZendClientFactory $zendClientFactory;
 
     /**
      * @var Calculate
@@ -94,12 +94,17 @@ class Order
     /**
      * @var Filesystem
      */
-    private $filesystem;
+    private Filesystem $filesystem;
 
     /**
      * @var File
      */
-    private $file;
+    private File $file;
+
+    /**
+     * @var DriverInterface
+     */
+    private DriverInterface $fileSystemDriver;
 
     /**
      * @var CartRepositoryInterface
@@ -136,6 +141,7 @@ class Order
      * @param InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory
      * @param Filesystem $filesystem
      * @param File $file
+     * @param DriverInterface $fileSystemDriver
      * @param CartRepositoryInterface $quoteRepository
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Sales\Model\Order $orderModel
@@ -155,6 +161,7 @@ class Order
         InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory,
         Filesystem                                $filesystem,
         File                                      $file,
+        DriverInterface                           $fileSystemDriver,
         CartRepositoryInterface                   $quoteRepository,
         \Psr\Log\LoggerInterface                  $logger,
         \Magento\Sales\Model\Order                $orderModel
@@ -173,12 +180,15 @@ class Order
         $this->inventoryRequestExtensionInterfaceFactory = $inventoryRequestExtensionInterfaceFactory;
         $this->filesystem = $filesystem;
         $this->file = $file;
+        $this->fileSystemDriver = $fileSystemDriver;
         $this->quoteRepository = $quoteRepository;
         $this->logger = $logger;
         $this->orderModel = $orderModel;
     }
 
     /**
+     * Process Orders in eas
+     *
      * @return void
      * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\FileSystemException
@@ -204,13 +214,15 @@ class Order
     }
 
     /**
-     * @param $order
+     * Create Order in eas
+     *
+     * @param \Magento\Sales\Model\Order $order
      * @return mixed
      * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Zend_Http_Client_Exception
      */
-    public function createOrder($order)
+    public function createOrder(\Magento\Sales\Model\Order $order)
     {
         $apiUrl = 'http://internal1.easproject.com/api/createpostsaleorder';
         $client = $this->clientFactory->create();
@@ -230,11 +242,13 @@ class Order
     }
 
     /**
-     * @param $order
+     * Get Order Data
+     *
+     * @param \Magento\Sales\Model\Order $order
      * @return array
      * @throws NoSuchEntityException
      */
-    public function getOrderData($order): array
+    public function getOrderData(\Magento\Sales\Model\Order $order): array
     {
         $requestData = [];
 
@@ -302,6 +316,7 @@ class Order
 
         $incrId = $order->getIncrementId();
         $order = $this->orderModel->loadByIncrementId($incrId);
+
         foreach ($order->getItems() as $item) {
             $storeId = $item->getStoreId();
             /** @var ProductInterface $product */
@@ -312,8 +327,8 @@ class Order
                 "id_provided_by_em" => $product->getId(),
                 "quantity" => (int)$item->getData("qty_ordered"),
                 "cost_provided_by_em" => (float)number_format(
-                    ($item->getOriginalPrice() *
-                        $item->getData("qty_ordered") - $item->getOriginalDiscountAmount()) / (int)$item->getData("qty_ordered"),
+                    (($item->getOriginalPrice() * $item->getData("qty_ordered")) -
+                        $item->getOriginalDiscountAmount()) / (int)$item->getData("qty_ordered"),
                     2
                 ),
                 "weight" => (float)number_format((float)$item->getWeight(), 2),
@@ -375,10 +390,12 @@ class Order
     }
 
     /**
-     * @param $product
+     * Get Type Of Goods
+     *
+     * @param ProductInterface $product
      * @return string
      */
-    private function getTypeOfGoods($product): string
+    private function getTypeOfGoods(ProductInterface $product): string
     {
         $result = Configuration::GOODS;
         if ($product->getTypeId() == Configuration::VIRTUAL) {
@@ -391,13 +408,15 @@ class Order
     }
 
     /**
-     * @param $item
+     * Get Location Warehouse
+     *
+     * @param Item $item
      * @param ProductInterface $product
-     * @param $order
+     * @param \Magento\Sales\Model\Order $order
      * @return array|bool|string|null
      * @throws NoSuchEntityException
      */
-    private function getLocationWarehouse($item, ProductInterface $product, $order)
+    private function getLocationWarehouse(Item $item, ProductInterface $product, \Magento\Sales\Model\Order $order)
     {
         if ($this->configuration->getMSIWarehouseLocation()) {
             $sourceCode = $this->getWarehouseCode($item, $product, $order);
@@ -412,12 +431,14 @@ class Order
     }
 
     /**
-     * @param $item
+     * Get Warehouse Code
+     *
+     * @param Item $item
      * @param ProductInterface $product
-     * @param $order
+     * @param \Magento\Sales\Model\Order $order
      * @return array|bool|string|null
      */
-    private function getWarehouseCode($item, ProductInterface $product, $order)
+    private function getWarehouseCode(Item $item, ProductInterface $product, \Magento\Sales\Model\Order $order)
     {
         if ($this->configuration->getMSIWarehouseLocation()) {
             $request = $this->getInventoryRequestFromQuote($item, $product, $order);
@@ -435,13 +456,18 @@ class Order
     }
 
     /**
-     * @param $item
+     * Get Inventory Request From Quote
+     *
+     * @param Item $item
      * @param ProductInterface $product
-     * @param $order
+     * @param \Magento\Sales\Model\Order $order
      * @return mixed
      */
-    private function getInventoryRequestFromQuote($item, ProductInterface $product, $order)
-    {
+    private function getInventoryRequestFromQuote(
+        Item $item,
+        ProductInterface $product,
+        \Magento\Sales\Model\Order $order
+    ) {
         $store = $item->getStore();
         $stock = $this->stockByWebsiteId->execute((int)$store->getWebsiteId());
         $requestItems = [];
@@ -472,10 +498,12 @@ class Order
     }
 
     /**
-     * @param $order
+     * Get Address From Quote
+     *
+     * @param \Magento\Sales\Model\Order $order
      * @return AddressInterface|null
      */
-    private function getAddressFromQuote($order): ?AddressInterface
+    private function getAddressFromQuote(\Magento\Sales\Model\Order $order): ?AddressInterface
     {
         /** @var AddressInterface $address */
         $address = $order->getIsVirtual() ? $order->getBillingAddress() : $order->getShippingAddress();
@@ -495,12 +523,14 @@ class Order
     }
 
     /**
-     * @param $token
+     * Confirm Order
+     *
+     * @param string $token
      * @return void
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Zend_Http_Client_Exception
      */
-    public function confirmOrder($token)
+    public function confirmOrder(string $token)
     {
         $apiUrl = 'http://internal1.easproject.com/api/confirmpostsaleorder';
         $client = $this->clientFactory->create();
@@ -522,7 +552,9 @@ class Order
     }
 
     /**
-     * @param $order
+     * Prepare Order Data
+     *
+     * @param \Magento\Sales\Model\Order $order
      * @return void
      */
     private function prepareOrderData($order)
@@ -549,24 +581,29 @@ class Order
     }
 
     /**
-     * @param $content
+     * Write Content
+     *
+     * @param string $content
      * @return void
      * @throws \Magento\Framework\Exception\FileSystemException
      */
-    public function writeContent($content)
+    public function writeContent(string $content)
     {
         $dirname = $this->filesystem->getDirectoryWrite(
             DirectoryList::LOG
         )->getAbsolutePath('eas/orders');
-        if (!is_dir($dirname)) {
-            mkdir($dirname, 0775, true);
+        if (!$this->fileSystemDriver->isDirectory($dirname)) {
+            $this->fileSystemDriver->createDirectory($dirname, 0775);
         }
 
         $this->file->write($dirname . '/' . 'orders.json', $content);
     }
 
     /**
+     * Mass Sale
+     *
      * @return void
+     * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\FileSystemException
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Zend_Http_Client_Exception
@@ -593,18 +630,20 @@ class Order
         $response = $client->request(Zend_Http_Client::POST)->getBody();
         $response = json_decode($response, true);
         if (isset($response['job_id'])) {
-            $this->massSaleJobStatus($response['job_id']);
+            $this->massSaleJobStatus((string) $response['job_id']);
         }
     }
 
     /**
-     * @param $jobId
+     * Mass Sale Job Status
+     *
+     * @param string $jobId
      * @return void
      * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Zend_Http_Client_Exception
      */
-    public function massSaleJobStatus($jobId)
+    public function massSaleJobStatus(string $jobId)
     {
         $apiUrl = 'http://internal1.easproject.com/api/mass-sale/get_post_sale_without_lc_job_status/' . $jobId;
         $client = $this->clientFactory->create();
@@ -626,13 +665,15 @@ class Order
     }
 
     /**
-     * @param $jobId
+     * Mass Sale Order Status
+     *
+     * @param string $jobId
      * @return void
      * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Zend_Http_Client_Exception
      */
-    public function massSaleOrderStatus($jobId)
+    public function massSaleOrderStatus(string $jobId)
     {
         $apiUrl = 'http://internal1.easproject.com/api/mass-sale/get_post_sale_without_lc_order_status/' . $jobId;
         $client = $this->clientFactory->create();
@@ -652,13 +693,15 @@ class Order
     }
 
     /**
-     * @param $checkoutToken
+     * Save Checkout Token
+     *
+     * @param string $checkoutToken
      * @param bool $order
      * @param int $incId
      * @return void
      * @throws NoSuchEntityException
      */
-    public function saveCheckoutToken($checkoutToken, bool $order = false, int $incId = 0)
+    public function saveCheckoutToken(string $checkoutToken, bool $order = false, int $incId = 0)
     {
         if ($incId) {
             $cartId = $this->serviceCollection->getQuoteIdByOrderIncId($incId);
@@ -671,12 +714,14 @@ class Order
     }
 
     /**
-     * @param $cartId
-     * @param $checkoutToken
+     * Save Token
+     *
+     * @param int $cartId
+     * @param string $checkoutToken
      * @return void
      * @throws NoSuchEntityException
      */
-    public function saveToken($cartId, $checkoutToken)
+    public function saveToken(int $cartId, string $checkoutToken)
     {
         $quote = $this->quoteRepository->get($cartId);
         $quote->setData(Configuration::EAS_TOKEN, $checkoutToken);
@@ -684,17 +729,22 @@ class Order
     }
 
     /**
-     * @param $order
+     * Check Vat
+     *
+     * @param \Magento\Sales\Model\Order $order
      * @return bool
      */
-    public function checkVat($order): bool
+    public function checkVat(\Magento\Sales\Model\Order $order): bool
     {
         return !+$order->getData('base_tax_amount') == true;
     }
 
     /**
+     * Mass Sale Orders
+     *
      * @param array $massOrderUpdate
      * @return void
+     * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\FileSystemException
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Zend_Http_Client_Exception

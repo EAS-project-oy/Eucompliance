@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -9,9 +12,6 @@ use Magento\Checkout\Model\ShippingInformationManagement;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\QuoteRepository;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class SaveGuestCartData
 {
     /**
@@ -31,6 +31,8 @@ class SaveGuestCartData
     }
 
     /**
+     * Plugin Before Save Address Information
+     *
      * @param  ShippingInformationManagement $subject
      * @param  int                           $cartId
      * @param  ShippingInformationInterface  $addressInformation

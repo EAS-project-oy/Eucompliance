@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -35,9 +38,6 @@ use Zend_Http_Client;
 use Zend_Http_Client_Exception;
 use Magento\Framework\Serialize\SerializerInterface;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Calculate
 {
 
@@ -217,6 +217,8 @@ class Calculate
     }
 
     /**
+     * Calculate
+     *
      * @param  Quote $quote
      * @return array
      * @throws InputException
@@ -254,8 +256,13 @@ class Calculate
     }
 
     /**
-     * @return string
-     * @throws Zend_Http_Client_Exception|InputException
+     * GetAuthorizeToken
+     *
+     * @param string $apiKey
+     * @param string $secretApiKey
+     * @param string $baseApiUrl
+     * @return string|null
+     * @throws InputException
      */
     public function getAuthorizeToken($apiKey = null, $secretApiKey = null, $baseApiUrl = null): ?string
     {
@@ -290,7 +297,10 @@ class Calculate
     }
 
     /**
-     * @param $client
+     * Set config client
+     *
+     * @param array $client
+     * @return void
      */
     protected function setConfig($client)
     {
@@ -301,9 +311,12 @@ class Calculate
     }
 
     /**
-     * @param  Quote            $quote
-     * @param  ProductInterface $product
-     * @return string
+     * Get Warehouse Code
+     *
+     * @param Quote $quote
+     * @param ProductInterface $product
+     * @return array|bool|string|null
+     * @throws NoSuchEntityException
      */
     private function getWarehouseCode(Quote $quote, ProductInterface $product)
     {
@@ -323,8 +336,10 @@ class Calculate
     }
 
     /**
-     * @param  Quote            $quote
-     * @param  ProductInterface $product
+     * Get Inventory Request From Quote
+     *
+     * @param Quote $quote
+     * @param ProductInterface $product
      * @return mixed
      * @throws NoSuchEntityException
      */
@@ -362,7 +377,9 @@ class Calculate
     }
 
     /**
-     * @param  Quote $quote
+     * Get Address From Quote
+     *
+     * @param Quote $quote
      * @return AddressInterface|null
      */
     private function getAddressFromQuote(Quote $quote): ?AddressInterface
@@ -387,8 +404,10 @@ class Calculate
     }
 
     /**
-     * @param  Quote            $quote
-     * @param  ProductInterface $product
+     * Get Location Warehouse
+     *
+     * @param Quote $quote
+     * @param ProductInterface $product
      * @return array|bool|string|null
      * @throws NoSuchEntityException
      */
@@ -407,8 +426,10 @@ class Calculate
     }
 
     /**
-     * @param  $error
-     * @return bool[]|string[]
+     * Get Error Result
+     *
+     * @param array $error
+     * @return bool[]|\Magento\Framework\Phrase[]
      */
     private function getErrorResult($error): array
     {
@@ -425,7 +446,9 @@ class Calculate
     }
 
     /**
-     * @param  $error
+     * Get User Message
+     *
+     * @param array $error
      * @return \Magento\Framework\Phrase
      */
     private function getUserMessage($error): \Magento\Framework\Phrase
@@ -440,7 +463,9 @@ class Calculate
     }
 
     /**
-     * @param  $error
+     * Get Full Message
+     *
+     * @param array $error
      * @return string
      */
     public function getFullMessage($error): string
@@ -453,7 +478,9 @@ class Calculate
     }
 
     /**
-     * @param  $error
+     * Get Error Message
+     *
+     * @param array $error
      * @return string
      */
     public function getErrorMessage($error): string
@@ -469,7 +496,9 @@ class Calculate
     }
 
     /**
-     * @param  $error
+     * Get Message
+     *
+     * @param array $error
      * @return string
      */
     public function getMessage($error): string
@@ -488,6 +517,8 @@ class Calculate
     }
 
     /**
+     * Get Default Message
+     *
      * @return string
      */
     private function getDefaultMessage(): string
@@ -496,8 +527,10 @@ class Calculate
     }
 
     /**
-     * @param  $error
-     * @param  string $message
+     * Get Key Message
+     *
+     * @param array $error
+     * @param string $message
      * @return string
      */
     public function getKeyMessage($error, string $message): string
@@ -512,7 +545,9 @@ class Calculate
     }
 
     /**
-     * @param  $error
+     * Send To Admin
+     *
+     * @param array $error
      * @return void
      */
     private function sendToAdmin($error)
@@ -532,9 +567,12 @@ class Calculate
     }
 
     /**
-     * @throws NoSuchEntityException
+     * Confirm Order
+     *
+     * @param OrderInterface $order
+     * @return void
      * @throws InputException
-     * @throws Zend_Http_Client_Exception
+     * @throws NoSuchEntityException
      */
     public function confirmOrder(OrderInterface $order)
     {
@@ -572,6 +610,12 @@ class Calculate
         }
     }
 
+    /**
+     * Get Public Key
+     *
+     * @return mixed
+     * @throws InputException
+     */
     public function getPublicKey()
     {
         $apiUrl = $this->configuration->getApiKeysUrl();
@@ -589,7 +633,9 @@ class Calculate
     }
 
     /**
-     * @param  $product
+     * Get Type Of Goods
+     *
+     * @param ProductInterface $product
      * @return string
      */
     private function getTypeOfGoods($product): string
@@ -605,12 +651,13 @@ class Calculate
     }
 
     /**
-     * @param  \Magento\Quote\Model\Quote $quote
+     * Send Request
+     *
+     * @param Quote $quote
      * @return array
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Zend_Http_Client_Exception
+     * @throws CouldNotSaveException
+     * @throws InputException
+     * @throws NoSuchEntityException
      */
     public function sendRequest(
         Quote $quote

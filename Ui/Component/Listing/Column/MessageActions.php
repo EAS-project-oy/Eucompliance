@@ -1,30 +1,39 @@
 <?php
 /**
- * Copyright ©  All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © EAS Project Oy. All rights reserved.
  */
+
 declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Ui\Component\Listing\Column;
 
-class MessageActions extends \Magento\Ui\Component\Listing\Columns\Column
+use Magento\Framework\UrlInterface;
+use Magento\Framework\View\Element\UiComponent\ContextInterface;
+use Magento\Framework\View\Element\UiComponentFactory;
+use Magento\Ui\Component\Listing\Columns\Column;
+
+class MessageActions extends Column
 {
 
     public const URL_PATH_EDIT = 'eas/message/edit';
     public const URL_PATH_DELETE = 'eas/message/delete';
-    protected $urlBuilder;
 
     /**
-     * @param \Magento\Framework\View\Element\UiComponent\ContextInterface $context
-     * @param \Magento\Framework\View\Element\UiComponentFactory           $uiComponentFactory
-     * @param \Magento\Framework\UrlInterface                              $urlBuilder
-     * @param array                                                        $components
-     * @param array                                                        $data
+     * @var UrlInterface
+     */
+    protected UrlInterface $urlBuilder;
+
+    /**
+     * @param ContextInterface $context
+     * @param UiComponentFactory $uiComponentFactory
+     * @param UrlInterface $urlBuilder
+     * @param array $components
+     * @param array $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\UiComponent\ContextInterface $context,
-        \Magento\Framework\View\Element\UiComponentFactory $uiComponentFactory,
-        \Magento\Framework\UrlInterface $urlBuilder,
+        ContextInterface $context,
+        UiComponentFactory $uiComponentFactory,
+        UrlInterface $urlBuilder,
         array $components = [],
         array $data = []
     ) {

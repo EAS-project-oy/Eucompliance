@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -12,9 +15,6 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\Setup\Patch\PatchRevertableInterface;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class AddGiftCardProductAttribute implements DataPatchInterface, PatchRevertableInterface
 {
 
@@ -23,11 +23,12 @@ class AddGiftCardProductAttribute implements DataPatchInterface, PatchRevertable
     /**
      * @var ModuleDataSetupInterface
      */
-    private $moduleDataSetup;
+    private ModuleDataSetupInterface $moduleDataSetup;
+
     /**
      * @var EavSetupFactory
      */
-    private $eavSetupFactory;
+    private EavSetupFactory $eavSetupFactory;
 
     /**
      * Constructor
@@ -44,7 +45,7 @@ class AddGiftCardProductAttribute implements DataPatchInterface, PatchRevertable
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function apply()
     {
@@ -84,6 +85,9 @@ class AddGiftCardProductAttribute implements DataPatchInterface, PatchRevertable
         $this->moduleDataSetup->getConnection()->endSetup();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function revert()
     {
         $this->moduleDataSetup->getConnection()->startSetup();
@@ -94,7 +98,7 @@ class AddGiftCardProductAttribute implements DataPatchInterface, PatchRevertable
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAliases()
     {
@@ -102,7 +106,7 @@ class AddGiftCardProductAttribute implements DataPatchInterface, PatchRevertable
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public static function getDependencies()
     {

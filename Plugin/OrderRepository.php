@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Plugin;
 
@@ -9,9 +12,6 @@ use Magento\OfflinePayments\Model\Checkmo;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class OrderRepository
 {
     public const PENDING = 'pending';
@@ -38,6 +38,8 @@ class OrderRepository
     }
 
     /**
+     * After Get plugin
+     *
      * @param \Magento\Sales\Model\OrderRepository $subject
      * @param OrderInterface                       $result
      *
@@ -58,6 +60,8 @@ class OrderRepository
     }
 
     /**
+     * Before save plugin
+     *
      * @param  \Magento\Sales\Model\OrderRepository $subject
      * @param  OrderInterface                       $entity
      * @return array

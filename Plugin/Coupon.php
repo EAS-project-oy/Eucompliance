@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Plugin;
 
@@ -11,6 +14,7 @@ use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\CouponManagement;
+use PHPUnit\Exception;
 
 class Coupon
 {
@@ -31,8 +35,9 @@ class Coupon
     private Quote $serviceQuote;
 
     /**
-     * @param \Magento\Checkout\Model\Session            $session
-     * @param \Easproject\Eucompliance\Service\Calculate $calculate
+     * @param Session $session
+     * @param Calculate $calculate
+     * @param Quote $serviceQuote
      */
     public function __construct(
         Session   $session,
@@ -45,10 +50,12 @@ class Coupon
     }
 
     /**
-     * @param  CouponManagement $subject
-     * @param  bool             $result
-     * @param  int              $cartId
-     * @param  string           $couponCode
+     * After set plugin
+     *
+     * @param CouponManagement $subject
+     * @param bool $result
+     * @param int $cartId
+     * @param string $couponCode
      * @return bool
      */
     public function afterSet(CouponManagement $subject, bool $result, $cartId, $couponCode): bool
@@ -64,12 +71,7 @@ class Coupon
                 $response[Configuration::EAS_CHECKOUT_TOKEN] = $tempResponse;
                 $this->serviceQuote->saveQuoteData($response, true);
             }
-        } catch (CouldNotSaveException
-        |InputException
-        |NoSuchEntityException
-        |\Zend_Http_Client_Exception
-        |LocalizedException $e
-        ) {
+        } catch (\Exception $exception) {
             return $result;
         }
 

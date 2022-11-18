@@ -1,15 +1,17 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Plugin;
 
 use Magento\Framework\DataObject;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class DefaultRenderer
 {
     /**
+     * Plugin After Get Column Html
+     *
      * @param  \Magento\Sales\Block\Adminhtml\Order\View\Items\Renderer\DefaultRenderer $subject
      * @param  string                                                                   $result
      * @param  \Magento\Framework\DataObject                                            $item

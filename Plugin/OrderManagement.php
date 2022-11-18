@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Plugin;
 
@@ -6,9 +9,6 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class OrderManagement
 {
 
@@ -27,6 +27,8 @@ class OrderManagement
     }
 
     /**
+     * After Place Plugin
+     *
      * @param  OrderManagementInterface $subject
      * @param  OrderInterface           $result
      * @param  OrderInterface           $order

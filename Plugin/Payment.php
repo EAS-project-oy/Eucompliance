@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Plugin;
 
@@ -6,7 +9,9 @@ use Magento\Checkout\Model\Session;
 
 class Payment
 {
-
+    /**
+     * @var Session
+     */
     private Session $session;
 
     /**
@@ -18,8 +23,10 @@ class Payment
     }
 
     /**
+     * Plugin After Import Data
+     *
      * @param \Magento\Quote\Model\Quote\Payment $subject
-     * @param $result
+     * @param \Magento\Quote\Model\Quote\Payment $result
      * @param array $data
      * @return mixed
      */

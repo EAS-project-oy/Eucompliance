@@ -80,7 +80,7 @@ class ChangeAttributeGroup implements DataPatchInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      *
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -124,7 +124,9 @@ class ChangeAttributeGroup implements DataPatchInterface
     }
 
     /**
-     * @param  $attributeSetId
+     * Remove Attribute Group
+     *
+     * @param float|int|string $attributeSetId
      * @return void
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -135,7 +137,7 @@ class ChangeAttributeGroup implements DataPatchInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAliases()
     {
@@ -143,12 +145,10 @@ class ChangeAttributeGroup implements DataPatchInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public static function getDependencies()
     {
-        return [
-
-        ];
+        return [];
     }
 }

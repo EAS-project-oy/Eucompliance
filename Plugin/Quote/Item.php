@@ -1,13 +1,13 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Plugin\Quote;
 
 use Easproject\Eucompliance\Service\CartItem;
 use Magento\Framework\Model\AbstractModel;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Item
 {
     /**
@@ -24,6 +24,8 @@ class Item
     }
 
     /**
+     * Before Save Plugin
+     *
      * @param  \Magento\Quote\Model\ResourceModel\Quote\Item $subject
      * @param  AbstractModel                                 $cartItem
      * @return array

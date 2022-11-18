@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -8,9 +11,6 @@ use Magento\Framework\Model\AbstractModel;
 use Magento\Quote\Api\Data\CartItemInterface;
 use Magento\Quote\Api\Data\CartItemExtensionFactory;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class CartItem
 {
 
@@ -49,6 +49,8 @@ class CartItem
     ];
 
     /**
+     * Handle Attributes
+     *
      * @param  CartItemInterface|AbstractModel $cartItem
      * @param  string                          $mode
      * @param  array                           $attributes
@@ -57,8 +59,7 @@ class CartItem
     public function handleAttributes(
         $cartItem,
         string $mode = self::SAVE,
-        array $attributes =
-        self::ATTRIBUTE_NAMES
+        array $attributes = self::ATTRIBUTE_NAMES
     ) {
         $extAttributes = $cartItem->getExtensionAttributes() ?: $this->cartItemInterfaceFactory->create();
 
@@ -82,11 +83,13 @@ class CartItem
     }
 
     /**
-     * @param  $cartItem
-     * @param  string|null $key
-     * @param  string      $attribute
-     * @param  $extAttributes
-     * @param  string      $mode
+     * Handle Attribute
+     *
+     * @param CartItemInterface|AbstractModel $cartItem
+     * @param string|null $key
+     * @param string $attribute
+     * @param \Magento\Quote\Api\Data\CartItemExtensionInterface|null $extAttributes
+     * @param string $mode
      * @return mixed
      */
     private function handleAttribute(
@@ -119,9 +122,9 @@ class CartItem
     }
 
     /**
-     * Converst string to camel case
+     * Convert string to camel case
      *
-     * @param  $string
+     * @param string $string
      * @return string
      */
     private function toCamelCase($string): string

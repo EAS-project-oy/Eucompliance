@@ -69,13 +69,22 @@ class AddEasAttributes implements DataPatchInterface
         $this->product = $product;
     }
 
+    /**
+     * Add eas attributes and eas group
+     *
+     * @return AddEasAttributes|void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Magento\Framework\Exception\StateException
+     */
     public function apply()
     {
         $attributeSetId = $this->product->getDefaultAttributeSetId();
+
         $attributeGroup = $this->attributeGroupFactory->create();
         $attributeGroup->setAttributeSetId($attributeSetId);
         $attributeGroup->setAttributeGroupName(Configuration::EAS_ADDITIONAL_ATTRIBUTES);
         $this->attributeGroupRepository->save($attributeGroup);
+
         $this->moduleDataSetup->getConnection()->startSetup();
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
         $eavSetup->addAttribute(
@@ -216,11 +225,17 @@ class AddEasAttributes implements DataPatchInterface
         $this->moduleDataSetup->getConnection()->endSetup();
     }
 
+    /**
+     * @inheritdoc
+     */
     public static function getDependencies()
     {
         return [];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getAliases()
     {
         return [];

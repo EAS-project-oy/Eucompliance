@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 declare(strict_types=1);
 
@@ -10,9 +13,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\QuoteRepository;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class SaveGuestEmail
 {
     /**
@@ -40,15 +40,20 @@ class SaveGuestEmail
     }
 
     /**
-     * @param  AccountManagement $subject
-     * @param  $customerEmail
-     * @param  null              $websiteId
+     * Plugin Before Is Email Available
+     *
+     * @param AccountManagement $subject
+     * @param string $customerEmail
+     * @param int|null $websiteId
      * @return array
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
-    public function beforeIsEmailAvailable(AccountManagement $subject, $customerEmail, $websiteId = null): array
-    {
+    public function beforeIsEmailAvailable(
+        AccountManagement $subject,
+        string $customerEmail,
+        int $websiteId = null
+    ): array {
         $this->session->getQuote()->setCustomerEmail($customerEmail);
         $this->quoteRepository->save($this->session->getQuote());
         return [$customerEmail, $websiteId];

@@ -1,32 +1,31 @@
 <?php
-
-namespace Easproject\Eucompliance\Ui\Component\Listing\Column;
-
-use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Framework\View\Element\UiComponent\ContextInterface;
-use Magento\Framework\View\Element\UiComponentFactory;
-use Magento\Ui\Component\Listing\Columns\Column;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
-
 /**
  * Copyright © EAS Project Oy. All rights reserved.
  */
+
+declare(strict_types=1);
+
+namespace Easproject\Eucompliance\Ui\Component\Listing\Column;
+
+use Magento\Framework\View\Element\UiComponent\ContextInterface;
+use Magento\Framework\View\Element\UiComponentFactory;
+use Magento\Ui\Component\Listing\Columns\Column;
+use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
+
 class EasToken extends Column
 {
-    protected $_orderRepository;
-    protected $_searchCriteria;
 
     /**
-     * @var \Magento\Quote\Model\ResourceModel\Quote\Item\CollectionFactory
+     * @var CollectionFactory
      */
     private CollectionFactory $quoteCollectionFactory;
 
     /**
-     * @param \Magento\Framework\View\Element\UiComponent\ContextInterface $context
-     * @param \Magento\Framework\View\Element\UiComponentFactory           $uiComponentFactory
-     * @param array                                                        $components
-     * @param array                                                        $data
+     * @param ContextInterface $context
+     * @param UiComponentFactory $uiComponentFactory
+     * @param CollectionFactory $quoteCollectionFactory
+     * @param array $components
+     * @param array $data
      */
     public function __construct(
         ContextInterface   $context,
@@ -39,6 +38,12 @@ class EasToken extends Column
         $this->quoteCollectionFactory = $quoteCollectionFactory;
     }
 
+    /**
+     * Prepare Data Source
+     *
+     * @param array $dataSource
+     * @return array
+     */
     public function prepareDataSource(array $dataSource)
     {
         if (isset($dataSource['data']['items'])) {

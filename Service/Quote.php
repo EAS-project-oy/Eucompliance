@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Service;
 
@@ -8,9 +11,6 @@ use Magento\Checkout\Model\Session;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\Quote\Item;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Quote
 {
     /**
@@ -52,7 +52,9 @@ class Quote
     }
 
     /**
-     * @param  $tokenData
+     * Save Quote Data
+     *
+     * @param  string $tokenData
      * @param  bool $coupon
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -131,11 +133,11 @@ class Quote
                     $quote->setData('base_subtotal', $totalOrder);
                     $quote->setData('shipping_amount', $data['delivery_charge_vat_excl']);
                     $quote->setData('base_shipping_amount', $data['delivery_charge_vat_excl']);
-                    $discountPerByProduct = $discountPrice / $countProduct;
+                    //$discountPerByProduct = $discountPrice / $countProduct;
 
-                    foreach ($quote->getAllItems() as $productItem) {
+                    //foreach ($quote->getAllItems() as $productItem) {
                         //$productItem->setOriginalCustomPrice($productItem->getPrice() + $discountPerByProduct);
-                    }
+                    //}
                 }//base_subtotal_with_discount, //subtotal_with_discount
             }
             $this->session->setData('custom_data_eas', '2');
@@ -159,7 +161,8 @@ class Quote
                 if ($this->session->getData('custom_data_eas') != 1) {
                     $this->session->setData('custom_data_eas', '1');
                     $this->session->setData('custom_price_price', $quote->getData('base_subtotal'));
-                    $this->session->setData('custom_discount_price', $quote->getData('base_subtotal') - $data['merchandise_cost_vat_excl']);
+                    $custom_discount_price = $quote->getData('base_subtotal') - $data['merchandise_cost_vat_excl'];
+                    $this->session->setData('custom_discount_price', $custom_discount_price);
                     $testShipping = $quote->getShippingAddress();
                     $testShipping->setData('subtotal_with_discount', $quote->getData('base_subtotal'));
                     $testShipping->setData('base_subtotal_with_discount', $quote->getData('base_subtotal'));
@@ -185,6 +188,8 @@ class Quote
     }
 
     /**
+     * Clear item data
+     *
      * @param  \Magento\Quote\Model\Quote\Item $item
      * @return void
      */

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ */
 
 namespace Easproject\Eucompliance\Plugin\Tax;
 
@@ -8,17 +11,17 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
-/**
- * Copyright © EAS Project Oy. All rights reserved.
- */
 class Shipping extends CommonTaxCollector
 {
     /**
+     *  Plugin After Collect
+     *
      * @param \Magento\Tax\Model\Sales\Total\Quote\Shipping $subject
-     * @param $result
-     * @param Quote                                         $quote
-     * @param ShippingAssignmentInterface                   $shippingAssignment
-     * @param Total                                         $total
+     * @param \Magento\Tax\Model\Sales\Total\Quote\Shipping $result
+     * @param Quote $quote
+     * @param ShippingAssignmentInterface $shippingAssignment
+     * @param Total $total
+     * @return mixed
      */
     public function afterCollect(
         \Magento\Tax\Model\Sales\Total\Quote\Shipping $subject,
