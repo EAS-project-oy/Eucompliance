@@ -54,7 +54,7 @@ class Quote
     /**
      * Save Quote Data
      *
-     * @param  string $tokenData
+     * @param  array $tokenData
      * @param  bool $coupon
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
