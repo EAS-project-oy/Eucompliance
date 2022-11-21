@@ -1,6 +1,13 @@
 <?php
 /**
  * Copyright © EAS Project Oy. All rights reserved.
+ * PHP version 8
+ *
+ * @category Module
+ * @package  Easproject_Eucompliance
+ * @author   EAS Project <magento@easproject.org>
+ * @license  https://github.com/EAS-project-oy/eascompliance/ General License
+ * @link     https://github.com/EAS-project-oy/eascompliance
  */
 
 namespace Easproject\Eucompliance\Controller\Index;
@@ -8,10 +15,8 @@ namespace Easproject\Eucompliance\Controller\Index;
 use Easproject\Eucompliance\Service\Calculate;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\ActionInterface;
-use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Zend_Http_Client_Exception;

@@ -1,12 +1,19 @@
 <?php
+/**
+ * Copyright © EAS Project Oy. All rights reserved.
+ * PHP version 8
+ *
+ * @category Module
+ * @package  Easproject_Eucompliance
+ * @author   EAS Project <magento@easproject.org>
+ * @license  https://github.com/EAS-project-oy/eascompliance/ General License
+ * @link     https://github.com/EAS-project-oy/eascompliance
+ */
 
 namespace Easproject\Eucompliance\Console;
 
 use Easproject\Eucompliance\Service\Request\Order;
 use Magento\Framework\App\State;
-use Magento\Framework\Exception\FileSystemException;
-use Magento\Framework\Exception\InputException;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

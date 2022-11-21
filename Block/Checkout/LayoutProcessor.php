@@ -1,6 +1,13 @@
 <?php
 /**
  * Copyright © EAS Project Oy. All rights reserved.
+ * PHP version 8
+ *
+ * @category Module
+ * @package  Easproject_Eucompliance
+ * @author   EAS Project <magento@easproject.org>
+ * @license  https://github.com/EAS-project-oy/eascompliance/ General License
+ * @link     https://github.com/EAS-project-oy/eascompliance
  */
 
 declare(strict_types=1);
@@ -164,25 +171,6 @@ class LayoutProcessor
         if (isset($jsLayout['components']['checkout']['children']['steps']['children']
             ['eas-billing-step']['children']['eas-billing']['children'])
         ) {
-            $jsLayout['components']['checkout']['children']['steps']
-            ['children']['eas-billing-step']['children']['customer-email'] =
-                [
-                    'component' => 'Magento_Checkout/js/view/form/element/email',
-                    'displayArea' => 'customer-email',
-                    'tooltip' => [
-                        'description' => "We'll send your order confirmation here."
-                    ],
-                    'children' => [
-                        'before-login-form' => [
-                            'component' => 'uiComponent',
-                            'displayArea' => 'before-login-form',
-                        ],
-                        'additional-login-form-fields' => [
-                            'component' => 'uiComponent',
-                            'displayArea' => 'additional-login-form-fields'
-                        ]
-                    ]
-                ];
 
             $jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children']
             ['eas-billing']['children'] = $this->processNewStepsChildrenComponents(

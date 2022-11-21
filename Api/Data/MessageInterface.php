@@ -1,7 +1,7 @@
 <?php
 /**
  * Copyright © EAS Project Oy. All rights reserved.
- * PHP version 7
+ * PHP version 8
  *
  * @category Module
  * @package  Easproject_Eucompliance
