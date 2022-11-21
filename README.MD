@@ -36,7 +36,7 @@ Navigate to the root magento 2 installation directory
 
 You can install PHP JWT using command
 
-`composer require firebase/php-jwt
+`composer require firebase/php-jwt:5.3
 `
 
 
