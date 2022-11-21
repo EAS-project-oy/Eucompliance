@@ -15,11 +15,11 @@ In case your installation is not compatible with the latest composer version, yo
 
 ### **To install this module using composer**
 
-Use composer require eas/eucompliance:dev-master (for latest version for magento 2.4.*) php 7.4
+Use composer require eas/eucompliance:dev-master (for latest version for magento 2.4.*) php 8.1
 
 Or
 
-`composer require eas/eucompliance:dev-feature/2.3.5  ( In case your magento version is magento 2.3.5)
+`composer require eas/eucompliance:dev-feature/2.4.5  ( In case your magento version is magento 2.4.5)
 `
 
 You should get following result
@@ -30,7 +30,7 @@ You should get following result
 ### **To install this module using git**
 
 Login in to your web server shell.
-Be sure that PHP JWT plugin installed.
+Be sure that PHP JWT (5.3) plugin installed.
 
 Navigate to the root magento 2 installation directory
 
