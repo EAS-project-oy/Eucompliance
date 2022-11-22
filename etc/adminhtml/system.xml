@@ -150,6 +150,15 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>configuration/advanced/debug</config_path>
                 </field>
+                <field id="default_email" translate="label" type="text" sortOrder="2" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Default email for request, if customer do not provided</label>
+                    <config_path>configuration/advanced/default_email</config_path>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
             </group>
 
         </section>

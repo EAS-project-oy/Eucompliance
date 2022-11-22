@@ -28,6 +28,7 @@ class Configuration
     public const CONFIGURATION_ATTRIBUTES_SELLER_REGISTRATION_COUNTRY
         = 'configuration/attributes/seller_registration_country';
     public const CONFIGURATION_ADVANCED_DEBUG = 'configuration/advanced/debug';
+    public const CONFIGURATION_GENERAL_DEFAULT_EMAIL = 'configuration/advanced/default_email';
     public const CONFIGURATION_CREDENTIALS_BASE_URL = 'configuration/credentials/api_url';
     public const CREDENTIALS_AUTH_KEYS_URL = '/auth/keys';
     public const CREDENTIALS_AUTHORIZE_URL = '/auth/open-id/connect';
@@ -339,6 +340,19 @@ class Configuration
                 Configuration::CONFIGURATION_CREDENTIALS_SECRET_API_KEY,
                 ScopeInterface::SCOPE_STORE
             )
+        );
+    }
+
+    /**
+     * Get Default Email
+     *
+     * @return mixed
+     */
+    public function getDefaultEmail(): mixed
+    {
+        return $this->scopeConfig->getValue(
+            Configuration::CONFIGURATION_GENERAL_DEFAULT_EMAIL,
+            ScopeInterface::SCOPE_STORE
         );
     }
 }

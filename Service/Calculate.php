@@ -716,7 +716,7 @@ class Calculate
             "delivery_postal_code" => $address->getPostcode(),
             "delivery_country" => $address->getCountryId(),
             "delivery_phone" => $address->getTelephone() ?: 'Not provided',
-            "delivery_email" => $customerEmail ?: 'not@provided.com',
+            "delivery_email" => $customerEmail ?: $this->configuration->getDefaultEmail(),
             'delivery_state_province' => $address->getRegion() ? $address->getRegion() : ''
         ];
 
