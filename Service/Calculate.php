@@ -544,7 +544,7 @@ class Calculate
     {
         foreach ($error as $key => $value) {
             if ($key !== 'type' && array_key_exists($key, $this->keyMapping)) {
-                $changedMessage = str_replace($key, __($this->keyMapping[$key]), $value);
+                $changedMessage = str_replace($key, $this->keyMapping[$key], $value);
                 $message .= $changedMessage . ' ';
             }
         }
@@ -699,6 +699,8 @@ class Calculate
             $deliveryMethod = Configuration::POSTAL;
         }
 
+        $customerEmail = $address->getEmail() ?: $quote->getCustomerEmail();
+
         $data = [
             "external_order_id" => $quote->getReservedOrderId(),
             "delivery_method" => $deliveryMethod,
@@ -713,8 +715,8 @@ class Calculate
             "delivery_city" => $address->getCity(),
             "delivery_postal_code" => $address->getPostcode(),
             "delivery_country" => $address->getCountryId(),
-            "delivery_phone" => $address->getTelephone(),
-            "delivery_email" => $address->getEmail() ?: $quote->getCustomerEmail(),
+            "delivery_phone" => $address->getTelephone() ?: 'Not provided',
+            "delivery_email" => $customerEmail ?: 'not@provided.com',
             'delivery_state_province' => $address->getRegion() ? $address->getRegion() : ''
         ];
 

@@ -18,10 +18,24 @@ use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Checkout\Block\Checkout\AttributeMerger;
 use Magento\Customer\Model\AttributeMetadataDataProvider;
 use Magento\Customer\Model\Options;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Ui\Component\Form\AttributeMapper;
+use Magento\Checkout\Model\Session;
 
 class LayoutProcessor
 {
+
+    public const VIRTUAL_ITEM_TYPES = [
+        \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL,
+        \Magento\Downloadable\Model\Product\Type::TYPE_DOWNLOADABLE
+    ];
+
+    /**
+     * @var Session
+     */
+    protected Session $checkoutSession;
+
     /**
      * @var AttributeMetadataDataProvider
      */
@@ -49,23 +63,26 @@ class LayoutProcessor
 
     /**
      * @param AttributeMetadataDataProvider $attributeMetadataDataProvider
-     * @param AttributeMapper               $attributeMapper
-     * @param AttributeMerger               $merger
-     * @param Options                       $options
-     * @param Configuration                 $configuration
+     * @param AttributeMapper $attributeMapper
+     * @param AttributeMerger $merger
+     * @param Options $options
+     * @param Configuration $configuration
+     * @param Session $checkoutSession
      */
     public function __construct(
         AttributeMetadataDataProvider $attributeMetadataDataProvider,
         AttributeMapper               $attributeMapper,
         AttributeMerger               $merger,
         Options                       $options,
-        Configuration                 $configuration
+        Configuration                 $configuration,
+        Session                       $checkoutSession
     ) {
         $this->options = $options;
         $this->configuration = $configuration;
         $this->attributeMetadataDataProvider = $attributeMetadataDataProvider;
         $this->attributeMapper = $attributeMapper;
         $this->merger = $merger;
+        $this->checkoutSession = $checkoutSession;
     }
 
     /**
@@ -171,7 +188,6 @@ class LayoutProcessor
         if (isset($jsLayout['components']['checkout']['children']['steps']['children']
             ['eas-billing-step']['children']['eas-billing']['children'])
         ) {
-
             $jsLayout['components']['checkout']['children']['steps']['children']['eas-billing-step']['children']
             ['eas-billing']['children'] = $this->processNewStepsChildrenComponents(
                 $jsLayout['components']['checkout']['children']['steps']['children']['billing-step']['children']
@@ -189,6 +205,26 @@ class LayoutProcessor
             );
 
         return $jsLayout;
+    }
+
+    /**
+     * Check if in checkout only virtual items
+     *
+     * @return bool
+     */
+    public function checkIsVirtualCart(): bool
+    {
+        try {
+            $items = $this->checkoutSession->getQuote()->getAllVisibleItems();
+            foreach ($items as $item) {
+                if (!in_array($item->getProduct()->getTypeId(), self::VIRTUAL_ITEM_TYPES)) {
+                    return false;
+                }
+            }
+        } catch (NoSuchEntityException|LocalizedException $e) {
+            return true;
+        }
+        return true;
     }
 
     /**
