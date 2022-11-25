@@ -16,15 +16,14 @@ use Easproject\Eucompliance\Model\Config\Configuration;
 use Easproject\Eucompliance\Service\Calculate;
 use Easproject\Eucompliance\Service\Quote;
 use Magento\Checkout\Model\Session;
-use Magento\Framework\Exception\CouldNotSaveException;
-use Magento\Framework\Exception\InputException;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\CouponManagement;
-use PHPUnit\Exception;
 
 class Coupon
 {
+    /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
 
     /**
      * @var Session
@@ -45,15 +44,18 @@ class Coupon
      * @param Session $session
      * @param Calculate $calculate
      * @param Quote $serviceQuote
+     * @param Configuration $configuration
      */
     public function __construct(
         Session   $session,
         Calculate $calculate,
-        Quote     $serviceQuote
+        Quote     $serviceQuote,
+        Configuration $configuration,
     ) {
         $this->session = $session;
         $this->calculate = $calculate;
         $this->serviceQuote = $serviceQuote;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -67,6 +69,10 @@ class Coupon
      */
     public function afterSet(CouponManagement $subject, bool $result, $cartId, $couponCode): bool
     {
+        if (!$this->configuration->isEnabled()) {
+            return $result;
+        }
+
         try {
             $quote = $this->session->getQuote();
             list($data, $response) = $this->calculate->sendRequest($quote);

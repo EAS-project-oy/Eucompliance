@@ -12,11 +12,17 @@
 
 namespace Easproject\Eucompliance\Plugin\Quote;
 
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Easproject\Eucompliance\Service\CartItem;
 use Magento\Framework\Model\AbstractModel;
 
 class Item
 {
+    /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
     /**
      * @var CartItem
      */
@@ -24,10 +30,14 @@ class Item
 
     /**
      * @param CartItem $cartItemService
+     * @param Configuration $configuration
      */
-    public function __construct(CartItem $cartItemService)
-    {
+    public function __construct(
+        CartItem $cartItemService,
+        Configuration $configuration
+    ) {
         $this->cartItemService = $cartItemService;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -39,7 +49,9 @@ class Item
      */
     public function beforeSave(\Magento\Quote\Model\ResourceModel\Quote\Item $subject, AbstractModel $cartItem): array
     {
-        $this->cartItemService->handleAttributes($cartItem);
+        if ($this->configuration->isEnabled()) {
+            $this->cartItemService->handleAttributes($cartItem);
+        }
         return [$cartItem];
     }
 }

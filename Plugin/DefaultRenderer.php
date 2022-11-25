@@ -12,10 +12,27 @@
 
 namespace Easproject\Eucompliance\Plugin;
 
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Framework\DataObject;
 
 class DefaultRenderer
 {
+    /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
+    /**
+     * Plugin constructor
+     *
+     * @param Configuration $configuration
+     */
+    public function __construct(
+        Configuration $configuration,
+    ) {
+        $this->configuration = $configuration;
+    }
+
     /**
      * Plugin After Get Column Html
      *
@@ -33,6 +50,9 @@ class DefaultRenderer
         $column,
         $field = null
     ): string {
+        if (!$this->configuration->isEnabled()) {
+            return $result;
+        }
         switch ($column) {
             case 'eas_custom_duties':
                 return $subject->displayPriceAttribute('eas_custom_duties');

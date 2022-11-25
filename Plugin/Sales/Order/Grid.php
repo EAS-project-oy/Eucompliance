@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Plugin\Sales\Order;
 
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Sales\Model\ResourceModel\Order\Grid\Collection;
 use Magento\Framework\DB\Select;
 use Magento\Framework\View\Element\UiComponent\DataProvider\Reporting;
@@ -37,6 +38,22 @@ class Grid
     public static string $leftJoinTable = 'quote';
 
     /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
+    /**
+     * Plugin constructor
+     *
+     * @param Configuration $configuration
+     */
+    public function __construct(
+        Configuration $configuration,
+    ) {
+        $this->configuration = $configuration;
+    }
+
+    /**
      * Add eas_token to collection
      *
      * @param Reporting $subject
@@ -46,6 +63,10 @@ class Grid
      */
     public function afterSearch(Reporting $subject, Collection $collection): Collection
     {
+        if (!$this->configuration->isEnabled()) {
+            return $collection;
+        }
+
         if ($collection->getMainTable() === $collection->getConnection()->getTableName(self::$table)) {
 
             $leftJoinTableName = $collection->getConnection()->getTableName(self::$leftJoinTable);

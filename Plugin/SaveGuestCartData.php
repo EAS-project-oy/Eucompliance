@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Plugin;
 
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Checkout\Api\Data\ShippingInformationInterface;
 use Magento\Checkout\Model\ShippingInformationManagement;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -21,6 +22,11 @@ use Magento\Quote\Model\QuoteRepository;
 
 class SaveGuestCartData
 {
+    /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
     /**
      * @var QuoteRepository
      */
@@ -30,11 +36,14 @@ class SaveGuestCartData
      * SaveGuestCartData constructor.
      *
      * @param QuoteRepository $quoteRepository
+     * @param Configuration $configuration
      */
     public function __construct(
-        QuoteRepository $quoteRepository
+        QuoteRepository $quoteRepository,
+        Configuration $configuration
     ) {
         $this->quoteRepository = $quoteRepository;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -51,11 +60,13 @@ class SaveGuestCartData
         int                           $cartId,
         ShippingInformationInterface  $addressInformation
     ): array {
-        $quote = $this->quoteRepository->getActive($cartId);
-        $shipping = $addressInformation->getShippingAddress();
-        $quote->setCustomerFirstname($shipping->getFirstname());
-        $quote->setCustomerLastname($shipping->getLastname());
-        $quote->setCustomerPrefix($shipping->getPrefix());
+        if ($this->configuration->isEnabled()) {
+            $quote = $this->quoteRepository->getActive($cartId);
+            $shipping = $addressInformation->getShippingAddress();
+            $quote->setCustomerFirstname($shipping->getFirstname());
+            $quote->setCustomerLastname($shipping->getLastname());
+            $quote->setCustomerPrefix($shipping->getPrefix());
+        }
         return [$cartId, $addressInformation];
     }
 }

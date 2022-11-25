@@ -13,13 +13,64 @@
 namespace Easproject\Eucompliance\Plugin\Tax;
 
 use Easproject\Eucompliance\Model\Config\Configuration;
+use Magento\Customer\Api\AccountManagementInterface as CustomerAccountManagement;
+use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
+use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
+use Magento\Tax\Api\Data\QuoteDetailsItemExtensionInterfaceFactory;
+use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
 class Shipping extends CommonTaxCollector
 {
+    /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
+    /**
+     * @param Configuration $configuration
+     * @param \Magento\Tax\Model\Config $taxConfig
+     * @param \Magento\Tax\Api\TaxCalculationInterface $taxCalculationService
+     * @param \Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory $quoteDetailsDataObjectFactory
+     * @param \Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory $quoteDetailsItemDataObjectFactory
+     * @param \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory
+     * @param CustomerAddressFactory $customerAddressFactory
+     * @param CustomerAddressRegionFactory $customerAddressRegionFactory
+     * @param TaxHelper|null $taxHelper
+     * @param QuoteDetailsItemExtensionInterfaceFactory|null $quoteDetailsItemExtensionInterfaceFactory
+     * @param CustomerAccountManagement|null $customerAccountManagement
+     */
+    public function __construct(
+        Configuration $configuration,
+        \Magento\Tax\Model\Config $taxConfig,
+        \Magento\Tax\Api\TaxCalculationInterface $taxCalculationService,
+        \Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory $quoteDetailsDataObjectFactory,
+        \Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory $quoteDetailsItemDataObjectFactory,
+        \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory,
+        CustomerAddressFactory $customerAddressFactory,
+        CustomerAddressRegionFactory $customerAddressRegionFactory,
+        TaxHelper $taxHelper = null,
+        QuoteDetailsItemExtensionInterfaceFactory $quoteDetailsItemExtensionInterfaceFactory = null,
+        ?CustomerAccountManagement $customerAccountManagement = null
+    ) {
+        $this->configuration = $configuration;
+        parent::__construct(
+            $taxConfig,
+            $taxCalculationService,
+            $quoteDetailsDataObjectFactory,
+            $quoteDetailsItemDataObjectFactory,
+            $taxClassKeyDataObjectFactory,
+            $customerAddressFactory,
+            $customerAddressRegionFactory,
+            $taxHelper,
+            $quoteDetailsItemExtensionInterfaceFactory,
+            $customerAccountManagement
+        );
+    }
+
     /**
      *  Plugin After Collect
      *
@@ -37,6 +88,10 @@ class Shipping extends CommonTaxCollector
         ShippingAssignmentInterface                   $shippingAssignment,
         Total                                         $total
     ) {
+        if (!$this->configuration->isEnabled()) {
+            return $result;
+        }
+
         $storeId = $quote->getStoreId();
         $shippingDataObject = $this->getShippingDataObject($shippingAssignment, $total, false);
         $baseShippingDataObject = $this->getShippingDataObject($shippingAssignment, $total, true);

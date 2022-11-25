@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Plugin;
 
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Easproject\Eucompliance\Service\CartItem;
 use Magento\Quote\Api\Data\CartItemExtensionFactory;
 use Magento\Quote\Api\Data\CartItemInterface;
@@ -23,16 +24,25 @@ class Item
 {
 
     /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
+    /**
      * @var CartItem
      */
     private CartItem $cartItemService;
 
     /**
      * @param CartItem $cartItemService
+     * @param Configuration $configuration
      */
-    public function __construct(CartItem $cartItemService)
-    {
+    public function __construct(
+        CartItem $cartItemService,
+        Configuration $configuration
+    ) {
         $this->cartItemService = $cartItemService;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -44,7 +54,9 @@ class Item
      */
     public function beforeSave(Repository $subject, CartItemInterface $cartItem): array
     {
-        $this->cartItemService->handleAttributes($cartItem);
+        if ($this->configuration->isEnabled()) {
+            $this->cartItemService->handleAttributes($cartItem);
+        }
         return [$cartItem];
     }
 
@@ -58,8 +70,10 @@ class Item
      */
     public function afterGetList(Repository $subject, array $result, int $cartId): array
     {
-        foreach ($result as $item) {
-            $this->cartItemService->handleAttributes($item, CartItem::SET);
+        if ($this->configuration->isEnabled()) {
+            foreach ($result as $item) {
+                $this->cartItemService->handleAttributes($item, CartItem::SET);
+            }
         }
 
         return $result;

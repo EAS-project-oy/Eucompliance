@@ -12,6 +12,7 @@
 
 namespace Easproject\Eucompliance\Plugin;
 
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -20,17 +21,25 @@ class OrderManagement
 {
 
     /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
+    /**
      * @var OrderRepositoryInterface
      */
     private OrderRepositoryInterface $orderRepository;
 
     /**
      * @param OrderRepositoryInterface $orderRepository
+     * @param Configuration $configuration
      */
     public function __construct(
-        OrderRepositoryInterface $orderRepository
+        OrderRepositoryInterface $orderRepository,
+        Configuration $configuration
     ) {
         $this->orderRepository = $orderRepository;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -47,6 +56,11 @@ class OrderManagement
         OrderInterface $result,
         OrderInterface $order
     ): OrderInterface {
+
+        if (!$this->configuration->isEnabled()) {
+            return $result;
+        }
+
         foreach ($result->getItems() as $item) {
             if ($item->getEasWarehouseCode()) {
                 $result->addCommentToStatusHistory(

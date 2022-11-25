@@ -12,11 +12,17 @@
 
 namespace Easproject\Eucompliance\Plugin;
 
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Quote\Model\Quote;
 use Magento\Checkout\Model\Session;
 
 class QuoteCollect
 {
+    /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
     /**
      * @var Session
      */
@@ -24,10 +30,14 @@ class QuoteCollect
 
     /**
      * @param Session $session
+     * @param Configuration $configuration
      */
-    public function __construct(Session $session)
-    {
+    public function __construct(
+        Session $session,
+        Configuration $configuration
+    ) {
         $this->session = $session;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -40,7 +50,7 @@ class QuoteCollect
      */
     public function afterCollectTotals(Quote $subject, $result)
     {
-        if ($this->session->getData('custom_price_price')) {
+        if ($this->configuration->isEnabled() && $this->session->getData('custom_price_price')) {
             $subject->setData('subtotal', $this->session->getData('custom_price_price'));
             $subject->setData('base_subtotal', $this->session->getData('custom_price_price'));
             $subject->setData('subtotal_with_discount', $this->session->getData('custom_price_price'));

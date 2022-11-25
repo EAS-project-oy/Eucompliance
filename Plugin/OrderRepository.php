@@ -12,6 +12,7 @@
 
 namespace Easproject\Eucompliance\Plugin;
 
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Easproject\Eucompliance\Service\Calculate;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -22,6 +23,12 @@ use Magento\Sales\Api\Data\OrderInterface;
 class OrderRepository
 {
     public const PENDING = 'pending';
+
+    /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
     /**
      * @var Calculate
      */
@@ -33,15 +40,18 @@ class OrderRepository
     private CartRepositoryInterface $cartRepository;
 
     /**
-     * @param Calculate               $calculate
+     * @param Calculate $calculate
      * @param CartRepositoryInterface $cartRepository
+     * @param Configuration $configuration
      */
     public function __construct(
         Calculate               $calculate,
-        CartRepositoryInterface $cartRepository
+        CartRepositoryInterface $cartRepository,
+        Configuration $configuration
     ) {
         $this->cartRepository = $cartRepository;
         $this->calculate = $calculate;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -59,6 +69,11 @@ class OrderRepository
         \Magento\Sales\Model\OrderRepository $subject,
         OrderInterface                       $result
     ): OrderInterface {
+
+        if (!$this->configuration->isEnabled()) {
+            return $result;
+        }
+
         if ($result->getStatus() == 'processing' || $result->getStatus() == 'complete') {
             $this->calculate->confirmOrder($result);
         }
@@ -80,6 +95,11 @@ class OrderRepository
         \Magento\Sales\Model\OrderRepository $subject,
         OrderInterface                       $entity
     ): array {
+
+        if (!$this->configuration->isEnabled()) {
+            return [$entity];
+        }
+
         if ($entity->getQuoteId()) {
             $quote = $this->cartRepository->get((int)$entity->getQuoteId());
             if ($quote->getEasTotalVat()) {

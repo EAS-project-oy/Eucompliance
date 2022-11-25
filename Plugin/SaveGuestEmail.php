@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Plugin;
 
+use Easproject\Eucompliance\Model\Config\Configuration;
 use Magento\Checkout\Model\Session;
 use Magento\Customer\Model\AccountManagement;
 use Magento\Framework\Exception\LocalizedException;
@@ -22,6 +23,11 @@ use Magento\Quote\Model\QuoteRepository;
 
 class SaveGuestEmail
 {
+    /**
+     * @var Configuration
+     */
+    private Configuration $configuration;
+
     /**
      * @var Session
      */
@@ -35,15 +41,18 @@ class SaveGuestEmail
     /**
      * SaveGuestEmail constructor.
      *
-     * @param Session         $session
+     * @param Session $session
      * @param QuoteRepository $quoteRepository
+     * @param Configuration $configuration
      */
     public function __construct(
         Session $session,
-        QuoteRepository $quoteRepository
+        QuoteRepository $quoteRepository,
+        Configuration $configuration,
     ) {
         $this->session = $session;
         $this->quoteRepository = $quoteRepository;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -61,8 +70,10 @@ class SaveGuestEmail
         string $customerEmail,
         int $websiteId = null
     ): array {
-        $this->session->getQuote()->setCustomerEmail($customerEmail);
-        $this->quoteRepository->save($this->session->getQuote());
+        if ($this->configuration->isEnabled()) {
+            $this->session->getQuote()->setCustomerEmail($customerEmail);
+            $this->quoteRepository->save($this->session->getQuote());
+        }
         return [$customerEmail, $websiteId];
     }
 }
