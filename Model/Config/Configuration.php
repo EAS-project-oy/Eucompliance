@@ -76,6 +76,8 @@ class Configuration
     public const CONFIGURATION_MSI_ENABLE = 'configuration/msi/enable';
     public const CONFIGURATION_MSI_MSI_ALGORITHM = 'configuration/msi/msi_algorithm';
 
+    public const CONFIGURATION_GENERAL_MULTISHIPPING_ENABLE = "multishipping/options/checkout_multiple";
+
     /**
      * @var ScopeConfigInterface
      */
@@ -354,5 +356,28 @@ class Configuration
             Configuration::CONFIGURATION_GENERAL_DEFAULT_EMAIL,
             ScopeInterface::SCOPE_STORE
         );
+    }
+
+    /**
+     * Check Multi Shipping is Enabled
+     *
+     * @return bool
+     */
+    public function isMultiShippingEnabled(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(
+            self::CONFIGURATION_GENERAL_MULTISHIPPING_ENABLE,
+            ScopeInterface::SCOPE_WEBSITE
+        );
+    }
+
+    /**
+     * Warning Message
+     *
+     * @return string
+     */
+    public function getWarningMessage(): string
+    {
+        return "We do not support multi shipping, please disable this option before activation EAS EU compliance.";
     }
 }

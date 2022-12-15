@@ -8,4 +8,8 @@
     <event name="sales_order_save_after">
         <observer name="easproject_eucompliance_sales_order_save_after" instance="Easproject\Eucompliance\Observer\Sales\OrderSaveAfter"/>
     </event>
+    <event name="controller_action_postdispatch_checkout_cart_index">
+        <observer name="check_if_multi_shipping_enabled_controller_action_postdispatch_checkout_cart_index"
+                  instance="Easproject\Eucompliance\Observer\CheckIfMultiShippingEnabled" />
+    </event>
 </config>

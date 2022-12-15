@@ -16,4 +16,13 @@
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\Reporting">
         <plugin name="sales_grid_collection" type="Easproject\Eucompliance\Plugin\Sales\Order\Grid"/>
     </type>
+    <type name="Magento\Framework\Notification\MessageList">
+        <arguments>
+            <argument name="messages" xsi:type="array">
+                <item name="customMessageNotification" xsi:type="string">
+                    Easproject\Eucompliance\Model\System\Message\MessageNotification
+                </item>
+            </argument>
+        </arguments>
+    </type>
 </config>
