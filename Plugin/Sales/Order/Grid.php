@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Easproject\Eucompliance\Plugin\Sales\Order;
 
 use Easproject\Eucompliance\Model\Config\Configuration;
+use Magento\Framework\Api\Search\SearchCriteriaInterface;
 use Magento\Sales\Model\ResourceModel\Order\Grid\Collection;
 use Magento\Framework\DB\Select;
 use Magento\Framework\View\Element\UiComponent\DataProvider\Reporting;
@@ -57,21 +58,21 @@ class Grid
      * Add eas_token to collection
      *
      * @param Reporting $subject
-     * @param Collection $collection
-     * @return Collection
-     * @throws \Zend_Db_Select_Exception
+     * @param Collection $result
+     * @param SearchCriteriaInterface $collection
+     * @return mixed
      */
-    public function afterSearch(Reporting $subject, Collection $collection): Collection
+    public function afterSearch(Reporting $subject, $result, $collection)
     {
         if (!$this->configuration->isEnabled()) {
-            return $collection;
+            return $result;
         }
 
-        if ($collection->getMainTable() === $collection->getConnection()->getTableName(self::$table)) {
+        if ($result->getMainTable() === $result->getConnection()->getTableName(self::$table)) {
 
-            $leftJoinTableName = $collection->getConnection()->getTableName(self::$leftJoinTable);
+            $leftJoinTableName = $result->getConnection()->getTableName(self::$leftJoinTable);
 
-            $collection
+            $result
                 ->getSelect()
                 ->joinLeft(
                     ['co' => $leftJoinTableName],
@@ -81,7 +82,7 @@ class Grid
                     ]
                 );
 
-            $where = $collection->getSelect()->getPart(Select::WHERE);
+            $where = $result->getSelect()->getPart(Select::WHERE);
 
             foreach ($where as $key => $condition) {
                 if (strripos($condition, self::EAS_CONDITION_YES)) {
@@ -107,9 +108,9 @@ class Grid
                 $where[$key] = $newCondition;
             }
 
-            $collection->getSelect()->setPart(Select::WHERE, $where);
+            $result->getSelect()->setPart(Select::WHERE, $where);
 
         }
-        return $collection;
+        return $result;
     }
 }
