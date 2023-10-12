@@ -48,7 +48,7 @@ class SaveGuestEmail
     public function __construct(
         Session $session,
         QuoteRepository $quoteRepository,
-        Configuration $configuration,
+        Configuration $configuration
     ) {
         $this->session = $session;
         $this->quoteRepository = $quoteRepository;

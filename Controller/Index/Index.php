@@ -19,7 +19,6 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Zend_Http_Client_Exception;
 
 class Index implements ActionInterface
 {
@@ -61,7 +60,6 @@ class Index implements ActionInterface
      * @return Json
      * @throws LocalizedException
      * @throws NoSuchEntityException
-     * @throws Zend_Http_Client_Exception
      */
     public function execute()
     {

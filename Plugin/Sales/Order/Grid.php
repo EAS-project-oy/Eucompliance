@@ -49,7 +49,7 @@ class Grid
      * @param Configuration $configuration
      */
     public function __construct(
-        Configuration $configuration,
+        Configuration $configuration
     ) {
         $this->configuration = $configuration;
     }

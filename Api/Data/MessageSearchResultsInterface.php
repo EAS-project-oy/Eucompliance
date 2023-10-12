@@ -29,14 +29,14 @@ interface MessageSearchResultsInterface extends SearchResultsInterface
     /**
      * Get message list.
      *
-     * @return \Easproject\Eucompliance\Api\Data\MessageInterface[]
+     * @return MessageInterface[]
      */
     public function getItems();
 
     /**
      * Set error_type list.
      *
-     * @param \Easproject\Eucompliance\Api\Data\MessageInterface[] $items items
+     * @param MessageInterface[] $items items
      *
      * @return $this
      */

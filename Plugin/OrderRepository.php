@@ -63,7 +63,6 @@ class OrderRepository
      * @return OrderInterface
      * @throws InputException
      * @throws NoSuchEntityException
-     * @throws \Zend_Http_Client_Exception
      */
     public function afterGet(
         \Magento\Sales\Model\OrderRepository $subject,
@@ -89,7 +88,6 @@ class OrderRepository
      * @return array
      * @throws InputException
      * @throws NoSuchEntityException
-     * @throws \Zend_Http_Client_Exception
      */
     public function beforeSave(
         \Magento\Sales\Model\OrderRepository $subject,

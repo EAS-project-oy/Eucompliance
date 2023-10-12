@@ -16,14 +16,19 @@ use Easproject\Eucompliance\Model\Config\Configuration;
 use Easproject\Eucompliance\Service\Calculate;
 use Easproject\Eucompliance\Service\Order\Collection;
 use Easproject\Eucompliance\Setup\Patch\Data\AddGiftCardProductAttribute;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\RequestOptions;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Io\File;
-use Magento\Framework\HTTP\ZendClientFactory;
 use Magento\Framework\Filesystem\DriverInterface;
+use Magento\Framework\Serialize\SerializerInterface;
 use Magento\InventoryApi\Api\SourceRepositoryInterface;
 use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\AddressInterface;
@@ -34,7 +39,9 @@ use Magento\InventorySourceSelectionApi\Api\Data\ItemRequestInterfaceFactory;
 use Magento\InventorySourceSelectionApi\Api\SourceSelectionServiceInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Sales\Model\Order\Item;
-use Zend_Http_Client;
+use Psr\Log\LoggerInterface;
+use GuzzleHttp\ClientFactory;
+use Magento\Framework\Webapi\Rest\Request;
 
 class Order
 {
@@ -42,11 +49,6 @@ class Order
      * @var Configuration
      */
     private Configuration $configuration;
-
-    /**
-     * @var ZendClientFactory
-     */
-    private ZendClientFactory $clientFactory;
 
     /**
      * @var Calculate
@@ -128,6 +130,12 @@ class Order
      */
     private \Magento\Sales\Model\Order $orderModel;
 
+    /** @var ClientFactory  */
+    private ClientFactory $guzzleClientFactory;
+
+    /** @var SerializerInterface  */
+    private SerializerInterface $serializer;
+
     /**
      * @var array
      */
@@ -135,7 +143,6 @@ class Order
 
     /**
      * @param Configuration $configuration
-     * @param ZendClientFactory $clientFactory
      * @param Calculate $calculate
      * @param Collection $serviceCollection
      * @param Product $productResourceModel
@@ -150,12 +157,13 @@ class Order
      * @param File $file
      * @param DriverInterface $fileSystemDriver
      * @param CartRepositoryInterface $quoteRepository
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      * @param \Magento\Sales\Model\Order $orderModel
+     * @param ClientFactory $guzzleClientFactory
+     * @param SerializerInterface $serializer
      */
     public function __construct(
         Configuration                             $configuration,
-        ZendClientFactory                         $clientFactory,
         Calculate                                 $calculate,
         Collection                                $serviceCollection,
         Product                                   $productResourceModel,
@@ -171,10 +179,11 @@ class Order
         DriverInterface                           $fileSystemDriver,
         CartRepositoryInterface                   $quoteRepository,
         \Psr\Log\LoggerInterface                  $logger,
-        \Magento\Sales\Model\Order                $orderModel
+        \Magento\Sales\Model\Order                $orderModel,
+        ClientFactory                             $guzzleClientFactory,
+        SerializerInterface                       $serializer
     ) {
         $this->configuration = $configuration;
-        $this->clientFactory = $clientFactory;
         $this->calculate = $calculate;
         $this->serviceCollection = $serviceCollection;
         $this->productResourceModel = $productResourceModel;
@@ -191,6 +200,8 @@ class Order
         $this->quoteRepository = $quoteRepository;
         $this->logger = $logger;
         $this->orderModel = $orderModel;
+        $this->guzzleClientFactory = $guzzleClientFactory;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -199,8 +210,7 @@ class Order
      * @return void
      * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\FileSystemException
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Zend_Http_Client_Exception
+     * @throws InputException|GuzzleException
      */
     public function processOrders()
     {
@@ -226,23 +236,42 @@ class Order
      * @param \Magento\Sales\Model\Order $order
      * @return mixed
      * @throws NoSuchEntityException
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Zend_Http_Client_Exception
+     * @throws InputException
+     * @throws GuzzleException
      */
     public function createOrder(\Magento\Sales\Model\Order $order)
     {
-        $apiUrl = 'http://internal1.easproject.com/api/createpostsaleorder';
-        $client = $this->clientFactory->create();
-        $client->setUri($apiUrl);
-        $client->setHeaders([
-            'authorization' => 'Bearer ' . $this->calculate->getAuthorizeToken(),
-            'Content-Type' => 'application/json',
-            'accept' => 'text/*'
-        ]);
+        $client = $this->guzzleClientFactory->create();
         $requestData = $this->getOrderData($order);
-        $client->setRawData(json_encode($requestData), 'application/json');
-        $response = $client->request(Zend_Http_Client::POST)->getBody();
-        $response = json_decode($response);
+        try {
+            $response = $this->serializer->unserialize($client->request(
+                Request::HTTP_METHOD_POST,
+                "http://internal1.easproject.com/api/createpostsaleorder",
+                [
+                    RequestOptions::VERIFY => false,
+                    RequestOptions::HEADERS => [
+                        'authorization' => 'Bearer ' . $this->calculate->getAuthorizeToken(),
+                        'Content-Type' => 'application/json',
+                        'accept' => 'text/*'
+                    ],
+                    RequestOptions::JSON => $requestData
+                ]
+            )->getBody()->getContents());
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            $responseData = $this->serializer->unserialize((string)$response->getBody()->getContents());
+            $this->logger->debug(
+                'Failed to create order. Exception message: ' . $responseData['message'] .
+                ' code: ' . $e->getCode()
+            );
+            throw $e;
+        } catch (GuzzleException $e) {
+            $this->logger->debug(
+                'Failed to create order. Exception message: ' . $e->getMessage() .
+                ' code: ' . $e->getCode()
+            );
+            throw $e;
+        }
         $this->confirmOrder($response);
 
         return $response;
@@ -534,28 +563,45 @@ class Order
      *
      * @param string $token
      * @return void
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Zend_Http_Client_Exception
+     * @throws InputException
+     * @throws GuzzleException
      */
     public function confirmOrder(string $token)
     {
-        $apiUrl = 'http://internal1.easproject.com/api/confirmpostsaleorder';
-        $client = $this->clientFactory->create();
-        $client->setUri($apiUrl);
-        $client->setHeaders([
-            'authorization' => 'Bearer ' . $this->calculate->getAuthorizeToken(),
-            'Content-Type' => 'application/json',
-            'accept' => 'text/*'
-        ]);
+        $url = 'http://internal1.easproject.com/api/confirmpostsaleorder';
+        /** @var Client $client */
+        $client = $this->guzzleClientFactory->create();
         $requestData = [];
         $requestData['order_token'] = $token;
-        $client->setRawData(json_encode($requestData), 'application/json');
-
-        $config = [
-            Configuration::VERIFYPEER => false
-        ];
-        $client->setConfig($config);
-        $client->request(Zend_Http_Client::POST)->getBody();
+        try {
+            $this->serializer->unserialize($client->request(
+                Request::HTTP_METHOD_POST,
+                $url,
+                [
+                    RequestOptions::VERIFY => false,
+                    RequestOptions::HEADERS => [
+                        'authorization' => 'Bearer ' . $this->calculate->getAuthorizeToken(),
+                        'Content-Type' => 'application/json',
+                        'accept' => 'text/*'
+                    ],
+                    RequestOptions::JSON => $requestData
+                ]
+            )->getBody()->getContents());
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            $responseData = $this->serializer->unserialize((string)$response->getBody()->getContents());
+            $this->logger->debug(
+                'Failed to create order. Exception message: ' . $responseData['message'] .
+                ' code: ' . $e->getCode()
+            );
+            throw $e;
+        } catch (GuzzleException $e) {
+            $this->logger->debug(
+                'Failed to create order. Exception message: ' . $e->getMessage() .
+                ' code: ' . $e->getCode()
+            );
+            throw $e;
+        }
     }
 
     /**
@@ -612,8 +658,8 @@ class Order
      * @return void
      * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\FileSystemException
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Zend_Http_Client_Exception
+     * @throws InputException
+     * @throws GuzzleException
      */
     public function massSale()
     {
@@ -621,21 +667,44 @@ class Order
             DirectoryList::LOG
         )->getAbsolutePath('eas/orders');
 
-        $apiUrl = 'https://internal1.easproject.com/api/mass-sale/create_post_sale_without_lc_orders';
-        $client = $this->clientFactory->create();
-        $client->setUri($apiUrl);
-        $client->setHeaders([
-            'authorization' => 'Bearer ' . $this->calculate->getAuthorizeToken(),
-            'accept' => '*/*',
-            'Content-Type' => 'multipart/form-data; boundary=file',
-        ]);
-        $client->setFileUpload($dirname . '/' . 'orders.json', 'file', null, 'multipart/form-data; boundary=file');
-        $config = [
-            Configuration::VERIFYPEER => false
-        ];
-        $client->setConfig($config);
-        $response = $client->request(Zend_Http_Client::POST)->getBody();
-        $response = json_decode($response, true);
+        $baseUrl = 'https://internal1.easproject.com/api';
+        $url = '/mass-sale/create_post_sale_without_lc_orders';
+        /** @var Client $client */
+        $client = $this->guzzleClientFactory->create();
+        try {
+            $response = $this->serializer->unserialize($client->request(
+                Request::HTTP_METHOD_POST,
+                $baseUrl . $url,
+                [
+                    RequestOptions::VERIFY => false,
+                    RequestOptions::HEADERS => [
+                        'authorization' => 'Bearer ' . $this->calculate->getAuthorizeToken(),
+                        'accept' => '*/*',
+                        'Content-Type' => 'multipart/form-data; boundary=file',
+                    ],
+                    RequestOptions::MULTIPART => [
+                        [
+                            'name' => 'orders.json',
+                            'contents' => fopen($dirname . '/' . 'orders.json', 'rb'),
+                        ]
+                    ]
+                ]
+            )->getBody()->getContents());
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            $responseData = $this->serializer->unserialize((string)$response->getBody()->getContents());
+            $this->logger->debug(
+                'Failed to execute massSale. Exception message: ' . $responseData['message'] .
+                ' code: ' . $e->getCode()
+            );
+            throw $e;
+        } catch (GuzzleException $e) {
+            $this->logger->debug(
+                'Failed to execute massSale. Exception message: ' . $e->getMessage() .
+                ' code: ' . $e->getCode()
+            );
+            throw $e;
+        }
         if (isset($response['job_id'])) {
             $this->massSaleJobStatus((string) $response['job_id']);
         }
@@ -647,21 +716,15 @@ class Order
      * @param string $jobId
      * @return void
      * @throws NoSuchEntityException
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Zend_Http_Client_Exception
+     * @throws InputException
+     * @throws GuzzleException
      */
     public function massSaleJobStatus(string $jobId)
     {
-        $apiUrl = 'http://internal1.easproject.com/api/mass-sale/get_post_sale_without_lc_job_status/' . $jobId;
-        $client = $this->clientFactory->create();
-        $client->setUri($apiUrl);
-        $client->setHeaders([
-            'authorization' => 'Bearer ' . $this->calculate->getAuthorizeToken(),
-            'Content-Type' => 'application/json',
-            'accept' => 'text/*'
-        ]);
-        $response = $client->request(Zend_Http_Client::GET)->getBody();
-        $response = json_decode($response, true);
+        $baseUrl = 'http://internal1.easproject.com/api';
+        $url = '/api/mass-sale/get_post_sale_without_lc_job_status/' . $jobId;
+        /** @var Client $client */
+        $response = $this->getOrderStatuses($baseUrl, $url);
         if (isset($response['status'])) {
             if ($response['status'] != 'completed') {
                 $this->massSaleJobStatus($jobId);
@@ -677,21 +740,15 @@ class Order
      * @param string $jobId
      * @return void
      * @throws NoSuchEntityException
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Zend_Http_Client_Exception
+     * @throws InputException
+     * @throws GuzzleException
      */
     public function massSaleOrderStatus(string $jobId)
     {
-        $apiUrl = 'http://internal1.easproject.com/api/mass-sale/get_post_sale_without_lc_order_status/' . $jobId;
-        $client = $this->clientFactory->create();
-        $client->setUri($apiUrl);
-        $client->setHeaders([
-            'authorization' => 'Bearer ' . $this->calculate->getAuthorizeToken(),
-            'Content-Type' => 'application/json',
-            'accept' => 'text/*'
-        ]);
-        $response = $client->request(Zend_Http_Client::GET)->getBody();
-        $response = json_decode($response, true);
+        $baseUrl = 'http://internal1.easproject.com/api';
+        $url = '/mass-sale/get_post_sale_without_lc_order_status/' . $jobId;
+        /** @var Client $client */
+        $response = $this->getOrderStatuses($baseUrl, $url);
         if (isset($response['order_response_list'])) {
             foreach ($response['order_response_list'] as $orderData) {
                 $this->saveCheckoutToken($response['checkout_token'], false, (int) $orderData['external_order_id']);
@@ -753,8 +810,8 @@ class Order
      * @return void
      * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\FileSystemException
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Zend_Http_Client_Exception
+     * @throws InputException
+     * @throws GuzzleException
      */
     public function massSaleOrders(array $massOrderUpdate): void
     {
@@ -769,5 +826,46 @@ class Order
         if (count($this->massOrdersData)) {
             $this->massSaleOrders([]);
         }
+    }
+
+    /**
+     * @param string $baseUrl
+     * @param string $url
+     * @return array|bool|float|int|string|null
+     * @throws GuzzleException
+     * @throws InputException
+     */
+    private function getOrderStatuses(string $baseUrl, string $url)
+    {
+        $client = $this->guzzleClientFactory->create();
+        try {
+            $response = $this->serializer->unserialize($client->request(
+                Request::HTTP_METHOD_GET,
+                $baseUrl . $url,
+                [
+                    RequestOptions::VERIFY => false,
+                    RequestOptions::HEADERS => [
+                        'authorization' => 'Bearer ' . $this->calculate->getAuthorizeToken(),
+                        'Content-Type' => 'application/json',
+                        'accept' => 'text/*'
+                    ],
+                ]
+            )->getBody()->getContents());
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            $responseData = $this->serializer->unserialize((string)$response->getBody()->getContents());
+            $this->logger->debug(
+                'Failed to get orderStatuses. Exception message: ' . $responseData['message'] .
+                ' code: ' . $e->getCode()
+            );
+            throw $e;
+        } catch (GuzzleException $e) {
+            $this->logger->debug(
+                'Failed to get orderStatuses. Exception message: ' . $e->getMessage() .
+                ' code: ' . $e->getCode()
+            );
+            throw $e;
+        }
+        return $response;
     }
 }

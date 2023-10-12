@@ -63,9 +63,9 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
         EncryptorInterface   $encryptor,
         Calculate            $calculate,
         WriterInterface      $writer,
+        RequestInterface     $request,
         AbstractResource     $resource = null,
         AbstractDb           $resourceCollection = null,
-        RequestInterface     $request,
         array                $data = []
     ) {
         $this->writer = $writer;
@@ -95,7 +95,7 @@ class Encrypted extends \Magento\Config\Model\Config\Backend\Encrypted
         list($apiKey, $secretKey, $urlBase) = $this->getCredentialsFields();
         try {
             $this->calculate->getAuthorizeToken($apiKey, $secretKey, $urlBase);
-        } catch (InputException|\Zend_Http_Client_Exception $e) {
+        } catch (InputException $e) {
             throw new InputException(__($e->getMessage()));
         }
         parent::beforeSave();
