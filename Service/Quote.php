@@ -14,6 +14,7 @@ namespace Easproject\Eucompliance\Service;
 
 use Easproject\Eucompliance\Model\Config\Configuration;
 use Firebase\JWT\JWT;
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Checkout\Model\Session;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\Quote\Item;
@@ -61,11 +62,12 @@ class Quote
     /**
      * Save Quote Data
      *
-     * @param  array $tokenData
-     * @param  bool $coupon
+     * @param array $tokenData
+     * @param bool $coupon
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws GuzzleException
      */
     public function saveQuoteData($tokenData, bool $coupon = false): bool
     {
@@ -73,7 +75,7 @@ class Quote
             $token = $tokenData[Configuration::EAS_CHECKOUT_TOKEN];
             $data = $this->jwt->decode(
                 $token,
-                json_decode($this->calculate->getPublicKey(), true),
+                $this->calculate->getPublicKey(),
                 ['RS256']
             );
             $data = json_decode(json_encode($data), true);
@@ -143,7 +145,7 @@ class Quote
                     //$discountPerByProduct = $discountPrice / $countProduct;
 
                     //foreach ($quote->getAllItems() as $productItem) {
-                        //$productItem->setOriginalCustomPrice($productItem->getPrice() + $discountPerByProduct);
+                    //$productItem->setOriginalCustomPrice($productItem->getPrice() + $discountPerByProduct);
                     //}
                 }//base_subtotal_with_discount, //subtotal_with_discount
             }

@@ -50,7 +50,7 @@ class Coupon
         Session   $session,
         Calculate $calculate,
         Quote     $serviceQuote,
-        Configuration $configuration,
+        Configuration $configuration
     ) {
         $this->session = $session;
         $this->calculate = $calculate;

@@ -17,14 +17,15 @@ namespace Easproject\Eucompliance\Service;
 use Easproject\Eucompliance\Api\Data\MessageInterfaceFactory as MessageFactory;
 use Easproject\Eucompliance\Api\MessageRepositoryInterface;
 use Easproject\Eucompliance\Setup\Patch\Data\AddGiftCardProductAttribute;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\RequestOptions;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\HTTP\ZendClientFactory;
-use Magento\Framework\Mail\MessageInterfaceFactory;
 use Magento\InventoryApi\Api\SourceRepositoryInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\AddressInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\AddressInterfaceFactory;
@@ -41,17 +42,12 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\UrlInterface;
 use Psr\Log\LoggerInterface;
-use Zend_Http_Client;
-use Zend_Http_Client_Exception;
 use Magento\Framework\Serialize\SerializerInterface;
+use GuzzleHttp\ClientFactory;
+use Magento\Framework\Webapi\Rest\Request;
 
 class Calculate
 {
-
-    /**
-     * @var ZendClientFactory
-     */
-    private ZendClientFactory $clientFactory;
 
     /**
      * @var string|null
@@ -143,6 +139,9 @@ class Calculate
      */
     private SerializerInterface $serializer;
 
+    /** @var ClientFactory  */
+    private ClientFactory $guzzleClientFactory;
+
     /**
      * @var string[]
      */
@@ -163,27 +162,26 @@ class Calculate
     /**
      * Calculate constructor.
      *
-     * @param ZendClientFactory                         $clientFactory
-     * @param StoreManagerInterface                     $storeManager
-     * @param Product                                   $productResourceModel
-     * @param QuoteRepository                           $quoteRepository
-     * @param LoggerInterface                           $logger
-     * @param UrlInterface                              $url
-     * @param AddressInterfaceFactory                   $addressInterfaceFactory
-     * @param StockByWebsiteIdResolverInterface         $stockByWebsiteId
-     * @param ItemRequestInterfaceFactory               $itemRequestInterfaceFactory
-     * @param InventoryRequestInterfaceFactory          $inventoryRequestInterfaceFactory
+     * @param StoreManagerInterface $storeManager
+     * @param Product $productResourceModel
+     * @param QuoteRepository $quoteRepository
+     * @param LoggerInterface $logger
+     * @param UrlInterface $url
+     * @param AddressInterfaceFactory $addressInterfaceFactory
+     * @param StockByWebsiteIdResolverInterface $stockByWebsiteId
+     * @param ItemRequestInterfaceFactory $itemRequestInterfaceFactory
+     * @param InventoryRequestInterfaceFactory $inventoryRequestInterfaceFactory
      * @param InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory
-     * @param SourceSelectionServiceInterface           $sourceSelectionService
-     * @param SourceRepositoryInterface                 $sourceRepository
-     * @param Repository                                $quoteItemRepository
-     * @param Configuration                             $configuration
-     * @param MessageRepositoryInterface                $messageRepository
-     * @param MessageFactory                            $messageFactory
-     * @param SerializerInterface                       $serializer
+     * @param SourceSelectionServiceInterface $sourceSelectionService
+     * @param SourceRepositoryInterface $sourceRepository
+     * @param Repository $quoteItemRepository
+     * @param Configuration $configuration
+     * @param MessageRepositoryInterface $messageRepository
+     * @param MessageFactory $messageFactory
+     * @param SerializerInterface $serializer
+     * @param ClientFactory $guzzleClientFactory
      */
     public function __construct(
-        ZendClientFactory                         $clientFactory,
         StoreManagerInterface                     $storeManager,
         Product                                   $productResourceModel,
         QuoteRepository                           $quoteRepository,
@@ -200,7 +198,8 @@ class Calculate
         Configuration                             $configuration,
         MessageRepositoryInterface                $messageRepository,
         MessageFactory                            $messageFactory,
-        SerializerInterface                       $serializer
+        SerializerInterface                       $serializer,
+        ClientFactory                             $guzzleClientFactory
     ) {
         $this->sourceRepository = $sourceRepository;
         $this->sourceSelectionService = $sourceSelectionService;
@@ -208,7 +207,6 @@ class Calculate
         $this->quoteItemRepository = $quoteItemRepository;
         $this->inventoryRequestInterfaceFactory = $inventoryRequestInterfaceFactory;
         $this->stockByWebsiteId = $stockByWebsiteId;
-        $this->clientFactory = $clientFactory;
         $this->addressInterfaceFactory = $addressInterfaceFactory;
         $this->inventoryRequestExtensionInterfaceFactory = $inventoryRequestExtensionInterfaceFactory;
         $this->storeManager = $storeManager;
@@ -221,6 +219,7 @@ class Calculate
         $this->messageRepository = $messageRepository;
         $this->messageFactory = $messageFactory;
         $this->serializer = $serializer;
+        $this->guzzleClientFactory = $guzzleClientFactory;
     }
 
     /**
@@ -230,7 +229,6 @@ class Calculate
      * @return array
      * @throws InputException
      * @throws NoSuchEntityException
-     * @throws Zend_Http_Client_Exception
      * @throws CouldNotSaveException
      */
     public function calculate(Quote $quote): array
@@ -244,21 +242,23 @@ class Calculate
         }
 
         list($data, $response) = $this->sendRequest($quote);
+        $serialized =  $this->serializer->serialize($response);
         if ($this->configuration->isDebugEnabled()) {
             $this->logger->debug('Eas data send :' . $this->serializer->serialize($data));
-            $this->logger->debug('Eas data get :' . $response);
+            $this->logger->debug('Eas data get :' . $serialized);
         }
         if (filter_var(str_replace('"', '', $response), FILTER_VALIDATE_URL)) {
             $this->quoteRepository->save($quote);
-            return ['redirect' => str_replace('"', '', $response)];
+            return ['redirect' => str_replace('\/', '/', str_replace('"', '', $serialized))];
         }
-        $this->logger->critical('Eas calculate failed' . $response);
-        $errors = $this->serializer->unserialize($response);
+        $this->logger->critical('Eas calculate failed ' . $serialized);
+        $errors = $response;
         if (array_key_exists('type', $errors)) {
             return $this->getErrorResult($errors);
         }
         $errors = array_key_exists('errors', $errors) ? $errors['errors'] :
-            (array_key_exists('message', $errors) ? $errors['message'] : $errors['messages']);
+            (array_key_exists('error', $errors) ? $errors['error'] :
+                (array_key_exists('message', $errors) ? $errors['message'] : $errors['messages']));
         return $this->getErrorResult($errors);
     }
 
@@ -270,11 +270,12 @@ class Calculate
      * @param string $baseApiUrl
      * @return string|null
      * @throws InputException
+     * @throws GuzzleException
      */
     public function getAuthorizeToken($apiKey = null, $secretApiKey = null, $baseApiUrl = null): ?string
     {
         if (!$this->token) {
-            $client = $this->clientFactory->create();
+            $client = $this->guzzleClientFactory->create();
             if ($baseApiUrl) {
                 $baseApiUrl = $baseApiUrl . Configuration::CREDENTIALS_AUTHORIZE_URL;
             } else {
@@ -283,16 +284,36 @@ class Calculate
 
             $apiKey = $apiKey ?: $this->configuration->getApiKey();
             $secretApiKey = $secretApiKey ?: $this->configuration->getSecretKey();
-            $client->setUri($baseApiUrl);
-            $client->setHeaders(
-                [
-                    'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
-                ]
-            );
+            try {
+                $token = $this->serializer->unserialize($client->request(
+                    Request::HTTP_METHOD_POST,
+                    $baseApiUrl,
+                    [
+                        RequestOptions::VERIFY => false,
+                        RequestOptions::HEADERS => [
+                            'Authorization' => 'Basic ' . base64_encode($apiKey . ':' . $secretApiKey),
+                        ],
+                        RequestOptions::FORM_PARAMS => [
+                            'grant_type' => 'client_credentials'
+                        ]
+                    ]
+                )->getBody()->getContents());
+            } catch (ClientException $e) {
+                $response = $e->getResponse();
+                $responseData = $this->serializer->unserialize((string)$response->getBody()->getContents());
+                $this->logger->debug(
+                    'Failed to get authorized token. Exception message: ' . $responseData['message'] .
+                    ' code: ' . $e->getCode()
+                );
+                throw $e;
+            } catch (GuzzleException $e) {
+                $this->logger->debug(
+                    'Failed to get authorized token. Exception message: ' . $e->getMessage() .
+                    ' code: ' . $e->getCode()
+                );
+                throw $e;
+            }
 
-            $client->setParameterPost('grant_type', 'client_credentials');
-            $this->setConfig($client);
-            $token = $this->serializer->unserialize($client->request(Zend_Http_Client::POST)->getBody());
             if ($token && array_key_exists(Configuration::ACCESS_TOKEN, $token)) {
                 $this->token = $token[Configuration::ACCESS_TOKEN];
             } else {
@@ -579,38 +600,57 @@ class Calculate
      * @param OrderInterface $order
      * @return void
      * @throws InputException
-     * @throws NoSuchEntityException
+     * @throws NoSuchEntityException|GuzzleException
      */
     public function confirmOrder(OrderInterface $order)
     {
         if ($this->configuration->isEnabled()) {
             $quote = $this->quoteRepository->get((int)$order->getQuoteId());
             if ($quote->getEasToken() && !$quote->getEasConfirmationSent()) {
-                $apiUrl = $this->configuration->getPaymentVerifyUrl();
-                $client = $this->clientFactory->create();
-                $client->setUri($apiUrl);
-                $client->setHeaders(
-                    [
-                        'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
-                        'Content-Type' => 'application/json',
-                        'accept' => 'text/*'
-                    ]
-                );
-
+                $client = $this->guzzleClientFactory->create();
                 $data = [
                     'token' => $quote->getEasToken(),
                     'checkout_payment_id' => $order->getIncrementId()
                 ];
-                $client->setRawData($this->serializer->serialize($data), 'application/json');
-                $this->setConfig($client);
-                $response = $client->request(Zend_Http_Client::POST)->getBody();
-                if (empty($response)) {
+                $response = null;
+                try {
+                    $response = $client->request(
+                        Request::HTTP_METHOD_POST,
+                        $this->configuration->getBaseUrl() . Configuration::CREDENTIALS_PAYMENT_VERIFY_URL,
+                        [
+                            RequestOptions::VERIFY => false,
+                            RequestOptions::HEADERS => [
+                                'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+                                'Content-Type' => 'application/json',
+                                'accept' => 'text/*'
+                            ],
+                            RequestOptions::JSON => $data
+                        ]
+                    );
+                } catch (ClientException $e) {
+                    $response = $e->getResponse();
+                    $responseData = $this->serializer->unserialize((string)$response->getBody()->getContents());
+                    $this->logger->debug(
+                        'EAS: quote with id ' . $quote->getEntityId() .
+                        'failed confirmation. Exception message: ' . $responseData['message'] .
+                        ' code: ' . $e->getCode()
+                    );
+                    throw $e;
+                } catch (GuzzleException $e) {
+                    $this->logger->debug(
+                        'EAS: quote with id ' . $quote->getEntityId() .
+                        'failed confirmation. Exception message: ' . $e->getMessage() .
+                        ' code: ' . $e->getCode()
+                    );
+                    throw $e;
+                }
+                if (empty($response->getBody()->getContents())) {
                     $quote->setEasConfirmationSent(true);
                     $this->quoteRepository->save($quote);
                 } else {
                     $this->logger->debug(
                         'EAS: quote with id ' . $quote->getEntityId() .
-                        'failed confirmation. Response body ' . $response
+                        'failed confirmation. Response body ' . $response->getBody()->getContents()
                     );
                 }
             }
@@ -622,21 +662,39 @@ class Calculate
      *
      * @return mixed
      * @throws InputException
+     * @throws GuzzleException
      */
     public function getPublicKey()
     {
-        $apiUrl = $this->configuration->getApiKeysUrl();
-        $client = $this->clientFactory->create();
-        $client->setUri($apiUrl);
-        $this->setConfig($client);
-        $client->setHeaders(
-            [
-                'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
-                'Content-Type' => 'application/json',
-                'accept' => 'text/*'
-            ]
-        );
-        return $client->request(Zend_Http_Client::GET)->getBody();
+        $client = $this->guzzleClientFactory->create();
+        try {
+            return $this->serializer->unserialize($client->request(
+                Request::HTTP_METHOD_GET,
+                $this->configuration->getBaseUrl() . Configuration::CREDENTIALS_AUTH_KEYS_URL,
+                [
+                    RequestOptions::VERIFY => false,
+                    RequestOptions::HEADERS => [
+                        'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+                        'Content-Type' => 'application/json',
+                        'accept' => 'text/*'
+                    ]
+                ]
+            )->getBody()->getContents());
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            $responseData = $this->serializer->unserialize((string)$response->getBody()->getContents());
+            $this->logger->debug(
+                'Failed To get public key. Exception message: ' . $responseData['message'] .
+                ' code: ' . $e->getCode()
+            );
+            throw $e;
+        } catch (GuzzleException $e) {
+            $this->logger->debug(
+                'Failed To get public key. Exception message: ' . $e->getMessage() .
+                ' code: ' . $e->getCode()
+            );
+            throw $e;
+        }
     }
 
     /**
@@ -669,18 +727,6 @@ class Calculate
     public function sendRequest(
         Quote $quote
     ): array {
-
-        $apiUrl = $this->configuration->getCalculateUrl();
-        $client = $this->clientFactory->create();
-        $client->setUri($apiUrl);
-        $client->setHeaders(
-            [
-                'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
-                'x-redirect-uri' => $this->url->getUrl(Configuration::EAS_CALCULATE),
-                'Content-Type' => 'application/json',
-                'accept' => 'text/*'
-            ]
-        );
 
         $storeId = $this->storeManager->getStore()->getId();
         $address = $quote->getIsVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
@@ -822,9 +868,39 @@ class Calculate
         }
 
         $data['order_breakdown'] = $items;
-        $client->setRawData($this->serializer->serialize($data), 'application/json');
-        $this->setConfig($client);
-        $response = $client->request(Zend_Http_Client::POST)->getBody();
+
+        $client = $this->guzzleClientFactory->create();
+        try {
+            $this->logger->debug("Sent: " . $this->serializer->serialize($data));
+            $response = $this->serializer->unserialize($client->request(
+                Request::HTTP_METHOD_POST,
+                $this->configuration->getBaseUrl() . Configuration::CREDENTIALS_CALCULATE_URL,
+                [
+                    RequestOptions::VERIFY => false,
+                    RequestOptions::HEADERS => [
+                        'authorization' => 'Bearer ' . $this->getAuthorizeToken(),
+                        'x-redirect-uri' => $this->url->getUrl(Configuration::EAS_CALCULATE),
+                        'Content-Type' => 'application/json',
+                        'accept' => 'text/*'
+                    ],
+                    RequestOptions::JSON => $data
+                ]
+            )->getBody()->getContents());
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            $responseData = $this->serializer->unserialize((string)$response->getBody()->getContents());
+            $this->logger->debug(
+                'Failed To send request. Exception message: ' . $responseData['message'] .
+                ' code: ' . $e->getCode()
+            );
+            $response = $responseData;
+        } catch (GuzzleException $e) {
+            $this->logger->debug(
+                'Failed To send request. Exception message: ' . $e->getMessage() .
+                ' code: ' . $e->getCode()
+            );
+            $response = 'Something went wrong';
+        }
         return [$data, $response];
     }
 }
