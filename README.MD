@@ -59,6 +59,7 @@ After installation from root magento folder,
 to enable module run: `bin/magento se:up`
 to generate module classes run: `bin/magento s:s:d -f && bin/magento s:d:c`
 You can run it all in one command: `bin/magento se:up && bin/magento s:s:d -f && bin/magento s:d:c`
+If you planning to use "Standard solution" mode, make sure to creaqte right magento rontab file with command `bin/magento cron:install`
 
 After doing so, `bin/magento mo:st Eas_Eucompliance` should return
 
