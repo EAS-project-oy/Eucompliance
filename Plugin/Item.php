@@ -54,7 +54,7 @@ class Item
      */
     public function beforeSave(Repository $subject, CartItemInterface $cartItem): array
     {
-        if ($this->configuration->isEnabled()) {
+        if ($this->configuration->isEnabled() && !$this->configuration->isStandardSolution()) {
             $this->cartItemService->handleAttributes($cartItem);
         }
         return [$cartItem];
@@ -70,7 +70,7 @@ class Item
      */
     public function afterGetList(Repository $subject, array $result, int $cartId): array
     {
-        if ($this->configuration->isEnabled()) {
+        if ($this->configuration->isEnabled() && !$this->configuration->isStandardSolution()) {
             foreach ($result as $item) {
                 $this->cartItemService->handleAttributes($item, CartItem::SET);
             }

@@ -169,7 +169,7 @@ class LayoutProcessor
      */
     public function process($jsLayout)
     {
-        if (!$this->configuration->isEnabled()) {
+        if (!$this->configuration->isEnabled() || $this->configuration->isStandardSolution()) {
             return $jsLayout;
         }
 

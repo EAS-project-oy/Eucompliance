@@ -50,7 +50,7 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     public function execute(
         Observer $observer
     ) {
-        if ($this->configuration->isEnabled()) {
+        if ($this->configuration->isEnabled() && !$this->configuration->isStandardSolution()) {
             $this->checkoutSession->getData('original_shipping_price', true);
             $this->checkoutSession->getData('custom_price_price', true);
             $this->checkoutSession->getData('custom_shipping_price', true);

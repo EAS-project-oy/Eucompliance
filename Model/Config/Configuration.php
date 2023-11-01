@@ -78,6 +78,8 @@ class Configuration
 
     public const CONFIGURATION_GENERAL_MULTISHIPPING_ENABLE = "multishipping/options/checkout_multiple";
 
+    public const CONFIGURATION_GENERAL_STANDARD_SOLUTION = 'configuration/general/standard_solution';
+
     /**
      * @var ScopeConfigInterface
      */
@@ -379,5 +381,18 @@ class Configuration
     public function getWarningMessage(): string
     {
         return "We do not support multi shipping, please disable this option before activation EAS EU compliance.";
+    }
+
+    /**
+     * Check if standard solution enabled
+     *
+     * @return bool
+     */
+    public function isStandardSolution(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(
+            self::CONFIGURATION_GENERAL_STANDARD_SOLUTION,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 }

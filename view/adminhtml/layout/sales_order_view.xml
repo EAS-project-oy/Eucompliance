@@ -7,6 +7,9 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
+        <referenceContainer name="content">
+            <block class="Easproject\Eucompliance\Block\Adminhtml\Order\View\EasError" name="eas_error" template="Easproject_Eucompliance::order/view/eas_error.phtml"/>
+        </referenceContainer>
         <referenceContainer name="left">
             <block class="Magento\Sales\Block\Adminhtml\Order\View\Tabs" name="sales_order_tabs">
                 <block class="Magento\Sales\Block\Adminhtml\Order\View\Tab\Info" name="order_tab_info"

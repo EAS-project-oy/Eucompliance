@@ -69,7 +69,7 @@ class Coupon
      */
     public function afterSet(CouponManagement $subject, bool $result, $cartId, $couponCode): bool
     {
-        if (!$this->configuration->isEnabled()) {
+        if (!$this->configuration->isEnabled() || $this->configuration->isStandardSolution()) {
             return $result;
         }
 

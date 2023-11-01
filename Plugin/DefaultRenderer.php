@@ -50,7 +50,7 @@ class DefaultRenderer
         $column,
         $field = null
     ): string {
-        if (!$this->configuration->isEnabled()) {
+        if (!$this->configuration->isEnabled() || $this->configuration->isStandardSolution()) {
             return $result;
         }
         switch ($column) {

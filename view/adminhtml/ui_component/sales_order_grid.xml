@@ -8,5 +8,13 @@
                 </item>
             </argument>
         </column>
+        <column name="ioss" class="Easproject\Eucompliance\Ui\Component\Listing\Column\IOSS">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">IOSS</item>
+                </item>
+            </argument>
+        </column>
     </columns>
 </listing>

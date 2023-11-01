@@ -19,6 +19,12 @@
 
     <table name="sales_order" resource="sales" comment="Sales Flat Order">
         <column xsi:type="float" name="eas_total_vat" nullable="true" default="0" comment="Eas total vat"/>
+        <column xsi:type="int" name="eas_exported" nullable="false" default="0"
+                comment="Exported to EAS service"/>
+        <column xsi:type="text" name="eas_token" nullable="true"
+                comment="EAS checkout token"/>
+        <column xsi:type="text" name="eas_error" nullable="true"
+                comment="EAS error message"/>
     </table>
 
     <table name="quote_item" resource="checkout" comment="Sales Flat Quote Item">
@@ -65,5 +71,16 @@
         <column name="error_type" nullable="true" xsi:type="varchar" comment="error_type" length="255"/>
         <column name="response" nullable="true" xsi:type="mediumtext" comment="response"/>
         <column name="message" nullable="true" xsi:type="text" comment="message"/>
+    </table>
+
+    <table name="eas_job" resource="default" engine="innodb" comment="Table to track EAS jobs with its status">
+        <column xsi:type="int" name="job_id" padding="10" unsigned="true" nullable="false" comment="Entity Id"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="job_id"/>
+        </constraint>
+        <column name="status" nullable="true" xsi:type="varchar" comment="Job status" length="30"/>
+        <column name="error" nullable="true" xsi:type="text" comment="Error messages"/>
+        <column xsi:type="int" name="synced" nullable="false" default="0"
+                comment="Status synced with EAS"/>
     </table>
 </schema>

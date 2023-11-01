@@ -64,7 +64,7 @@ class Grid
      */
     public function afterSearch(Reporting $subject, $result, $collection)
     {
-        if (!$this->configuration->isEnabled()) {
+        if (!$this->configuration->isEnabled() || $this->configuration->isStandardSolution()) {
             return $result;
         }
 

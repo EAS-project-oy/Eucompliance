@@ -24,32 +24,32 @@
             <label>EAS EU Compliance</label>
             <tab>eas</tab>
             <resource>Easproject_Eucompliance::default</resource>
-            <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>General</label>
 
-                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enable this solution</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>configuration/general/enable</config_path>
                 </field>
 
-                <field id="post_shipping" translate="label" type="multiselect" sortOrder="1" showInDefault="1"
+                <field id="post_shipping" translate="label" type="multiselect" sortOrder="20" showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
                     <label>Shipping methods by post</label>
                     <source_model>Magento\Shipping\Model\Config\Source\Allmethods</source_model>
                 </field>
 
-                <field id="msi_enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                <field id="msi_enable" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enable MSI</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>configuration/msi/enable</config_path>
                 </field>
 
-                <field id="msi_algorithm" translate="label" type="select" sortOrder="1" showInDefault="1"
+                <field id="msi_algorithm" translate="label" type="select" sortOrder="40" showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
                     <label>Msi algorithm used for stock selection</label>
@@ -61,7 +61,7 @@
                     </depends>
                 </field>
 
-                <field id="tax_name" translate="label" type="text" sortOrder="1" showInDefault="1"
+                <field id="tax_name" translate="label" type="text" sortOrder="50" showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
                     <label>Eas tax name</label>
@@ -70,13 +70,27 @@
                         <field id="enable">1</field>
                     </depends>
                 </field>
+
+                <field id="standard_solution" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Standard Solution</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>configuration/general/standard_solution</config_path>
+                    <comment><![CDATA[This integration type is to be used predominantly by Non-EU
+                    electronic merchants that use only IOSS special VAT scheme. Do not use this option if you supply goods from
+                    within EU territory. VAT will be calculated by Magento 2 tax engine.
+                    ]]></comment>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
             </group>
 
-            <group id="credentials" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
+            <group id="credentials" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Credentials</label>
 
-                <field id="api_url" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                <field id="api_url" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS API Base URL</label>
                     <comment><![CDATA[Get your credentials in <a href="https://dashboard.easproject.com/"
@@ -87,12 +101,12 @@
                     <config_path>configuration/credentials/api_url</config_path>
                 </field>
 
-                <field id="api_key" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
+                <field id="api_key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS api key</label>
                 </field>
 
-                <field id="secret_api_key" translate="label" type="obscure" sortOrder="3" showInDefault="1"
+                <field id="secret_api_key" translate="label" type="obscure" sortOrder="30" showInDefault="1"
                        showInWebsite="1"
                        showInStore="1" canRestore="0">
                     <label>EAS secret api key</label>
@@ -100,39 +114,39 @@
                 </field>
             </group>
 
-            <group id="attributes" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1"
+            <group id="attributes" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Attributes</label>
 
-                <field id="hscode" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                <field id="hscode" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <source_model>Easproject\Eucompliance\Model\Source\Attributes</source_model>
                     <label>HSCODE</label>
                     <comment>Use eas_hscode, if you don't have one</comment>
                 </field>
 
-                <field id="reduced_vat" translate="label" type="select" sortOrder="2" showInDefault="1"
+                <field id="reduced_vat" translate="label" type="select" sortOrder="20" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Reduced vat</label>
                     <source_model>Easproject\Eucompliance\Model\Source\Attributes</source_model>
                     <comment>Use eas_reduced_vat, if you don't have one</comment>
                 </field>
 
-                <field id="seller_registration_country" translate="label" type="select" sortOrder="2" showInDefault="1"
+                <field id="seller_registration_country" translate="label" type="select" sortOrder="20" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Seller registration</label>
                     <source_model>Easproject\Eucompliance\Model\Source\Attributes</source_model>
                     <comment>Use eas_seller_registration_country, if you don't have one</comment>
                 </field>
 
-                <field id="act_as_disclosed_agent" translate="label" type="select" sortOrder="2" showInDefault="1"
+                <field id="act_as_disclosed_agent" translate="label" type="select" sortOrder="20" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Act as disclosed agent</label>
                     <source_model>Easproject\Eucompliance\Model\Source\Attributes</source_model>
                     <comment>Use eas_act_as_disclosed_agent, if you don't have one</comment>
                 </field>
 
-                <field id="warehouse_country" translate="label" type="select" sortOrder="3" showInDefault="1"
+                <field id="warehouse_country" translate="label" type="select" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Warehouse country</label>
                     <source_model>Easproject\Eucompliance\Model\Source\Attributes</source_model>
@@ -141,16 +155,16 @@
 
             </group>
 
-            <group id="advanced" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1"
+            <group id="advanced" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Advanced</label>
-                <field id="debug" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                <field id="debug" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Debug mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>configuration/advanced/debug</config_path>
                 </field>
-                <field id="default_email" translate="label" type="text" sortOrder="2" showInDefault="1"
+                <field id="default_email" translate="label" type="text" sortOrder="20" showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
                     <label>Default email for request, if customer do not provided</label>

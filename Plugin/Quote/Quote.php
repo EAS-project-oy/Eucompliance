@@ -49,7 +49,7 @@ class Quote
      */
     public function afterGetAllVisibleItems(\Magento\Quote\Model\Quote $subject, array $result): array
     {
-        if ($this->configuration->isEnabled()) {
+        if ($this->configuration->isEnabled() && !$this->configuration->isStandardSolution()) {
             foreach ($result as $item) {
                 $this->cartItemService->handleAttributes($item, CartItem::SET);
             }

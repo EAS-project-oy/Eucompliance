@@ -88,7 +88,7 @@ class Shipping extends CommonTaxCollector
         ShippingAssignmentInterface                   $shippingAssignment,
         Total                                         $total
     ) {
-        if (!$this->configuration->isEnabled()) {
+        if (!$this->configuration->isEnabled() || $this->configuration->isStandardSolution()) {
             return $result;
         }
 

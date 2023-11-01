@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Ui\Component\Listing\Column;
 
+use Easproject\Eucompliance\Service\Calculate;
+use Firebase\JWT\JWT;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
@@ -22,13 +24,8 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Ui\Component\Listing\Columns\Column;
 use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
 
-class EasToken extends Column
+class IOSS extends Column
 {
-
-    /**
-     * @var CollectionFactory
-     */
-    private CollectionFactory $quoteCollectionFactory;
 
     /** @var SearchCriteriaBuilder  */
     protected SearchCriteriaBuilder $searchCriteriaBuilder;
@@ -36,28 +33,39 @@ class EasToken extends Column
     /** @var OrderRepositoryInterface  */
     protected OrderRepositoryInterface $orderRepository;
 
+    /** @var JWT  */
+    protected JWT $jwt;
+
+    /**
+     * @var Calculate
+     */
+    private Calculate $calculate;
+
     /**
      * @param ContextInterface $context
      * @param UiComponentFactory $uiComponentFactory
-     * @param CollectionFactory $quoteCollectionFactory
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param OrderRepositoryInterface $orderRepository
+     * @param JWT $jwt
+     * @param Calculate $calculate
      * @param array $components
      * @param array $data
      */
     public function __construct(
         ContextInterface   $context,
         UiComponentFactory $uiComponentFactory,
-        CollectionFactory  $quoteCollectionFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         OrderRepositoryInterface $orderRepository,
+        JWT $jwt,
+        Calculate $calculate,
         array              $components = [],
         array              $data = []
     ) {
-        parent::__construct($context, $uiComponentFactory, $components, $data);
-        $this->quoteCollectionFactory = $quoteCollectionFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->orderRepository = $orderRepository;
+        $this->jwt = $jwt;
+        $this->calculate = $calculate;
+        parent::__construct($context, $uiComponentFactory, $components, $data);
     }
 
     /**
@@ -75,15 +83,22 @@ class EasToken extends Column
                     ->addFilter(OrderInterface::INCREMENT_ID, $incId)
                     ->create();
                 $orders = $this->orderRepository->getList($criteria)->getItems();
-                $quoteCollection = $this->quoteCollectionFactory->create();
-                $quoteCollection->addFieldToFilter('reserved_order_id', ['eq' => $incId]);
-                $quoteCollection->addFieldToSelect('eas_token');
-                $data = $quoteCollection->getFirstItem();
-                $columnContext = $data->getData('eas_token') ||
-                (
-                    count($orders) &&
-                    $orders[array_keys($orders)[0]]->getData('eas_token')
-                ) ? 'YES' : 'NO';
+                $order =  !count($orders) ? null : $orders[array_keys($orders)[0]];
+                $decoded = null;
+                if ($order && $order->getData('eas_token')) {
+                    try{
+                        $decoded = $this->jwt->decode(
+                            $order->getData('eas_token'),
+                            $this->calculate->getPublicKey(),
+                            ['RS256']
+                        );
+                    } catch (\Exception $e) {
+                    }
+                }
+                $columnContext = !$order ||
+                $order->getIsVirtual() ||
+                !$decoded ||
+                !$decoded->FID ? 'NO' : 'YES';
                 $item[$this->getData('name')] = $columnContext;
             }
         }

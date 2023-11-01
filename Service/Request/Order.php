@@ -23,6 +23,7 @@ use GuzzleHttp\RequestOptions;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ResourceModel\Product;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Filesystem;
@@ -111,9 +112,9 @@ class Order
     private File $file;
 
     /**
-     * @var DriverInterface
+     * @var \Magento\Framework\Filesystem\Driver\File
      */
-    private DriverInterface $fileSystemDriver;
+    private \Magento\Framework\Filesystem\Driver\File $fileSystemDriver;
 
     /**
      * @var CartRepositoryInterface
@@ -176,7 +177,7 @@ class Order
         InventoryRequestExtensionInterfaceFactory $inventoryRequestExtensionInterfaceFactory,
         Filesystem                                $filesystem,
         File                                      $file,
-        DriverInterface                           $fileSystemDriver,
+        \Magento\Framework\Filesystem\Driver\File                           $fileSystemDriver,
         CartRepositoryInterface                   $quoteRepository,
         \Psr\Log\LoggerInterface                  $logger,
         \Magento\Sales\Model\Order                $orderModel,
@@ -637,10 +638,14 @@ class Order
      * Write Content
      *
      * @param string $content
+     * @param string $fileName
      * @return void
-     * @throws \Magento\Framework\Exception\FileSystemException
+     * @throws FileSystemException
      */
-    public function writeContent(string $content)
+    public function writeContent(
+        string $content,
+        string $fileName = 'orders.json'
+    )
     {
         $dirname = $this->filesystem->getDirectoryWrite(
             DirectoryList::LOG
@@ -649,7 +654,7 @@ class Order
             $this->fileSystemDriver->createDirectory($dirname, 0775);
         }
 
-        $this->file->write($dirname . '/' . 'orders.json', $content);
+        $this->file->write($dirname . '/' . $fileName, $content);
     }
 
     /**
