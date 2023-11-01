@@ -66,6 +66,10 @@
     <preference for="Easproject\Eucompliance\Api\MessageRepositoryInterface" type="Easproject\Eucompliance\Model\MessageRepository"/>
     <preference for="Easproject\Eucompliance\Api\Data\MessageInterface" type="Easproject\Eucompliance\Model\Message"/>
     <preference for="Easproject\Eucompliance\Api\Data\MessageSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    <preference for="Easproject\Eucompliance\Api\JobRepositoryInterface" type="Easproject\Eucompliance\Model\JobRepository"/>
+    <preference for="Easproject\Eucompliance\Api\Data\JobInterface" type="Easproject\Eucompliance\Model\Job"/>
+    <preference for="Easproject\Eucompliance\Api\Data\JobSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+
     <virtualType name="Easproject\Eucompliance\Model\ResourceModel\Message\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">eas_eucompliance_message</argument>
@@ -88,6 +92,7 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="orderProcessor" xsi:type="object">Easproject\Eucompliance\Console\OrderProcessor</item>
+                <item name="fillStandardSolution" xsi:type="object">Easproject\Eucompliance\Console\FillStandardSolution</item>
             </argument>
         </arguments>
     </type>

@@ -49,7 +49,7 @@ class Item
      */
     public function beforeSave(\Magento\Quote\Model\ResourceModel\Quote\Item $subject, AbstractModel $cartItem): array
     {
-        if ($this->configuration->isEnabled()) {
+        if ($this->configuration->isEnabled() && !$this->configuration->isStandardSolution()) {
             $this->cartItemService->handleAttributes($cartItem);
         }
         return [$cartItem];

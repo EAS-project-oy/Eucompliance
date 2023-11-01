@@ -70,7 +70,7 @@ class SaveGuestEmail
         string $customerEmail,
         int $websiteId = null
     ): array {
-        if ($this->configuration->isEnabled()) {
+        if ($this->configuration->isEnabled() && !$this->configuration->isStandardSolution()) {
             $this->session->getQuote()->setCustomerEmail($customerEmail);
             $this->quoteRepository->save($this->session->getQuote());
         }

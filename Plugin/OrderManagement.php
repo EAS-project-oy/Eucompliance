@@ -57,7 +57,7 @@ class OrderManagement
         OrderInterface $order
     ): OrderInterface {
 
-        if (!$this->configuration->isEnabled()) {
+        if (!$this->configuration->isEnabled() || $this->configuration->isStandardSolution()) {
             return $result;
         }
 

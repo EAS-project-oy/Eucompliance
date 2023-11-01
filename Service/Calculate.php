@@ -233,7 +233,7 @@ class Calculate
      */
     public function calculate(Quote $quote): array
     {
-        if (!$this->configuration->isEnabled()) {
+        if (!$this->configuration->isEnabled() || $this->configuration->isStandardSolution()) {
             return ['disabled' => true];
         }
 
@@ -604,7 +604,7 @@ class Calculate
      */
     public function confirmOrder(OrderInterface $order)
     {
-        if ($this->configuration->isEnabled()) {
+        if ($this->configuration->isEnabled() && !$this->configuration->isStandardSolution()) {
             $quote = $this->quoteRepository->get((int)$order->getQuoteId());
             if ($quote->getEasToken() && !$quote->getEasConfirmationSent()) {
                 $client = $this->guzzleClientFactory->create();

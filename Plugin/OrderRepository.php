@@ -69,7 +69,7 @@ class OrderRepository
         OrderInterface                       $result
     ): OrderInterface {
 
-        if (!$this->configuration->isEnabled()) {
+        if (!$this->configuration->isEnabled() || $this->configuration->isStandardSolution()) {
             return $result;
         }
 
@@ -94,7 +94,7 @@ class OrderRepository
         OrderInterface                       $entity
     ): array {
 
-        if (!$this->configuration->isEnabled()) {
+        if (!$this->configuration->isEnabled() || $this->configuration->isStandardSolution()) {
             return [$entity];
         }
 

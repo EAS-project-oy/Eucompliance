@@ -60,7 +60,7 @@ class SaveGuestCartData
         int                           $cartId,
         ShippingInformationInterface  $addressInformation
     ): array {
-        if ($this->configuration->isEnabled()) {
+        if ($this->configuration->isEnabled() && !$this->configuration->isStandardSolution()) {
             $quote = $this->quoteRepository->getActive($cartId);
             $shipping = $addressInformation->getShippingAddress();
             $quote->setCustomerFirstname($shipping->getFirstname());

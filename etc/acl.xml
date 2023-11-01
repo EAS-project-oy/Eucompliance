@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Easproject_Eucompliance::default" title="EAS Configuration" sortOrder="100"/>
+                <resource id="Magento_Sales::sales">
+                    <resource id="Easproject_Eucompliance::message" title="EAS Messages" sortOrder="100">
+                        <resource id="Easproject_Eucompliance::eas_eucompliance_message" title="EAS EUCompliance Message" sortOrder="10"/>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>
