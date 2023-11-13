@@ -306,6 +306,9 @@ class StandardSolution
         /** @var Order\Item $item */
         foreach ($items as $item) {
             $product = $item->getProduct();
+            if (!$product) {
+                throw new NoSuchEntityException(__("No product with id " . $item->getProductId()));
+            }
             $originatingCountry = $product->getData(Configuration::COUNTRY_OF_MANUFACTURE);
             $hs6p = $product->getData($this->configuration->getHscodeAttributeName());
             $sellerRegistrationCountry = $product->getData($this->configuration->getSellerRegistrationName());
