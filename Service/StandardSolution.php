@@ -135,7 +135,7 @@ class StandardSolution
             '0'
         )->addAttributeToFilter(
             OrderInterface::STATUS,
-            ['in' => ['Processing', 'Complete']]
+            ['in' => ['processing', 'complete']]
         );
         $collection->load();
         return $collection;
