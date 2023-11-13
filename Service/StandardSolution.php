@@ -527,7 +527,8 @@ class StandardSolution
         }
         $response = $this->processRequest(self::EXPORT_URL,
             Request::HTTP_METHOD_POST,
-            $toExport
+            $toExport,
+            true
         );
         if (!isset($response['job_id'])) {
             throw new LocalizedException(__("Something went wrong. Cannot export to EAS %1 order", $order->getIncrementId()));
