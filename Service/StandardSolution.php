@@ -522,7 +522,7 @@ class StandardSolution
             } catch (\Exception $e) {
                 $order->setData(self::ORDER_EAS_ERROR, $e->getMessage());
                 $this->orderRepository->save($order);
-                throw new LocalizedException(__($order->getIncrementId() . ' ' . $e->getMessage()));
+                continue;
             }
         }
         $response = $this->processRequest(self::EXPORT_URL,
