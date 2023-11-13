@@ -171,6 +171,10 @@ class OrderCalculation
                 $request,
                 $this->configuration->getMSIWarehouseLocation()
             )->getSourceSelectionItems();
+            if (!count($sourceSelectionItems)) {
+                return $order->getData($this->configuration->getWarehouseAttributeName()) ?:
+                    $this->configuration->getStoreDefaultCountryCode();
+            }
             return $sourceSelectionItems[array_key_first($sourceSelectionItems)]->getSourceCode();
         }
         return $order->getData($this->configuration->getWarehouseAttributeName()) ?:
