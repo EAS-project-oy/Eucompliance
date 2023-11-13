@@ -242,7 +242,8 @@ class StandardSolution
      */
     public function validateCountry(Order $order): bool
     {
-        $countryCode = $order->getShippingAddress()->getCountryId();
+        $address = $order->getIsVirtual() ? $order->getBillingAddress() : $order->getShippingAddress();
+        $countryCode = $address->getCountryId();
         $availableCountries = empty($this->availableCountries) ? $this->processRequest(
             self::AVAILABLE_COUNTRIES_URL,
             Request::HTTP_METHOD_GET
