@@ -511,14 +511,19 @@ class StandardSolution
         $toExport = ['order_list' => []];
         /** @var Order $order */
         foreach ($this->getNonExportedOrdersCollection() as $order) {
-            if (!$this->validateCountry($order) || $this->checkOrderExists($order)) {
-                continue;
+            try{
+                if (!$this->validateCountry($order) || $this->checkOrderExists($order)) {
+                    continue;
+                }
+                $toExport['order_list'][] = [
+                    'order' => $this->prepareExportData($order),
+                    'sale_date' => $order->getData('created_at')
+                ];
+            } catch (\Exception $e) {
+                $order->setData(self::ORDER_EAS_ERROR, $e->getMessage());
+                $this->orderRepository->save($order);
+                throw new LocalizedException(__($order->getIncrementId() . ' ' . $e->getMessage()));
             }
-            $toExport['order_list'][] = [
-                'order' => $this->prepareExportData($order),
-                'sale_date' => $order->getData('created_at')
-            ];
-
         }
         $response = $this->processRequest(self::EXPORT_URL,
             Request::HTTP_METHOD_POST,
