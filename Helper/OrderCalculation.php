@@ -11,6 +11,7 @@ use Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\AddressInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\ItemRequestInterfaceFactory;
 use Magento\InventorySourceSelectionApi\Api\SourceSelectionServiceInterface;
+use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\InventorySourceSelectionApi\Api\Data\InventoryRequestInterfaceFactory;
@@ -126,12 +127,13 @@ class OrderCalculation
         $stock = $this->stockByWebsiteIdResolver->execute((int)$store->getWebsiteId());
         $requestItems = [];
 
+        /** @var Order\Item $item */
         foreach ($order->getAllVisibleItems() as $item) {
             if ($item->getSku() == $product->getSku()) {
                 $requestItems[] = $this->itemRequestInterfaceFactory->create(
                     [
                         'sku' => $item->getSku(),
-                        'qty' => $item->getQty()
+                        'qty' => $item->getQtyOrdered()
                     ]
                 );
             }
