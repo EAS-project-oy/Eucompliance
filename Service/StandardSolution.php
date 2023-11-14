@@ -337,7 +337,7 @@ class StandardSolution
                     $this->configuration->getStoreDefaultCountryCode(),
                 Configuration::REDUCED_TBE_VAT_GROUP => (bool)$reducedTbeVatGroup,
                 'unit_cost' => $this->roundTo2((float)$item->getOriginalPrice()),
-                'vat_rate' => $this->roundTo2((float)$item->getTaxPercent() / 100),
+                'vat_rate' => $this->roundTo2((float)$item->getTaxPercent()),
                 'item_vat' => $this->roundTo2((float)$item->getTaxAmount()),
             ];
         }
