@@ -289,7 +289,7 @@ class StandardSolution
      */
     private function roundTo2(float $num): float
     {
-        return (float)(number_format($num, 2));
+        return (float)(round($num, 2));
     }
 
     /**
@@ -461,6 +461,7 @@ class StandardSolution
             }
 
             $order->setData(self::ORDER_EAS_TOKEN_ATTRIBUTE, $jobStatus['checkout_token']);
+            $order->setData(self::ORDER_EAS_ERROR, "");
             $order->setData(self::ORDER_EAS_EXPORTED_ATTRIBUTE, 1);
             $this->orderRepository->save($order);
         }
