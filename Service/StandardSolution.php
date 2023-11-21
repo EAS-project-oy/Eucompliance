@@ -500,6 +500,7 @@ class StandardSolution
             $newJob = $newJob->setError($totalError);
         }
         $this->jobRepository->save($newJob);
+        return $newJob;
     }
 
     /**
@@ -539,9 +540,7 @@ class StandardSolution
             throw new LocalizedException(__("Something went wrong. Cannot export to EAS %1 order", $order->getIncrementId()));
         }
 
-        $this->createJob($response);
-
-        return $response;
+        return $this->createJob($response);
     }
 
     /**
@@ -552,8 +551,11 @@ class StandardSolution
      * @throws InputException
      * @throws LocalizedException
      */
-    public function validate()
+    public function validate($newJob = null)
     {
+        if ($newJob) {
+            $this->fillEasTokens($newJob->getJobId(), $newJob);
+        }
         /** @var JobInterface $job */
         foreach ($this->getNonCompleteJobs() as $job)
         {
