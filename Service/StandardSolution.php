@@ -532,6 +532,9 @@ class StandardSolution
                 continue;
             }
         }
+        if (!count($toExport['order_list'])) {
+            return null;
+        }
         $response = $this->processRequest(self::EXPORT_URL,
             Request::HTTP_METHOD_POST,
             $toExport,
