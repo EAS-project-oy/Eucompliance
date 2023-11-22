@@ -446,6 +446,7 @@ class StandardSolution
                 if (isset($jobStatus['checkout_token'])) {
                     $order->setData(self::ORDER_EAS_TOKEN_ATTRIBUTE, $jobStatus['checkout_token']);
                 }
+                $order->setData(self::ORDER_EAS_EXPORTED_ATTRIBUTE, 1);
                 $order->save();
                 // $this->orderRepository->save($order);
                 $totalJobError .= $totalMsg;
