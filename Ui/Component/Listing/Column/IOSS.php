@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Easproject\Eucompliance\Ui\Component\Listing\Column;
 
+use Composer\InstalledVersions;
 use Easproject\Eucompliance\Service\Calculate;
 use Firebase\JWT\JWT;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -87,11 +88,24 @@ class IOSS extends Column
                 $decoded = null;
                 if ($order && $order->getData('eas_token')) {
                     try{
-                        $decoded = $this->jwt->decode(
-                            $order->getData('eas_token'),
-                            $this->calculate->getPublicKey(),
-                            ['RS256']
-                        );
+                        if (
+                            version_compare(
+                                InstalledVersions::getVersion('firebase/php-jwt'),
+                                '6.0',
+                                '<'
+                            )
+                        ) {
+                            $decoded = $this->jwt->decode(
+                                $order->getData('eas_token'),
+                                $this->calculate->getPublicKey(),
+                                ['RS256']
+                            );
+                        } else {
+                            $decoded = $this->jwt->decode(
+                                $order->getData('eas_token'),
+                                $this->calculate->getPublicKey()
+                            );
+                        }
                     } catch (\Exception $e) {
                     }
                 }

@@ -12,6 +12,7 @@
 
 namespace Easproject\Eucompliance\Service;
 
+use Composer\InstalledVersions;
 use Easproject\Eucompliance\Model\Config\Configuration;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Exception\GuzzleException;
@@ -73,11 +74,24 @@ class Quote
     {
         if (array_key_exists(Configuration::EAS_CHECKOUT_TOKEN, $tokenData)) {
             $token = $tokenData[Configuration::EAS_CHECKOUT_TOKEN];
-            $data = $this->jwt->decode(
-                $token,
-                $this->calculate->getPublicKey(),
-                ['RS256']
-            );
+            if (
+                version_compare(
+                    InstalledVersions::getVersion('firebase/php-jwt'),
+                    '6.0',
+                    '<'
+                )
+            ) {
+                $data = $this->jwt->decode(
+                    $token,
+                    $this->calculate->getPublicKey(),
+                    ['RS256']
+                );
+            } else {
+                $data = $this->jwt->decode(
+                    $token,
+                    $this->calculate->getPublicKey()
+                );
+            }
             $data = json_decode(json_encode($data), true);
             $quote = $this->session->getQuote();
 

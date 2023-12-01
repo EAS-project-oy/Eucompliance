@@ -135,7 +135,7 @@ class StandardSolution
             '0'
         )->addAttributeToFilter(
             OrderInterface::STATUS,
-            'Processing'
+            ['in' => ['processing', 'complete']]
         );
         $collection->load();
         return $collection;
@@ -242,7 +242,8 @@ class StandardSolution
      */
     public function validateCountry(Order $order): bool
     {
-        $countryCode = $order->getShippingAddress()->getCountryId();
+        $address = $order->getIsVirtual() ? $order->getBillingAddress() : $order->getShippingAddress();
+        $countryCode = $address->getCountryId();
         $availableCountries = empty($this->availableCountries) ? $this->processRequest(
             self::AVAILABLE_COUNTRIES_URL,
             Request::HTTP_METHOD_GET
@@ -288,7 +289,7 @@ class StandardSolution
      */
     private function roundTo2(float $num): float
     {
-        return (float)(number_format($num, 2));
+        return (float)(round($num, 2));
     }
 
     /**
@@ -305,6 +306,9 @@ class StandardSolution
         /** @var Order\Item $item */
         foreach ($items as $item) {
             $product = $item->getProduct();
+            if (!$product) {
+                throw new NoSuchEntityException(__("No product with id " . $item->getProductId()));
+            }
             $originatingCountry = $product->getData(Configuration::COUNTRY_OF_MANUFACTURE);
             $hs6p = $product->getData($this->configuration->getHscodeAttributeName());
             $sellerRegistrationCountry = $product->getData($this->configuration->getSellerRegistrationName());
@@ -333,7 +337,7 @@ class StandardSolution
                     $this->configuration->getStoreDefaultCountryCode(),
                 Configuration::REDUCED_TBE_VAT_GROUP => (bool)$reducedTbeVatGroup,
                 'unit_cost' => $this->roundTo2((float)$item->getOriginalPrice()),
-                'vat_rate' => $this->roundTo2((float)$item->getTaxPercent() / 100),
+                'vat_rate' => $this->roundTo2((float)$item->getTaxPercent()),
                 'item_vat' => $this->roundTo2((float)$item->getTaxAmount()),
             ];
         }
@@ -442,6 +446,7 @@ class StandardSolution
                 if (isset($jobStatus['checkout_token'])) {
                     $order->setData(self::ORDER_EAS_TOKEN_ATTRIBUTE, $jobStatus['checkout_token']);
                 }
+                $order->setData(self::ORDER_EAS_EXPORTED_ATTRIBUTE, 1);
                 $order->save();
                 // $this->orderRepository->save($order);
                 $totalJobError .= $totalMsg;
@@ -457,6 +462,7 @@ class StandardSolution
             }
 
             $order->setData(self::ORDER_EAS_TOKEN_ATTRIBUTE, $jobStatus['checkout_token']);
+            $order->setData(self::ORDER_EAS_ERROR, "");
             $order->setData(self::ORDER_EAS_EXPORTED_ATTRIBUTE, 1);
             $this->orderRepository->save($order);
         }
@@ -495,6 +501,7 @@ class StandardSolution
             $newJob = $newJob->setError($totalError);
         }
         $this->jobRepository->save($newJob);
+        return $newJob;
     }
 
     /**
@@ -511,26 +518,33 @@ class StandardSolution
         $toExport = ['order_list' => []];
         /** @var Order $order */
         foreach ($this->getNonExportedOrdersCollection() as $order) {
-            if (!$this->validateCountry($order) || $this->checkOrderExists($order)) {
+            try{
+                if (!$this->validateCountry($order) || $this->checkOrderExists($order)) {
+                    continue;
+                }
+                $toExport['order_list'][] = [
+                    'order' => $this->prepareExportData($order),
+                    'sale_date' => $order->getData('created_at')
+                ];
+            } catch (\Exception $e) {
+                $order->setData(self::ORDER_EAS_ERROR, $e->getMessage());
+                $this->orderRepository->save($order);
                 continue;
             }
-            $toExport['order_list'][] = [
-                'order' => $this->prepareExportData($order),
-                'sale_date' => $order->getData('created_at')
-            ];
-
+        }
+        if (!count($toExport['order_list'])) {
+            return null;
         }
         $response = $this->processRequest(self::EXPORT_URL,
             Request::HTTP_METHOD_POST,
-            $toExport
+            $toExport,
+            true
         );
         if (!isset($response['job_id'])) {
             throw new LocalizedException(__("Something went wrong. Cannot export to EAS %1 order", $order->getIncrementId()));
         }
 
-        $this->createJob($response);
-
-        return $response;
+        return $this->createJob($response);
     }
 
     /**
@@ -541,8 +555,11 @@ class StandardSolution
      * @throws InputException
      * @throws LocalizedException
      */
-    public function validate()
+    public function validate($newJob = null)
     {
+        if ($newJob) {
+            $this->fillEasTokens($newJob->getJobId(), $newJob);
+        }
         /** @var JobInterface $job */
         foreach ($this->getNonCompleteJobs() as $job)
         {

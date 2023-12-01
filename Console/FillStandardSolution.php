@@ -112,7 +112,7 @@ class FillStandardSolution extends Command
             );
         }
         $this->standardSolutionService = $this->objectManager->create(StandardSolution::class);
-        $this->standardSolutionService->export();
-        $this->standardSolutionService->validate();
+        $newJob = $this->standardSolutionService->export();
+        $this->standardSolutionService->validate($newJob);
     }
 }
