@@ -12,9 +12,10 @@
 
 namespace Easproject\Eucompliance\Service;
 
-use Composer\InstalledVersions;
+use Easproject\Eucompliance\Helper\Version;
 use Easproject\Eucompliance\Model\Config\Configuration;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Checkout\Model\Session;
 use Magento\Quote\Api\CartRepositoryInterface;
@@ -42,22 +43,29 @@ class Quote
      */
     private CartRepositoryInterface $quoteRepository;
 
+    /** @var Version  */
+    private Version $versionHelper;
+
+
     /**
-     * @param \Firebase\JWT\JWT                          $jwt
-     * @param \Easproject\Eucompliance\Service\Calculate $calculate
-     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
-     * @param \Magento\Checkout\Model\Session            $session
+     * @param JWT $jwt
+     * @param Calculate $calculate
+     * @param CartRepositoryInterface $quoteRepository
+     * @param Session $session
+     * @param Version $versionHelper
      */
     public function __construct(
         JWT                     $jwt,
         Calculate               $calculate,
         CartRepositoryInterface $quoteRepository,
-        Session                 $session
+        Session                 $session,
+        Version                 $versionHelper
     ) {
         $this->jwt = $jwt;
         $this->calculate = $calculate;
         $this->quoteRepository = $quoteRepository;
         $this->session = $session;
+        $this->versionHelper = $versionHelper;
     }
 
     /**
@@ -75,11 +83,7 @@ class Quote
         if (array_key_exists(Configuration::EAS_CHECKOUT_TOKEN, $tokenData)) {
             $token = $tokenData[Configuration::EAS_CHECKOUT_TOKEN];
             if (
-                version_compare(
-                    InstalledVersions::getVersion('firebase/php-jwt'),
-                    '6.0',
-                    '<'
-                )
+                $this->versionHelper->isJwtOld()
             ) {
                 $data = $this->jwt->decode(
                     $token,
@@ -89,7 +93,7 @@ class Quote
             } else {
                 $data = $this->jwt->decode(
                     $token,
-                    $this->calculate->getPublicKey()
+                    new Key($this->calculate->getPublicKey()['default'], 'RS256')
                 );
             }
             $data = json_decode(json_encode($data), true);

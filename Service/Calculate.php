@@ -354,7 +354,13 @@ class Calculate
                 $request,
                 $this->configuration->getMSIWarehouseLocation()
             )->getSourceSelectionItems();
-            return $sourceSelectionItems[array_key_first($sourceSelectionItems)]->getSourceCode();
+            return count($sourceSelectionItems) ?
+                $sourceSelectionItems[array_key_first($sourceSelectionItems)]->getSourceCode() :
+                ($this->productResourceModel->getAttributeRawValue(
+                    $product->getId(),
+                    $this->configuration->getWarehouseAttributeName(),
+                    $quote->getStoreId()
+                ) ?: $this->configuration->getStoreDefaultCountryCode());
         }
         return $this->productResourceModel->getAttributeRawValue(
             $product->getId(),
@@ -443,9 +449,17 @@ class Calculate
     {
         if ($this->configuration->getMSIWarehouseLocation()) {
             $sourceCode = $this->getWarehouseCode($quote, $product);
-            return $this->sourceRepository->get($sourceCode)->getCountryId();
-        }
+            try{
+                return $this->sourceRepository->get($sourceCode)->getCountryId();
+            } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+                return $this->productResourceModel->getAttributeRawValue(
+                    $product->getId(),
+                    $this->configuration->getWarehouseAttributeName(),
+                    $quote->getStoreId()
+                ) ?: $this->configuration->getStoreDefaultCountryCode();
+            }
 
+        }
         return $this->productResourceModel->getAttributeRawValue(
             $product->getId(),
             $this->configuration->getWarehouseAttributeName(),

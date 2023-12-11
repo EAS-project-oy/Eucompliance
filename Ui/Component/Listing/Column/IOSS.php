@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Easproject\Eucompliance\Ui\Component\Listing\Column;
 
 use Composer\InstalledVersions;
+use Easproject\Eucompliance\Helper\Version;
 use Easproject\Eucompliance\Service\Calculate;
 use Firebase\JWT\JWT;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -42,6 +43,9 @@ class IOSS extends Column
      */
     private Calculate $calculate;
 
+    /** @var Version  */
+    private Version $versionHelper;
+
     /**
      * @param ContextInterface $context
      * @param UiComponentFactory $uiComponentFactory
@@ -59,13 +63,15 @@ class IOSS extends Column
         OrderRepositoryInterface $orderRepository,
         JWT $jwt,
         Calculate $calculate,
-        array              $components = [],
-        array              $data = []
+        Version $versionHelper,
+        array $components = [],
+        array $data = []
     ) {
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->orderRepository = $orderRepository;
         $this->jwt = $jwt;
         $this->calculate = $calculate;
+        $this->versionHelper = $versionHelper;
         parent::__construct($context, $uiComponentFactory, $components, $data);
     }
 
@@ -89,11 +95,7 @@ class IOSS extends Column
                 if ($order && $order->getData('eas_token')) {
                     try{
                         if (
-                            version_compare(
-                                InstalledVersions::getVersion('firebase/php-jwt'),
-                                '6.0',
-                                '<'
-                            )
+                            $this->versionHelper->isJwtOld()
                         ) {
                             $decoded = $this->jwt->decode(
                                 $order->getData('eas_token'),
