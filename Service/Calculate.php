@@ -658,7 +658,7 @@ class Calculate
                     );
                     throw $e;
                 }
-                if (empty($response->getBody()->getContents())) {
+                if (empty($response->getBody()->getContents()) || $response->getBody()->getContents() === '') {
                     $quote->setEasConfirmationSent(true);
                     $this->quoteRepository->save($quote);
                 } else {
