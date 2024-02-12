@@ -35,11 +35,7 @@ class Version
     {
         $installed = array();
         $vendorDir = $this->dir->getRoot() . '/vendor';
-        if (is_file($vendorDir.'/composer/installed.php')) {
-            /** @var array{root: array{name: string, pretty_version: string, version: string, reference: string|null, type: string, install_path: string, aliases: string[], dev: bool}, versions: array<string, array{pretty_version?: string, version?: string, reference?: string|null, type?: string, install_path?: string, aliases?: string[], dev_requirement: bool, replaced?: string[], provided?: string[]}>}|array $required */
-            $required = require $vendorDir.'/composer/installed.php';
-            $installed[] = $required;
-        } elseif (is_file($vendorDir.'/composer/installed.json')) {
+        if (is_file($vendorDir.'/composer/installed.json')) {
             $installed = $this->serializer->unserialize(file_get_contents($vendorDir.'/composer/installed.json'));
         }
         return $installed;
@@ -52,19 +48,7 @@ class Version
     public function getVersion($packageName)
     {
         $vendorDir = $this->dir->getRoot() . '/vendor';
-        if (is_file($vendorDir.'/composer/installed.php')) {
-            foreach ($this->getInstalled() as $installed) {
-                if (!isset($installed['versions'][$packageName])) {
-                    continue;
-                }
-
-                if (!isset($installed['versions'][$packageName]['version'])) {
-                    return null;
-                }
-
-                return $installed['versions'][$packageName]['version'];
-            }
-        } elseif (is_file($vendorDir.'/composer/installed.json')) {
+        if (is_file($vendorDir.'/composer/installed.json')) {
             foreach ($this->getInstalled() as $package) {
                 if (
                     !isset($package['version']) ||
@@ -94,11 +78,15 @@ class Version
                 '<'
             );
         } catch (\OutOfBoundsException $e) {
-            $lesser = version_compare(
-                $this->getVersion('firebase/php-jwt'),
-                '6.0',
-                '<'
-            );
+            try {
+                $lesser = version_compare(
+                    $this->getVersion('firebase/php-jwt'),
+                    '6.0',
+                    '<'
+                );
+            } catch (\Exception $e) {
+                return false;
+            }
         }
         return $lesser;
     }
