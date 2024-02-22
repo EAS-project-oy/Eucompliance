@@ -54,12 +54,12 @@ And clone module
 `git clone https://github.com//EAS-project-oy/eucompliance
 `
 
-After installation from root magento folder,
+<p>After installation from root magento folder:
 to enable module run: `bin/magento se:up`
 to generate module classes run: `bin/magento s:s:d -f && bin/magento s:d:c`
 You can run it all in one command: `bin/magento se:up && bin/magento s:s:d -f && bin/magento s:d:c`
 If you are planning to use "Standard solution" mode, make sure to create the right magento crontab file with the command `bin/magento cron:install`
-
+</p>
 After doing so, `bin/magento mo:st Eas_Eucompliance` should return
 
 <p align="center">
