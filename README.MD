@@ -90,13 +90,8 @@ Shipping methods by post - select shipping methods which use post mailing system
 
 _**Credentials**_ - get default urls from  https://dashboard.easproject.com/
 
+**Standard Solution**  - This option used for stores with non compatible checkouts. To use EAS EU compliance with one page checkout plugins , please set YES. In that mode EAS EU compliance plugin will export paid orders to EAS solution. EAS EU compliance won't be injected into checkout process, that is why Taxes should be configured in the Magento store manually.
 **EAS API Base URL**  -  base api url used for sending request
-
-**EAS API authorize URL** - url, which will be used during  authorization
-
-**EAS API auth keys URL**  - url, which will be used to get authorized keys
-
-**EAS API calculate URL** -  url, which will be used to calculate additional costs
 
 **EAS api key**  -  EAS credentials, which will be used during authorization (EAS should provide them after signing in contract)
 
