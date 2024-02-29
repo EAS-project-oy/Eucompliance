@@ -22,6 +22,7 @@ use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Tax\Api\Data\QuoteDetailsItemExtensionInterfaceFactory;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
+use Magento\Framework\App\ObjectManager;
 
 class Shipping extends CommonTaxCollector
 {
@@ -31,44 +32,15 @@ class Shipping extends CommonTaxCollector
     private Configuration $configuration;
 
     /**
-     * @param Configuration $configuration
-     * @param \Magento\Tax\Model\Config $taxConfig
-     * @param \Magento\Tax\Api\TaxCalculationInterface $taxCalculationService
-     * @param \Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory $quoteDetailsDataObjectFactory
-     * @param \Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory $quoteDetailsItemDataObjectFactory
-     * @param \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory
-     * @param CustomerAddressFactory $customerAddressFactory
-     * @param CustomerAddressRegionFactory $customerAddressRegionFactory
-     * @param TaxHelper|null $taxHelper
-     * @param QuoteDetailsItemExtensionInterfaceFactory|null $quoteDetailsItemExtensionInterfaceFactory
-     * @param CustomerAccountManagement|null $customerAccountManagement
+     * @return Configuration
      */
-    public function __construct(
-        Configuration $configuration,
-        \Magento\Tax\Model\Config $taxConfig,
-        \Magento\Tax\Api\TaxCalculationInterface $taxCalculationService,
-        \Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory $quoteDetailsDataObjectFactory,
-        \Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory $quoteDetailsItemDataObjectFactory,
-        \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory,
-        CustomerAddressFactory $customerAddressFactory,
-        CustomerAddressRegionFactory $customerAddressRegionFactory,
-        TaxHelper $taxHelper = null,
-        QuoteDetailsItemExtensionInterfaceFactory $quoteDetailsItemExtensionInterfaceFactory = null,
-        ?CustomerAccountManagement $customerAccountManagement = null
-    ) {
-        $this->configuration = $configuration;
-        parent::__construct(
-            $taxConfig,
-            $taxCalculationService,
-            $quoteDetailsDataObjectFactory,
-            $quoteDetailsItemDataObjectFactory,
-            $taxClassKeyDataObjectFactory,
-            $customerAddressFactory,
-            $customerAddressRegionFactory,
-            $taxHelper,
-            $quoteDetailsItemExtensionInterfaceFactory,
-            $customerAccountManagement
-        );
+    private function getConfiguration()
+    {
+        if(isset($this->configuration)) {
+            return $this->configuration;
+        }
+        $this->configuration = ObjectManager::getInstance()->get(Configuration::class);
+        return $this->configuration;
     }
 
     /**
@@ -83,12 +55,12 @@ class Shipping extends CommonTaxCollector
      */
     public function afterCollect(
         \Magento\Tax\Model\Sales\Total\Quote\Shipping $subject,
-        $result,
+                                                      $result,
         Quote                                         $quote,
         ShippingAssignmentInterface                   $shippingAssignment,
         Total                                         $total
     ) {
-        if (!$this->configuration->isEnabled() || $this->configuration->isStandardSolution()) {
+        if (!$this->getConfiguration()->isEnabled() || $this->getConfiguration()->isStandardSolution()) {
             return $result;
         }
 

@@ -1,4 +1,8 @@
 *** EAS EU compliance plugin for Magento 2 Changelog ***
+2024-02-29 - version 1.3.10
+
+* (Fix) Remove constructor dependency on Shipping plugin class
+
 2024-02-12 - version 1.3.9.2
 
 * Remove "require" dependency
