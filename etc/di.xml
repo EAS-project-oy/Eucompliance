@@ -103,4 +103,5 @@
                 type="Easproject\Eucompliance\Plugin\Payment"
                 sortOrder="20"/>
     </type>
+    <preference for="Magento\Sales\Block\Adminhtml\Order\Totals" type="Easproject\Eucompliance\Block\Adminhtml\Order\Totals"/>
 </config>
